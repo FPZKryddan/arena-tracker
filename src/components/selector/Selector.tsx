@@ -14,7 +14,6 @@ const Selector = ({
   items,
   isOpen,
   toggleCallBack,
-  closeCallBack,
   selectCallBack,
 }: SelectorProps) => {
   return (
