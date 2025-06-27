@@ -1,0 +1,56 @@
+import React from "react";
+import type { championData } from "../../types";
+
+interface ChampionCardProps {
+  champion: championData;
+  updateStageCallBack: (championName: string, stage: number) => void;
+}
+
+const IMAGE_SIZE: number = 125;
+
+const ChampionCard = React.memo(({ champion, updateStageCallBack }: ChampionCardProps) => {
+  const baseImgUrl: string =
+    "https://ddragon.leagueoflegends.com/cdn/15.13.1/img/champion/";
+  const finalUrl: string = baseImgUrl + champion.id + ".png";
+
+  return (
+    <div className="flex flex-col gap-[8px] select-none">
+      <div className="group w-[125px] outline-2 flex flex-col relative">
+        <img src={finalUrl} width={IMAGE_SIZE} height={IMAGE_SIZE} loading="lazy"></img>
+        <div className="absolute bottom-[0px] w-full translate-y-full outline-2">
+          <div className="flex flex-row w-full mt-auto h-[10px] group-hover:h-[44px] transition-all duration-75 ease-out">
+            <button
+              className={`grow h-full border-2 border-r-1 border-black cursor-pointer ${
+                champion.stage >= 1
+                  ? "bg-amber-300 hover:bg-amber-400"
+                  : "bg-sky-200 hover:bg-amber-200"
+              }`}
+              onClick={() => updateStageCallBack(champion.name, 1)}
+            ></button>
+            <button
+              className={`grow h-full border-2 border-r-1 border-l-1 border-black cursor-pointer ${
+                champion.stage >= 2
+                  ? "bg-amber-300 hover:bg-amber-400"
+                  : "bg-sky-200 hover:bg-amber-200"
+              }`}
+              onClick={() => updateStageCallBack(champion.name, 2)}
+            ></button>
+            <button
+              className={`grow h-full border-2 border-l-1 border-black cursor-pointer ${
+                champion.stage >= 3
+                  ? "bg-amber-300 hover:bg-amber-400"
+                  : "bg-sky-200 hover:bg-amber-200"
+              }`}
+              onClick={() => updateStageCallBack(champion.name, 3)}
+            ></button>
+          </div>
+          <p className="w-full text-center bg-black text-white font-semibold text-lg no-wrap tracking-tighter">
+            {champion.name}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+export default ChampionCard;
