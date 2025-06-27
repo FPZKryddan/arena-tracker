@@ -153,7 +153,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col w-full h-dvh items-center p-x-16 gap-2 bg-linear-to-b to-stone-900 from-gray-900 overflow-y-auto">
+    <div className="flex flex-col w-full h-dvh items-center p-x-16 gap-2 bg-linear-to-b to-stone-900 from-gray-900 overflow-y-auto" id="scrollContainer">
       <div className="mt-32 flex flex-col gap-2">
         <input
           type="text"

@@ -30,3 +30,7 @@
   scrollbar-color: rgba(0, 0, 0, 0.5) transparent;
   scrollbar-arrow-color: transparent;
 }
+
+#scrollContainer {
+    scrollbar-gutter: stable;
+}
