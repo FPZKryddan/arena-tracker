@@ -4,6 +4,7 @@ import ChampionCard from "./components/championCard";
 import type { championData } from "./types";
 import useFuzzy from "./hooks/useFuzzy";
 import { Selector } from "./components/selector";
+import Progress from "./components/progressTracker/Progress";
 
 function App() {
   const [championData, setChampionData] = useState<championData[]>([]);
@@ -18,6 +19,11 @@ function App() {
   const [isOrderSelectorOpen, setIsOrderSelectorOpen] =
     useState<boolean>(false);
 
+  const [total, setTotal] = useState<number>(championData.length);
+  const [played, setPlayed] = useState<number>(0);
+  const [top4, setTop4] = useState<number>(0);
+  const [won, setWon] = useState<number>(0);
+
   const fuzzySearch = useFuzzy();
 
   const FetchChampionData = async () => {
@@ -25,13 +31,15 @@ function App() {
       "https://ddragon.leagueoflegends.com/cdn/15.13.1/data/en_US/champion.json"
     ).then((res) => res.json());
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fetchedData: championData[] = Object.values(data.data).map(
-      (champion: any) => ({
-        name: champion.name,
-        id: champion.id,
-        stage: 0,
-      })
+      (champion: unknown) => {
+        const typedChampion = champion as { name: string; id: string };
+        return {
+          name: typedChampion.name,
+          id: typedChampion.id,
+          stage: 0,
+        };
+      }
     );
 
     return fetchedData;
@@ -57,6 +65,7 @@ function App() {
     fetchData();
   }, []);
 
+  // update rendered data
   useEffect(() => {
     let toBeRenderedData = [...championData];
     if (searchFilter) {
@@ -71,6 +80,30 @@ function App() {
 
     setRenderedData(toBeRenderedData);
   }, [championData, searchFilter, sortBy, orderBy, fuzzySearch]);
+
+  // update tracked stats
+  useEffect(() => {
+    let _played = 0;
+    let _top4 = 0;
+    let _won = 0;
+    championData.map((champion) => {
+      switch (champion.stage) {
+        case 1:
+          _played++;
+          break;
+        case 2:
+          _top4++;
+          break;
+        case 3:
+          _won++;
+          break;
+      }
+    });
+    setTotal(championData.length);
+    setPlayed(_played);
+    setTop4(_top4);
+    setWon(_won);
+  }, [championData]);
 
   const SortByName = (
     data: championData[],
@@ -153,32 +186,40 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col w-full h-dvh items-center p-x-16 gap-2 bg-linear-to-b to-stone-900 from-gray-900 overflow-y-auto" id="scrollContainer">
-      <div className="mt-32 flex flex-col gap-2">
-        <input
-          type="text"
-          className="text-center h-8 rounded-sm bg-stone-700 text-white font-semibold w-[300px]"
-          placeholder="SEARCH"
-          value={searchFilter}
-          onChange={(e) => handleUpdateSearchFilter(e.target.value)}
-        />
-        <div className="self-start flex flex-row gap-2 w-full">
-          <Selector
-            label={sortBy}
-            items={["Name", "Progress"]}
-            isOpen={isSortSelectorOpen}
-            toggleCallBack={ToggleSortSelecctorState}
-            closeCallBack={CloseSortSelector}
-            selectCallBack={UpdateSortingMethod}
-          ></Selector>
-          <Selector
-            label={orderBy}
-            items={["asc", "desc"]}
-            isOpen={isOrderSelectorOpen}
-            toggleCallBack={ToggleOrderSelectorState}
-            closeCallBack={CloseOrderSelector}
-            selectCallBack={UpdateOrderMethod}
-          ></Selector>
+    <div className="flex flex-col w-full h-dvh items-center p-x-16 gap-2 bg-linear-to-b to-stone-900 from-gray-900 overflow-y-auto">
+      <div className="mt-16 flex flex-col lg:flex-row w-full md:w-1/2 xl:w-1/3 px-8 md:px-0 gap-8">
+        <Progress
+          total={total}
+          played={played}
+          top4={top4}
+          won={won}
+        ></Progress>
+        <div className="flex flex-col gap-2 w-full lg:w-1/2">
+          <input
+            type="text"
+            className="text-center h-8 rounded-sm bg-stone-700 text-white font-semibold w-full"
+            placeholder="SEARCH"
+            value={searchFilter}
+            onChange={(e) => handleUpdateSearchFilter(e.target.value)}
+          />
+          <div className="self-start flex flex-row gap-2 w-full">
+            <Selector
+              label={sortBy}
+              items={["Name", "Progress"]}
+              isOpen={isSortSelectorOpen}
+              toggleCallBack={ToggleSortSelecctorState}
+              closeCallBack={CloseSortSelector}
+              selectCallBack={UpdateSortingMethod}
+            ></Selector>
+            <Selector
+              label={orderBy}
+              items={["asc", "desc"]}
+              isOpen={isOrderSelectorOpen}
+              toggleCallBack={ToggleOrderSelectorState}
+              closeCallBack={CloseOrderSelector}
+              selectCallBack={UpdateOrderMethod}
+            ></Selector>
+          </div>
         </div>
       </div>
       {isLoadingChampions ? (

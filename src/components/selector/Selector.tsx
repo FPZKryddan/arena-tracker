@@ -21,9 +21,9 @@ const Selector = ({
       {/* {isOpen &&
         <div className="absolute inset-0 z-10" onClick={closeCallBack}></div>
       } */}
-      <div className="relative w-full " onClick={toggleCallBack}>
+      <div className="relative" onClick={toggleCallBack}>
         <p
-          className={`px-6 w-full font-semibold text-center hover:cursor-pointer rounded-full text-md select-none ${
+          className={`px-10 py-1 font-semibold text-center hover:cursor-pointer rounded-full text-md select-none ${
             isOpen ? "bg-white text-black" : "bg-stone-700 text-white"
           }`}
         >
