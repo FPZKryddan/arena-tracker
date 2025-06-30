@@ -49,7 +49,7 @@ const ChampionCard = React.memo(({ champion, updateStageCallBack }: ChampionCard
             {champion.name}
           </p>
         </div>
-        {champion.stage 
+        {champion.stage === 3
         ? <div className="absolute inset-0 bg-amber-400/40 flex items-center align-middle">
           <FaCheck className="w-full h-full p-5 drop-shadow-lg text-yellow-300"/>
         </div>
