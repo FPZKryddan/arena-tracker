@@ -1,5 +1,6 @@
 import React from "react";
 import type { championData } from "../../types";
+import { FaCheck } from "react-icons/fa6";
 
 interface ChampionCardProps {
   champion: championData;
@@ -48,6 +49,12 @@ const ChampionCard = React.memo(({ champion, updateStageCallBack }: ChampionCard
             {champion.name}
           </p>
         </div>
+        {champion.stage 
+        ? <div className="absolute inset-0 bg-amber-400/40 flex items-center align-middle">
+          <FaCheck className="w-full h-full p-5 drop-shadow-lg text-yellow-300"/>
+        </div>
+        : <></> 
+        }
       </div>
     </div>
   );
