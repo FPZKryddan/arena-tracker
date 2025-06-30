@@ -27,6 +27,11 @@ const Progress = ({ total, played, top4, won }: ProgressProps) => {
           total={total}
           tracking={"victory"}
         ></ProgressTracker>
+        <ProgressTracker
+          current={total-(played+top4+won)}
+          total={total}
+          tracking={"none"}
+        ></ProgressTracker>
       </div>
     </div>
   );
