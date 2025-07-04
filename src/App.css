@@ -32,5 +32,9 @@
 }
 
 #scrollContainer {
-    scrollbar-gutter: stable;
+    scrollbar-gutter: stable both-edges;
+}
+
+* {
+  font-family: 'Inter', sans-serif;
 }
