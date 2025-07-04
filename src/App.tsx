@@ -9,7 +9,7 @@ import useFetchData from "./hooks/useFetchData";
 import useMatchParser from "./hooks/useMatchParser";
 import SummonerInput from "./components/summonerInput";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Modal from "./components/modal";
+// import Modal from "./components/modal";
 import useToast from "./hooks/useToast";
 import ToastContainer from "./components/toastContainer";
 
@@ -189,7 +189,7 @@ function App() {
       }
     };
     fetchData();
-  }, []);
+  }, [FetchChampionData]);
 
   // update rendered data
   const sortedFilteredData = useMemo(() => {
