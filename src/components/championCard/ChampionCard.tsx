@@ -10,9 +10,15 @@ interface ChampionCardProps {
 const IMAGE_SIZE: number = 125;
 
 const ChampionCard = React.memo(({ champion, updateStageCallBack }: ChampionCardProps) => {
+  const firstLetterBig = (name: string): string => {
+    return name[0].toUpperCase() + name.slice(1);
+  }
+
+
   const baseImgUrl: string =
     "https://ddragon.leagueoflegends.com/cdn/15.13.1/img/champion/";
-  const finalUrl: string = baseImgUrl + champion.id + ".png";
+  const finalUrl: string = baseImgUrl + firstLetterBig(champion.id) + ".png";
+
 
   return (
     <div className="flex flex-col gap-[8px] select-none">
@@ -26,7 +32,7 @@ const ChampionCard = React.memo(({ champion, updateStageCallBack }: ChampionCard
                   ? "bg-amber-300 hover:bg-amber-400"
                   : "bg-sky-200 hover:bg-amber-200"
               }`}
-              onClick={() => updateStageCallBack(champion.name, 1)}
+              onClick={() => updateStageCallBack(firstLetterBig(champion.name), 1)}
             ></button>
             <button
               className={`grow h-full border-2 border-r-1 border-l-1 border-black cursor-pointer ${
@@ -34,7 +40,7 @@ const ChampionCard = React.memo(({ champion, updateStageCallBack }: ChampionCard
                   ? "bg-amber-300 hover:bg-amber-400"
                   : "bg-sky-200 hover:bg-amber-200"
               }`}
-              onClick={() => updateStageCallBack(champion.name, 2)}
+              onClick={() => updateStageCallBack(firstLetterBig(champion.name), 2)}
             ></button>
             <button
               className={`grow h-full border-2 border-l-1 border-black cursor-pointer ${
@@ -42,11 +48,11 @@ const ChampionCard = React.memo(({ champion, updateStageCallBack }: ChampionCard
                   ? "bg-amber-300 hover:bg-amber-400"
                   : "bg-sky-200 hover:bg-amber-200"
               }`}
-              onClick={() => updateStageCallBack(champion.name, 3)}
+              onClick={() => updateStageCallBack(firstLetterBig(champion.name), 3)}
             ></button>
           </div>
           <p className="w-full text-center bg-black text-white font-semibold text-lg no-wrap tracking-tighter">
-            {champion.name}
+            {firstLetterBig(champion.name)}
           </p>
         </div>
         {champion.stage === 3
