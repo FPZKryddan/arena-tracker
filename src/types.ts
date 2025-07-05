@@ -11,6 +11,39 @@ export interface Toast {
   type: 'SUCCESS' | 'ERROR';
 };
 
+export interface StatusMessage {
+  id: string;
+  status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+  message: string;
+  tasksCompleted: number;
+  totalTasks: number;
+};
+
+export interface PlayerStats {
+  puuid: string;
+  gameName: string;
+  tagLine: string;
+  matchesPlayed: number;
+  latestGamePlayed: EpochTimeStamp;
+  placements: placementDto
+  placementAvg: number;
+  championStats: {
+    [championName: string]: championStatsDto;
+  }
+}
+
+export interface placementDto {
+  [key: number]: number;
+}
+
+export interface championStatsDto {
+  timesPlayed: number;
+  placements: placementDto;
+  placementAvg: number;
+  name: string;
+  stage: number;
+}
+
 export interface GetPUUIDDto {
   gameName: string;
   puuid: string;
