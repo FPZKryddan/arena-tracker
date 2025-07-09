@@ -8,45 +8,50 @@ interface FetchingUpdatesProps {
 }
 
 const FetchingUpdates = ({
-  statusMessages,
   rateLimited,
   isFetching,
+  statusMessages,
 }: FetchingUpdatesProps) => {
   return (
-    <div className="flex flex-col min-w-64 gap-4 justify-center">
-      {isFetching ? (
-        <div className="text-center">
-          <ClipLoader />
-        </div>
-      ) : (
-        <></>
-      )}
-      <p
-        className={`text-sm w-full text-center ${
-          !rateLimited ? "text-transparent" : "text-red-600"
-        }`}
-      >
-        Rate limited: retrying again in 30 seconds!
-      </p>
-      <ul className="flex flex-col gap-1">
-        {statusMessages.map((statusMessage) => (
-          <li key={statusMessage.id}>
-            <div className="flex flex-row justify-start h-6 flex-nowrap gap-4">
-              <p>
-                {statusMessage.message +
-                  (statusMessage.tasksCompleted > 0
-                    ? statusMessage.tasksCompleted.toString() +
-                      (statusMessage.totalTasks != -1
-                        ? "/" + statusMessage.totalTasks
-                        : "")
-                    : "")}
+    <>
+      {isFetching && (
+        <div className="fixed group top-0 left-1/2 mt-[8px] transform -translate-x-1/2 px-6 py-[4px] bg-gray-50 rounded-full flex flex-col">
+          <div className="flex flex-row gap-[8px] justify-start">
+            <div className="flex flex-col">
+              <h1 className="text-[20px] leading-[22px] font-semibold">
+                Fetching user data
+              </h1>
+              {statusMessages.length > 0 && (
+                <p className="text-[12px] font-normal">
+                  {statusMessages[statusMessages.length - 1].message +
+                    (statusMessages[statusMessages.length - 1].tasksCompleted >
+                    0
+                      ? statusMessages[
+                          statusMessages.length - 1
+                        ].tasksCompleted.toString() +
+                        (statusMessages[statusMessages.length - 1].totalTasks !=
+                        -1
+                          ? "/" +
+                            statusMessages[statusMessages.length - 1].totalTasks
+                          : "")
+                      : "")}
+                </p>
+              )}
+              <p
+                className={`text-[10px] w-full text-center ${
+                  !rateLimited ? "text-transparent" : "text-red-600"
+                }`}
+              >
+                Rate limited: retrying again in 30 seconds!
               </p>
-              <p className="ml-auto">{statusMessage.status}</p>
             </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+            <div className="flex items-center">
+              <ClipLoader />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

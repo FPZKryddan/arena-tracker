@@ -5,6 +5,24 @@ export type championData = {
 //   roles: ('top' | 'jungle' | 'mid' | 'adc' | 'supp')[]
 };
 
+export interface augmentsData {
+  apiName: string;
+  name: string;
+  desc: string;
+  id: number;
+  iconLarge: string;
+  iconSmall: string;
+  rarity: number;
+};
+
+export interface summonerData {
+  id: string;
+  puuid: string;
+  profileIconId: number;
+  revisionDate: number;
+  summonerLevel: number;
+}
+
 export interface Toast {
   id: string;
   message: string;
@@ -23,26 +41,105 @@ export interface PlayerStats {
   puuid: string;
   gameName: string;
   tagLine: string;
+  profileIconId: number;
+  summonerLevel: number; 
   matchesPlayed: number;
   latestGamePlayed: EpochTimeStamp;
   placements: placementDto
   placementAvg: number;
+  infographics: infographicsDto;
+  augmentStats: augmentsStatsDto;
   championStats: {
     [championName: string]: championStatsDto;
   }
-}
+};
 
 export interface placementDto {
   [key: number]: number;
-}
+};
 
 export interface championStatsDto {
   timesPlayed: number;
   placements: placementDto;
   placementAvg: number;
+  infographics: infographicsDto;
+  augmentStats: augmentsStatsDto;
   name: string;
+  id: string;
   stage: number;
+};
+
+export interface infographicsDto {
+  damageStats: damageStatsDto;
+  damageTakenStats: damageTakenStatsDto;
+  goldStats: goldStatsDto;
+  skillShotsStats: skillShotsDto;
+  killsDeathsAssists: killDeathAssistsDto;
+};
+
+export interface augmentsStatsDto {
+  [id: number]: {
+    picked: number;
+  }
 }
+
+export interface killDeathAssistsDto {
+  kda: numericalStatsDto;
+  kills: numericalStatsDto;
+  deaths: numericalStatsDto;
+  assists: numericalStatsDto;
+}
+
+export interface damageStatsDto {
+  total: {
+    total: numericalStatsDto;
+    champions: numericalStatsDto;
+  };
+  true: {
+    total: numericalStatsDto;
+    champions: numericalStatsDto;
+  };
+  magic: {
+    total: numericalStatsDto;
+    champions: numericalStatsDto;
+  };
+  physical: {
+    total: numericalStatsDto;
+    champions: numericalStatsDto;
+  };
+  perMinute: numericalStatsDto;
+};
+
+export interface damageTakenStatsDto {
+  total: numericalStatsDto;
+  true: numericalStatsDto;
+  magic: numericalStatsDto;
+  physical: numericalStatsDto;
+  mitigated: numericalStatsDto;
+};
+
+export interface skillShotsDto {
+  dodged: numericalStatsDto;
+  hit: numericalStatsDto;
+};
+
+export interface goldStatsDto {
+  earned: numericalStatsDto;
+  spent: numericalStatsDto;
+  perMinute: numericalStatsDto;
+};
+
+export interface numericalStatsDto {
+  value: number;
+  records: recordsDto;
+};
+
+export interface recordsDtoEntry {
+  value: number;
+  matchId: string;
+}
+
+export type recordsDto = recordsDtoEntry[];
 
 export interface GetPUUIDDto {
   gameName: string;
@@ -82,7 +179,7 @@ export interface InfoDto {
   queueId: number;
   teams: TeamDto[];
   tournamentCode: string;
-}
+};
 
 export interface ChallengesDto {
   "12AssistStreakCount": number;
@@ -231,7 +328,7 @@ export interface ChallengesDto {
   wardsGuarded: number;
   wardTakedowns: number;
   wardTakedownsBefore20M: number;
-}
+};
 
 export interface ParticipantDto {
   allInPings: number;
@@ -374,7 +471,7 @@ export interface ParticipantDto {
   wardsKilled: number;
   wardsPlaced: number;
   win: boolean;
-}
+};
 
 export interface MissionsDto {
   playerScore0: number;
@@ -389,43 +486,43 @@ export interface MissionsDto {
   playerScore9: number;
   playerScore10: number;
   playerScore11: number;
-}
+};
 
 export interface PerksDto {
   statPerks: PerkStatsDto;
   styles: PerkStyleDto[];
-}
+};
 
 export interface PerkStatsDto {
   defense: number;
   flex: number;
   offense: number;
-}
+};
 
 export interface PerkStyleDto {
   description: string;
   selections: PerkStyleSelectionDto[];
   style: number;
-}
+};
 
 export interface PerkStyleSelectionDto {
   perk: number;
   var1: number;
   var2: number;
   var3: number;
-}
+};
 
 export interface TeamDto {
   bans: BanDto[];
   objectives: ObjectivesDto;
   teamId: number;
   win: boolean;
-}
+};
 
 export interface BanDto {
   championId: number;
   pickTurn: number;
-}
+};
 
 export interface ObjectivesDto {
   baron: ObjectiveDto;
@@ -435,9 +532,9 @@ export interface ObjectivesDto {
   inhibitor: ObjectiveDto;
   riftHerald: ObjectiveDto;
   tower: ObjectiveDto;
-}
+};
 
 export interface ObjectiveDto {
   first: boolean;
   kills: number;
-}
+};

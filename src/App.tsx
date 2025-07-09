@@ -1,12 +1,12 @@
 import "./App.css";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import ChampionCard from "./components/championCard";
 import {
   type championData,
-  type championStatsDto,
   type GetPUUIDDto,
   type MatchDto,
   type PlayerStats,
+  type summonerData
 } from "./types";
 import useFuzzy from "./hooks/useFuzzy";
 import { Selector } from "./components/selector";
@@ -14,12 +14,16 @@ import Progress from "./components/progressTracker/Progress";
 import useFetchData from "./hooks/useFetchData";
 import useMatchParser from "./hooks/useMatchParser";
 import SummonerInput from "./components/summonerInput";
-import Modal from "./components/modal";
+// import Modal from "./components/modal";
 import useToast from "./hooks/useToast";
 import ToastContainer from "./components/toastContainer";
 import useSorter from "./hooks/useSorter";
 import FetchingUpdates from "./components/fetchingUpdates";
 import useFetchStatusTracker from "./hooks/useFethingStatusTracker";
+const StatsOverviewCard = lazy(() => import("./components/statsOverviewCard"));
+import Tooltip from "./components/Tooltip/Tooltip";
+import StatsSkeleton from "./components/statsOverviewCard/StatsSkeleton";
+import ProfileHeader from "./components/profileHeader";
 
 function App() {
   const [championData, setChampionData] = useState<championData[]>([]);
@@ -35,8 +39,10 @@ function App() {
   const [isLoadingChampions, setIsLoadingChampions] = useState<boolean>(false);
   const [isLoadingRecentStats, setIsLoadingRecentStats] =
     useState<boolean>(false);
-  const [isLoadingPlayerStats, setIsLoadingPlayerStats] = useState<boolean>(false);
-  const [isPlayerStatsModalOpen, setIsPlayerStatsModalOpen] = useState<boolean>(false);
+  const [isLoadingPlayerStats, setIsLoadingPlayerStats] =
+    useState<boolean>(false);
+  // const [isPlayerStatsModalOpen, setIsPlayerStatsModalOpen] =
+  //   useState<boolean>(false);
 
   const [total, setTotal] = useState<number>(championData.length);
   const [played, setPlayed] = useState<number>(0);
@@ -50,21 +56,22 @@ function App() {
     FetchMatchData,
     FetchPlayerMatchList,
     FetchUserPuuid,
+    FetchSummonerData,
   } = useFetchData();
   const {
     GetParticipantIdByPuuid,
     PopulatePlayerStatsFromMatch,
-    PopulatePlacements,
+    createEmptyPlayerStats,
   } = useMatchParser();
   const { CreateToast, toasts } = useToast();
   const { SortByName, SortByProgress } = useSorter();
-  const { 
+  const {
     statusMessages,
     addStatusMessage,
     updateStatusMessage,
     completeStatusMessage,
     resetStatusMessages,
-    failStatusMessage
+    failStatusMessage,
   } = useFetchStatusTracker();
 
   const GetRecentStats = async (name: string) => {
@@ -87,7 +94,12 @@ function App() {
     const matchDatas: MatchDto[] = [];
 
     while (backtracking) {
-      const matchListSegment: string[] = await FetchPlayerMatchList(playerUuid, idx * 100, 100, 1741088416);
+      const matchListSegment: string[] = await FetchPlayerMatchList(
+        playerUuid,
+        idx * 100,
+        100,
+        1741088416
+      );
       for (const match of matchListSegment) {
         const matchData: MatchDto = await FetchMatchData(match);
         if (matchData.info.gameEndTimestamp <= playerStats.latestGamePlayed) {
@@ -99,7 +111,7 @@ function App() {
       idx++;
     }
 
-    const playerParticipantIdToMatch: { playerId: number; match: MatchDto }[] = 
+    const playerParticipantIdToMatch: { playerId: number; match: MatchDto }[] =
       matchDatas
         .map((match) => {
           const id = GetParticipantIdByPuuid(match, playerUuid);
@@ -109,7 +121,7 @@ function App() {
           (item): item is { playerId: number; match: MatchDto } => item !== null
         );
 
-    let tempPlayerStats = {...playerStats};
+    let tempPlayerStats = { ...playerStats };
     for (const matchMapping of playerParticipantIdToMatch) {
       try {
         tempPlayerStats = PopulatePlayerStatsFromMatch(
@@ -122,48 +134,18 @@ function App() {
       }
     }
 
-    CreateToast(String(matchDatas.length) + " Updates were retrieved!", "SUCCESS");
+    CreateToast(
+      String(matchDatas.length) + " Updates were retrieved!",
+      "SUCCESS"
+    );
     setIsLoadingRecentStats(false);
     populateChampionDataFromPlayerStats(tempPlayerStats);
     setPlayerStats(tempPlayerStats);
   };
 
-  const createEmptyPlayerStats = (
-    gameName: string,
-    tagLine: string,
-    puuid: string
-  ): PlayerStats => {
-    return {
-      gameName,
-      tagLine,
-      puuid,
-      matchesPlayed: 0,
-      latestGamePlayed: 0,
-      placements: PopulatePlacements(0),
-      placementAvg: 0,
-      championStats: createEmptyChampionStats(),
-    };
-  };
-
-  const createEmptyChampionStats = (): {
-    [championName: string]: championStatsDto;
-  } => {
-    const emptyChampionStats: { [championName: string]: championStatsDto } = {};
-    championData.forEach((champion) => {
-      emptyChampionStats[champion.id.toLocaleLowerCase()] = {
-        timesPlayed: 0,
-        placements: PopulatePlacements(0),
-        placementAvg: 0,
-        name: champion.name.toLocaleLowerCase(),
-        stage: 0,
-      };
-    });
-    return emptyChampionStats;
-  };
-
   const populateChampionDataFromPlayerStats = (playerStats: PlayerStats) => {
     const updatedChampionData = championData.map((champion) => {
-      champion.stage = playerStats.championStats[champion.id.toLocaleLowerCase()].stage;
+      champion.stage = playerStats.championStats[champion.id].stage;
       return champion;
     });
     setChampionData(updatedChampionData);
@@ -178,17 +160,17 @@ function App() {
     if (!tagline) {
       return;
     }
-  
+
     setIsLoadingPlayerStats(true);
-    setIsPlayerStatsModalOpen(true);
+    // setIsPlayerStatsModalOpen(true);
     resetStatusMessages();
 
     // Get Players UUID
-    const smIdPuuid = addStatusMessage('Getting Player UUID...', 1);
+    const smIdPuuid = addStatusMessage("Getting Player UUID...", 1);
     let puuidData: GetPUUIDDto;
     try {
       puuidData = await FetchUserPuuid(gameName, tagline);
-    } catch(error) {
+    } catch (error) {
       failStatusMessage(smIdPuuid);
       setIsLoadingPlayerStats(false);
       console.error("Failed to fetch Player UUID:", error);
@@ -202,7 +184,7 @@ function App() {
     let findingMatches = true;
     let idx = 0;
 
-    const smIdMatchHistory = addStatusMessage('Fetching match history...', -1);
+    const smIdMatchHistory = addStatusMessage("Fetching match history...", -1);
     while (findingMatches) {
       let matchListSegment: string[];
       try {
@@ -212,7 +194,7 @@ function App() {
           100,
           1741088416
         );
-      } catch(error) {
+      } catch (error) {
         failStatusMessage(smIdMatchHistory);
         setIsLoadingPlayerStats(false);
         console.error("Failed to fetch Player's match history:", error);
@@ -229,13 +211,16 @@ function App() {
     completeStatusMessage(smIdMatchHistory);
 
     // Get match data from match history
-    const smIdMatchData = addStatusMessage('Fetching match data...', matchList.length);
+    const smIdMatchData = addStatusMessage(
+      "Fetching match data...",
+      matchList.length
+    );
     const matchDatas: MatchDto[] = [];
     for (const match of matchList) {
       let data: MatchDto;
       try {
         data = await FetchMatchData(match);
-      } catch(error) {
+      } catch (error) {
         failStatusMessage(smIdMatchData);
         setIsLoadingPlayerStats(false);
         console.error("Failed to fetch match data:", error);
@@ -246,7 +231,10 @@ function App() {
     }
 
     // Map player to every match
-    const smIdPlayerInMatches = addStatusMessage('Finding player in matches...', matchList.length);
+    const smIdPlayerInMatches = addStatusMessage(
+      "Finding player in matches...",
+      matchList.length
+    );
     const playerParticipantIdToMatch: { playerId: number; match: MatchDto }[] =
       matchDatas
         .map((match) => {
@@ -259,8 +247,16 @@ function App() {
         );
 
     // Populate player stats from all retrieved matches
-    const smIdPlayerStats = addStatusMessage('Populating player stats', matchList.length);
-    let tempPlayerStats = createEmptyPlayerStats(gameName, tagline, playerUuid);
+    const smIdPlayerStats = addStatusMessage(
+      "Populating player stats",
+      matchList.length
+    );
+    let tempPlayerStats = createEmptyPlayerStats(
+      gameName,
+      tagline,
+      playerUuid,
+      championData
+    );
     for (const matchMapping of playerParticipantIdToMatch) {
       try {
         tempPlayerStats = PopulatePlayerStatsFromMatch(
@@ -272,9 +268,28 @@ function App() {
       } catch (error) {
         failStatusMessage(smIdPlayerStats);
         setIsLoadingPlayerStats(false);
-        console.error("Failed to fetch populate player stats from match:", error);
-        return
+        console.error(
+          "Failed to fetch populate player stats from match:",
+          error
+        );
+        return;
       }
+    }
+
+    const smIdSummonerData = addStatusMessage("Getting summoner data", 1);
+    try {
+      const summonerData: summonerData = await FetchSummonerData(playerUuid);
+      updateStatusMessage(smIdSummonerData);
+      tempPlayerStats.profileIconId = summonerData.profileIconId;
+      tempPlayerStats.summonerLevel = summonerData.summonerLevel;
+    } catch (error) {
+        failStatusMessage(smIdSummonerData);
+        setIsLoadingPlayerStats(false);
+        console.error(
+          "Failed to fetch summoner data for player:",
+          error
+        );
+        return;
     }
 
     console.log(tempPlayerStats);
@@ -425,74 +440,162 @@ function App() {
     setWon(_won);
   }, [championData]);
 
-  const closePlayerStatsModal = (): void => {
-    setIsPlayerStatsModalOpen(false);
+  // const closePlayerStatsModal = (): void => {
+  //   setIsPlayerStatsModalOpen(false);
+  // };
+
+  const getPlayerProgress = (): number => {
+    return Math.floor((played * 1 + top4 * 2 + won * 3) / (total*3) * 100);
+  };
+
+  const getPlayerStatsRedirecter = (name: string): void => {
+    if (!playerStats
+      ||  name !== playerStats.gameName + '#' + playerStats.tagLine
+    ) {
+      GetFullPlayerData(name);
+      return;
+    }
+
+    GetRecentStats(name);
   }
 
   return (
     <>
-      <Modal isOpen={isPlayerStatsModalOpen} canClose={!isLoadingPlayerStats} closeCallback={closePlayerStatsModal}>
-        <FetchingUpdates statusMessages={statusMessages} rateLimited={isRateLimited} isFetching={isLoadingPlayerStats}></FetchingUpdates>
-      </Modal>
-      <ToastContainer toasts={toasts}></ToastContainer>
-      <div
-        className="flex flex-col w-full h-dvh items-center p-x-16 gap-2 bg-linear-to-b to-stone-900 from-gray-900 overflow-y-auto"
-        id="scrollContainer"
+      {/* <Modal
+        isOpen={isPlayerStatsModalOpen}
+        canClose={!isLoadingPlayerStats}
+        closeCallback={closePlayerStatsModal}
       >
-        <div className="mt-16 grid grid-cols-2 lg:flex-row w-full xl:w-1/2 px-16 gap-8">
+      </Modal> */}
+      <FetchingUpdates
+          statusMessages={statusMessages}
+          rateLimited={isRateLimited}
+          isFetching={isLoadingPlayerStats}
+        />
+      <ToastContainer toasts={toasts} />
+      <div className="flex flex-col w-full h-dvh bg-linear-to-b to-slate-900 from-black p-[32px]">
+        <div className="flex flex-col p-4">
           <SummonerInput
             isLoading={isLoadingRecentStats}
-            onLatestClickCallback={GetRecentStats}
-            onAllClickCallback={GetFullPlayerData}
+            onClickCallback={getPlayerStatsRedirecter}
           ></SummonerInput>
-          <div className="flex flex-col gap-2 w-full">
-            <input
-              type="text"
-              className="text-center h-8 rounded-sm bg-stone-700 text-white font-semibold w-full"
-              placeholder="SEARCH"
-              value={searchFilter}
-              onChange={(e) => handleUpdateSearchFilter(e.target.value)}
-            />
-            <div className="self-start flex flex-row gap-2 w-full">
-              <Selector
-                label={sortBy}
-                items={["Name", "Progress"]}
-                isOpen={isSortSelectorOpen}
-                toggleCallBack={ToggleSortSelecctorState}
-                closeCallBack={CloseSortSelector}
-                selectCallBack={UpdateSortingMethod}
-              ></Selector>
-              <Selector
-                label={orderBy}
-                items={["asc", "desc"]}
-                isOpen={isOrderSelectorOpen}
-                toggleCallBack={ToggleOrderSelectorState}
-                closeCallBack={CloseOrderSelector}
-                selectCallBack={UpdateOrderMethod}
-              ></Selector>
+          {playerStats ? 
+            <ProfileHeader name={playerStats?.gameName + '#' + playerStats?.tagLine} percentProgress={getPlayerProgress()} iconId={playerStats?.profileIconId} />
+          : 
+            <ProfileHeader  percentProgress={getPlayerProgress()}/>
+          } 
+          <div className="w-[350px] mt-[8px]">
+            <Progress
+              total={total}
+              played={played}
+              top4={top4}
+              won={won}
+            ></Progress>
+          </div>
+        </div>
+
+        <div className="flex flex-row h-full p-4 gap-[48px] mt-[32px] overflow-hidden">
+          <div className="w-1/5 h-ful"></div>
+
+          <div className="flex flex-col bg-[#171A1C] rounded-[25px] p-4 w-3/5 gap-[8px]">
+            <div className="flex flex-col gap-2 w-full">
+              <input
+                type="text"
+                className="text-center h-8 rounded-sm bg-stone-700 text-white font-semibold w-full"
+                placeholder="SEARCH"
+                value={searchFilter}
+                onChange={(e) => handleUpdateSearchFilter(e.target.value)}
+              />
+              <div className="self-start flex flex-row gap-2 w-full">
+                <Selector
+                  label={sortBy}
+                  items={["Name", "Progress"]}
+                  isOpen={isSortSelectorOpen}
+                  toggleCallBack={ToggleSortSelecctorState}
+                  closeCallBack={CloseSortSelector}
+                  selectCallBack={UpdateSortingMethod}
+                ></Selector>
+                <Selector
+                  label={orderBy}
+                  items={["asc", "desc"]}
+                  isOpen={isOrderSelectorOpen}
+                  toggleCallBack={ToggleOrderSelectorState}
+                  closeCallBack={CloseOrderSelector}
+                  selectCallBack={UpdateOrderMethod}
+                ></Selector>
+              </div>
+            </div>
+
+            <div
+              className="w-full flex-1 min-h-0 py-[8px] grid [grid-template-columns:repeat(auto-fit,_150px)] gap-[16px] justify-center overflow-auto"
+              id="scrollContainer"
+            >
+              {isLoadingChampions ? (
+                <p>Loading</p>
+              ) : (
+                <>
+                  {sortedFilteredData.map((champion) =>
+                    playerStats ? (
+                      <Tooltip
+                        key={champion.name + "-tooltip"}
+                        delay={300}
+                        renderContent={() => (
+                          <Suspense fallback={<StatsSkeleton />}>
+                            <StatsOverviewCard
+                              stats={playerStats.championStats[champion.id]}
+                              name={
+                                champion.id
+                              }
+                            />
+                          </Suspense>
+                        )}
+                      >
+                        <ChampionCard
+                          key={champion.name}
+                          champion={champion}
+                          updateStageCallBack={UpdateChampionStage}
+                        ></ChampionCard>
+                      </Tooltip>
+                    ) : (
+                      <ChampionCard
+                        key={champion.name}
+                        champion={champion}
+                        updateStageCallBack={UpdateChampionStage}
+                      ></ChampionCard>
+                    )
+                  )}
+                </>
+              )}
             </div>
           </div>
-          <Progress
-            total={total}
-            played={played}
-            top4={top4}
-            won={won}
-          ></Progress>
-        </div>
-        {isLoadingChampions ? (
-          <p>Loading</p>
-        ) : (
-          <div className="grid gap-x-4 gap-y-20 grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 mt-12 mb-24 pb-24">
-            {sortedFilteredData.map((champion) => (
-              <ChampionCard
-                key={champion.name}
-                champion={champion}
-                updateStageCallBack={UpdateChampionStage}
-              ></ChampionCard>
-            ))}
+
+          <div className="flex justify-center w-fit h-full">
+            {playerStats ? (
+              <Suspense fallback={<StatsSkeleton />}>
+                <StatsOverviewCard
+                  stats={playerStats}
+                  name={playerStats.gameName + "#" + playerStats.tagLine}
+                />
+              </Suspense>
+            ) : (
+              <></>
+            )}
           </div>
-        )}
+        </div>
       </div>
+      {/* <div
+        className="flex flex-col w-full h-dvh items-center p-x-16 gap-2 bg-linear-to-b from-black to-slate-950 overflow-y-auto"
+        id="scrollContainer"
+      >
+        <StatsSkeleton />
+        <SummonerInput
+          isLoading={isLoadingRecentStats}
+          onLatestClickCallback={GetRecentStats}
+          onAllClickCallback={GetFullPlayerData}
+        ></SummonerInput>
+
+
+      </div> */}
     </>
   );
 }

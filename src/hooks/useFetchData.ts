@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import type { championData, GetPUUIDDto, MatchDto } from "../types";
+import type { augmentsData, championData, GetPUUIDDto, MatchDto, summonerData } from "../types";
 
 function useFetchData() {
   const API_KEY = import.meta.env.VITE_RIOT_API_KEY;
@@ -57,14 +57,31 @@ function useFetchData() {
 			(champion: unknown) => {
 				const typedChampion = champion as { name: string; id: string };
 				return {
-					name: typedChampion.name.toLocaleLowerCase(),
-					id: typedChampion.id.toLocaleLowerCase(),
+					name: typedChampion.name,
+					id: typedChampion.id,
 					stage: 0,
 				};
 			}
 		);
+		console.log(fetchedData);
 
 		return fetchedData;
+	}, []);
+
+	const FetchAugmentsData = useCallback(async () => {
+		const data = await fetch(
+			"https://raw.communitydragon.org/15.13/cdragon/arena/en_us.json"
+		).then((res) => res.json());
+
+		const augmentData: augmentsData[] = Object.values(data.augments).map(
+			(augment: unknown) => {
+				const typedAugment = augment as augmentsData;
+				return typedAugment;
+			}
+		);
+
+		console.log(augmentData);
+		return augmentData
 	}, []);
 
   const FetchUserPuuid = async (
@@ -81,6 +98,20 @@ function useFetchData() {
 
     return data;
   };
+
+	const FetchSummonerData = async (
+		puuid: string,
+	): Promise<summonerData> => {
+		const data = (await FetchWithRetry(
+			`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}`,
+			{
+        method: "GET",
+        headers: RIOT_HEADERS,
+      }
+		)) as summonerData;
+
+		return data;
+	}
 
   const FetchPlayerMatchList = async (
     puuid: string,
@@ -114,6 +145,8 @@ function useFetchData() {
   return {
 		isRateLimited,
     FetchChampionData,
+		FetchAugmentsData,
+		FetchSummonerData,
     FetchMatchData,
     FetchPlayerMatchList,
     FetchUserPuuid,

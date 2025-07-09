@@ -38,3 +38,44 @@
 * {
   font-family: 'Inter', sans-serif;
 }
+
+.augment-0,
+.augment-1,
+.augment-2 {
+  position: relative;
+  z-index: 10;
+  /* border-width: 4px;
+  border-style: solid;
+  border-radius: 19px;
+  border-image-slice: 1;
+  box-sizing: content-box;
+  background-origin: border-box;
+  background-clip: content-box, border-box; */
+}
+
+.augment-0::after,
+.augment-1::after,
+.augment-2::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  bottom: -0px;
+  left: -4px;
+  right: -4px;
+  border-radius: 19px;
+  padding: 4px 4px 4px 4px;
+  box-sizing: content-box;
+  z-index: -1;
+}
+
+.augment-0::after {
+  background-image: linear-gradient(to bottom, #A5BABD, #4C5657);
+}
+
+.augment-1::after {
+  background-image: linear-gradient(to bottom, #997E5D, #EDDAB8);
+}
+
+.augment-2::after {
+  background-image: linear-gradient(to bottom, #E78FFF, #E7DFFF, #AA9CFF, #FFD84E );
+}
