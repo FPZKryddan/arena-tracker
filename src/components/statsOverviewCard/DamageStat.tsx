@@ -67,8 +67,8 @@ const DamageStat = ({
         className={`flex flex-row w-[${BAR_WIDTH}px] bg-transparent h-[10px] rounded-2xl`}
       >
         <Tooltip
-          text={"Total physical damage dealt: " + phyiscal.value}
-          extra={"Highest physical damage dealt: " + phyiscal.records[0]?.value}
+          text={"Total physical damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + phyiscal.value}
+          extra={"Highest physical damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + phyiscal.records[0]?.value}
         >
           <div
             className="h-full rounded-l-2xl hover:outline-1 outline-black-400 hover:z-2"
@@ -79,8 +79,8 @@ const DamageStat = ({
           ></div>
         </Tooltip>
         <Tooltip
-          text={"Total magic damage dealt: " + magic.value}
-          extra={"Highest magic damage dealt: " + magic.records[0]?.value}
+          text={"Total magic damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + magic.value}
+          extra={"Highest magic damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + magic.records[0]?.value}
         >
           <div
             className="h-full hover:outline-1 outline-black-400 hover:z-2"
@@ -91,8 +91,8 @@ const DamageStat = ({
           ></div>
         </Tooltip>
         <Tooltip
-          text={"Total true damage dealt: " + trueDmg.value}
-          extra={"Highest true damage dealt: " + trueDmg.records[0]?.value}
+          text={"Total true damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + trueDmg.value}
+          extra={"Highest true damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + trueDmg.records[0]?.value}
         >
           <div
             className="h-full grow rounded-r-2xl hover:outline-1 outline-black-400 hover:z-2"
