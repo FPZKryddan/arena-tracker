@@ -9,10 +9,12 @@ import {
   Legend,
 } from "chart.js";
 import type { placementDto } from "../../types";
+import useStatsAggregator from "../../hooks/useStatsAggregator";
 
 interface PlacementsBodyProps {
   placements: placementDto;
   placementAvg: number;
+  darkGraph?: boolean;
 }
 
 ChartJS.register(
@@ -23,7 +25,13 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-const PlacementsBody = ({ placements, placementAvg }: PlacementsBodyProps) => {
+const PlacementsBody = ({
+  placements,
+  placementAvg,
+  darkGraph = false,
+}: PlacementsBodyProps) => {
+  const { getLosses, getTotalMatches, getWinrate, getWins } =
+    useStatsAggregator();
   const placementsToDataArray = (): number[] => {
     const newArr: number[] = [];
     for (let i = 8; i >= 1; i--) {
@@ -33,40 +41,13 @@ const PlacementsBody = ({ placements, placementAvg }: PlacementsBodyProps) => {
     return newArr;
   };
 
-  const getTotalMatches = (): number => {
-    let total = 0;
-    for (let i = 1; i <= 8; i++) {
-      const v = i in placements ? placements[i] : 0;
-      total += v;
-    }
-    return total;
-  };
-
-  const getWins = (): number => {
-    let total = 0;
-    for (let i = 1; i <= 4; i++) {
-      const v = i in placements ? placements[i] : 0;
-      total += v;
-    }
-    return total;
-  };
-
-  const getLosses = (): number => {
-    let total = 0;
-    for (let i = 5; i <= 8; i++) {
-      const v = i in placements ? placements[i] : 0;
-      total += v;
-    }
-    return total;
-  };
-
   const data = {
     labels: ["8th", "7th", "6th", "5th", "4th", "3rd", "2nd", "1st"],
     datasets: [
       {
         data: placementsToDataArray(),
         borderWidth: 1,
-        backgroundColor: "#000",
+        backgroundColor: darkGraph ? "#000" : "#fff",
       },
     ],
   };
@@ -100,11 +81,11 @@ const PlacementsBody = ({ placements, placementAvg }: PlacementsBodyProps) => {
   return (
     <div className="flex flex-col ">
       <div className="flex flex-row gap-[8px] text-[12px] font-medium">
-        <p>Matches Played: {getTotalMatches()}</p>
+        <p>Played: {getTotalMatches(placements)}</p>
         <p>
-          <span className="text-green-500">{getWins()}</span> /
-          <span className="text-red-500">{' ' + getLosses()}</span> (
-          {Math.ceil((getWins() / getTotalMatches()) * 100)}%)
+          <span className="text-green-500">{getWins(placements)}</span> /
+          <span className="text-red-500">{" " + getLosses(placements)}</span> (
+          {getWinrate(placements)}%)
         </p>
         <p>Average Place: {Math.ceil(placementAvg * 100) / 100}</p>
       </div>

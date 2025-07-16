@@ -1,8 +1,6 @@
 export type championData = {
-  name: string,
+  displayName: string,
   id: string,
-  stage: number,
-//   roles: ('top' | 'jungle' | 'mid' | 'adc' | 'supp')[]
 };
 
 export interface augmentsData {
@@ -15,6 +13,8 @@ export interface augmentsData {
   rarity: number;
 };
 
+export type Regions = 'EUW' | 'EUNE' | 'NA' | null;
+
 export interface summonerData {
   id: string;
   puuid: string;
@@ -22,6 +22,10 @@ export interface summonerData {
   revisionDate: number;
   summonerLevel: number;
 }
+
+export type Orders = "ASC" | "DESC";
+export type SortedState = "ASC" | "DESC" | "OTHER_HEADER_SORTED";
+export type Sort = "NAME" | "PLAYED" | "AVG" | "WR";
 
 export interface Toast {
   id: string;

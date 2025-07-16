@@ -34,47 +34,6 @@ function useMatchParser() {
     return foundId;
   };
 
-  const GetChampionProgressFromMatch = (
-    matchData: MatchDto,
-    participantId: number
-  ): championData => {
-    const player = matchData.info.participants[participantId];
-    const name = player.championName.toLocaleLowerCase();
-    let stage: number = 1;
-
-    if (player.placement === 1) {
-      stage = 3;
-    } else if (player.placement <= 4) {
-      stage = 2;
-    }
-
-    return {
-      name,
-      stage,
-      id: "",
-    };
-  };
-
-  const UpdateChampionProgressIfImproved = (
-    played: championData,
-    savedData: championData[]
-  ): { data: championData[]; didUpdate: boolean } => {
-    const newData: championData[] = [...savedData];
-    let updated = false;
-    newData.forEach((champion) => {
-      if (
-        played.name.toLocaleLowerCase() === champion.name.toLocaleLowerCase()
-      ) {
-        if (played.stage > champion.stage) {
-          champion.stage = played.stage;
-          updated = true;
-          return;
-        }
-      }
-    });
-    return { data: newData, didUpdate: updated };
-  };
-
   const PopulatePlayerStatsFromMatch = (
     playerStats: PlayerStats,
     match: MatchDto,
@@ -395,15 +354,12 @@ function useMatchParser() {
   };
 
   const createEmptyPlayerStats = (
-    gameName: string,
-    tagLine: string,
-    puuid: string,
     championData: championData[]
   ): PlayerStats => {
     return {
-      gameName,
-      tagLine,
-      puuid,
+      gameName: "",
+      tagLine: "",
+      puuid: "",
       profileIconId: 0,
       summonerLevel: 0,
       matchesPlayed: 0,
@@ -429,7 +385,7 @@ function useMatchParser() {
         placementAvg: 0,
         infographics: createEmptyInfographics(),
         augmentStats: {},
-        name: champion.name.toLocaleLowerCase(),
+        name: champion.displayName,
         id: champion.id,
         stage: 0,
       };
@@ -467,8 +423,6 @@ function useMatchParser() {
 
   return {
     GetParticipantIdByPuuid,
-    GetChampionProgressFromMatch,
-    UpdateChampionProgressIfImproved,
     PopulatePlayerStatsFromMatch,
     PopulatePlacements,
     createEmptyPlayerStats,

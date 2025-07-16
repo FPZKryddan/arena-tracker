@@ -1,9 +1,9 @@
-import { useState } from "react";
-import type { StatusMessage } from "../types";
 import { v4 as uuid } from "uuid";
+import useContextIfDefined from "./useContextIfDefined";
+import { ApiStatusMessagesContext } from "../contexts/ApiStatusMessagesContext";
 
 function useFetchStatusTracker() {
-  const [statusMessages, setStatusMessages] = useState<StatusMessage[]>([]);
+  const {statusMessages, setStatusMessages} = useContextIfDefined(ApiStatusMessagesContext);
 
   const addStatusMessage = (message: string, totalTasks: number): string => {
     const id = uuid();

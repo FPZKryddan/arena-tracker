@@ -14,7 +14,7 @@ const StatsOverviewHeader = ({ kills, deaths, assists, name, imgUrl}: StatsOverv
     <div className="flex flex-row justify-start items-center gap-[8px]">
       <img className="bg-gray-700 w-[55px] h-[55px] rounded-full"  src={imgUrl}/>
       <div className="flex flex-col">
-        <h1 className="text-[20px] font-extrabold">{name} Statistics</h1>
+        <h1 className="text-[16px] font-extrabold text-ellipsis">{name}</h1>
         <div className="flex flex-row gap-[16px]">
           <Tooltip text="Kills" extra={'Highest kills: ' + kills.records[0]?.value}>
             <KdaStat type={"kills"} value={kills.value} />

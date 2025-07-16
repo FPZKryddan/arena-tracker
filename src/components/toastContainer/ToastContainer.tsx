@@ -8,7 +8,7 @@ interface ToastContainerProps {
 const ToastContainer = ({ toasts }: ToastContainerProps) => {
 
     return (
-        <div className="flex flex-col w-1/2 fixed top-4 left-1/2 -translate-x-1/2 gap-2 pointer-events-none:">
+        <div className="flex flex-col w-1/2 fixed top-4 left-1/2 -translate-x-1/2 gap-2 pointer-events-none z-100">
             <AnimatePresence>
                 {toasts.map((toast) => (
                     <motion.div 
@@ -17,6 +17,7 @@ const ToastContainer = ({ toasts }: ToastContainerProps) => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -50 }}
                     transition={{ duration: 0.15, ease: easeOut }}
+                    layout
                     className={`w-full rounded-md py-2 shadow-2xl text-center select-none pointer-events-none text-white ${toast.type === 'SUCCESS' ? 'bg-green-700' : 'bg-red-500'}`}>
                         {toast.message}
                     </motion.div>

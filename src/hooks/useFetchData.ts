@@ -57,13 +57,11 @@ function useFetchData() {
 			(champion: unknown) => {
 				const typedChampion = champion as { name: string; id: string };
 				return {
-					name: typedChampion.name,
+					displayName: typedChampion.name,
 					id: typedChampion.id,
-					stage: 0,
 				};
 			}
 		);
-		console.log(fetchedData);
 
 		return fetchedData;
 	}, []);
@@ -86,10 +84,11 @@ function useFetchData() {
 
   const FetchUserPuuid = async (
     gameName: string,
-    tagLine: string
+    tagLine: string,
+    regionUrl: string
   ): Promise<GetPUUIDDto> => {
     const data = (await FetchWithRetry(
-      `https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`,
+      `https://${regionUrl}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`,
       {
         method: "GET",
         headers: RIOT_HEADERS,
@@ -101,9 +100,10 @@ function useFetchData() {
 
 	const FetchSummonerData = async (
 		puuid: string,
+    platformUrl: string,
 	): Promise<summonerData> => {
 		const data = (await FetchWithRetry(
-			`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}`,
+			`https://${platformUrl}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}`,
 			{
         method: "GET",
         headers: RIOT_HEADERS,
@@ -117,10 +117,11 @@ function useFetchData() {
     puuid: string,
     start: number = 0,
     count: number = 18,
-    startTime: number = Date.now()
+    startTime: number = Date.now(),
+    regionUrl: string
   ): Promise<string[]> => {
     const data = (await FetchWithRetry(
-      `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?queue=1700&start=${start}&count=${count}&startTime=${startTime}`,
+      `https://${regionUrl}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?queue=1700&start=${start}&count=${count}&startTime=${startTime}`,
       {
         method: "GET",
         headers: RIOT_HEADERS,
@@ -130,9 +131,9 @@ function useFetchData() {
     return data;
   };
 
-  const FetchMatchData = async (matchId: string): Promise<MatchDto> => {
+  const FetchMatchData = async (matchId: string, regionUrl: string): Promise<MatchDto> => {
     const data = (await FetchWithRetry(
-      `https://europe.api.riotgames.com/lol/match/v5/matches/${matchId}`,
+      `https://${regionUrl}.api.riotgames.com/lol/match/v5/matches/${matchId}`,
       {
         method: "GET",
         headers: RIOT_HEADERS,

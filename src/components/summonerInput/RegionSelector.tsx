@@ -1,56 +1,57 @@
 import { useEffect, useState } from "react";
-import { HiChevronDown } from "react-icons/hi2";
 import RegionSelectorItem from "./RegionSelectorItem";
+import type { Regions } from "../../types";
 
+interface RegionSelectorProps {
+  updateRegionCallback: (region: Regions) => void;
+}
 
-const RegionSelector = () => {
+const RegionSelector = ({ updateRegionCallback }: RegionSelectorProps) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState<boolean>(false);
-  const [regionSelected, setRegionSelected] = useState<string | null>(null);
+  const [regionSelected, setRegionSelected] = useState<Regions>('EUW');
 
   useEffect(() => {
-    const storedRegion = localStorage.getItem('region');
+    const storedRegion = localStorage.getItem("region");
     if (storedRegion) {
-      setRegionSelected(storedRegion);
-      return;
+      try {
+        const parsedRegion: Regions = storedRegion as Regions;
+        setRegionSelected(parsedRegion);
+        return;
+      } catch (error) {
+        console.error(`Could not parse stored region: ${error}`);
+      }
     }
-  }, [regionSelected])
+  }, []);
 
   const regionSelectorClicked = (): void => {
     setIsSelectorOpen(!isSelectorOpen);
-  }
+  };
 
-  const selectRegion = (label: string): void => {
-    setRegionSelected(label);
+  const selectRegion = (region: Regions): void => {
+    setRegionSelected(region);
+    updateRegionCallback(region);
     setIsSelectorOpen(false);
-    localStorage.setItem('region', label);
-  }
+
+    if (region) localStorage.setItem("region", region);
+  };
 
   return (
-    <div className="relative inline-block">
-      <button
-        className="relative h-[44px] w-[100px] leading-2 bg-stone-800 rounded-l-[25px] z-20 shadow-lg shadow-black/50 disabled:bg-stone-600 disabled:text-stone-400 hover:cursor-pointer hover:bg-stone-700 border-r-1 border-white"
-        // disabled={!playerInputName.trim() || isLoading}
-        onClick={() => regionSelectorClicked()}
+    <button className="relative h-full group" onClick={regionSelectorClicked}>
+      <div className="bg-[#171a1c] text-white rounded-md px-2 py-1.5 text-[14px] font-normal shadow-md shadow-black/50 group-hover:cursor-pointer group-hover:brightness-150">
+        {regionSelected}
+      </div>
+      <div
+        className={`absolute top-full mt-[4px] bg-[#171a1c] left-1/2 -translate-x-1/2 p-2 w-[100px] rounded-md shadow-2xl overflow-hidden z-1 ${
+          isSelectorOpen ? "block" : "hidden"
+        }`}
       >
-        {/* {isLoading ? (
-          <div className="w-full flex items-center justify-center">
-            <HashLoader size={20} color="#00CC00" />
-          </div>
-        ) : ( */}
-          <div className="flex flex-row text-white justify-center items-center gap-[2px]">
-            <p>{regionSelected ? regionSelected : 'Region'}</p>
-            <HiChevronDown className="text-xl" />
-          </div>
-        {/* )} */}
-      </button>
-      <div className={`absolute top-full w-full bg-stone-700 left-0 transform -translate-y-[22px] pt-[30px] pb-[8px] rounded-b-2xl shadow-2xl overflow-hidden z-10 ${isSelectorOpen ? 'block' : 'hidden'}`}>
         <ul className="text-center text-white">
-          <RegionSelectorItem label="EUW" onClickCallBack={selectRegion}/>
-          <RegionSelectorItem label="EUNE" onClickCallBack={selectRegion}/>
-          <RegionSelectorItem label="NA" onClickCallBack={selectRegion}/>
+          <RegionSelectorItem region="EUW" onClickCallBack={selectRegion} />
+          <RegionSelectorItem region="EUNE" onClickCallBack={selectRegion} />
+          <RegionSelectorItem region="NA" onClickCallBack={selectRegion} />
         </ul>
       </div>
-    </div>
+    </button>
   );
 };
 

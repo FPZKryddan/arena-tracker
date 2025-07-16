@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
-import { HashLoader } from "react-spinners";
 import RegionSelector from "./RegionSelector";
+import { IoSearch } from "react-icons/io5";
+import useGetPlayerStats from "../../hooks/useGetPlayerStats";
+import { type Regions } from "../../types";
 
-interface SummonerInputProps {
-  isLoading: boolean;
-  onClickCallback: (name: string) => void;
-}
+// interface SummonerInputProps {
+//   isLoading: boolean;
+//   onClickCallback: (name: string) => void;
+// }
 
-const SummonerInput = ({
-  isLoading,
-  onClickCallback,
-}: SummonerInputProps) => {
+const SummonerInput = () => {
   const [playerInputName, setPlayerInputName] = useState<string>("");
+  const [region, setRegion] = useState<Regions>(null);
+  const {
+    retrievePlayerData,
+    isFetching
+  } = useGetPlayerStats(region);
 
   useEffect(() => {
     const storedLeagueAccountName = localStorage.getItem("leagueAccountName");
@@ -20,43 +24,33 @@ const SummonerInput = ({
     }
   }, []);
 
-  const handleOnClick = () => {
+  const handleOnClick = async () => {
     localStorage.setItem("leagueAccountName", playerInputName);
-    onClickCallback(playerInputName);
+    await retrievePlayerData(playerInputName);
   };
 
   return (
-    <div className="flex flex-row w-full md:w-[400px] items-center rounded-sm">
-      <div className="relative">
+    <div className="w-full items-center rounded-sm">
+      <div className="flex flex-row w-full px-4 box-border h-[44px] bg-white rounded-[25px]">
         <input
           type="text"
           name="playerInput"
-          className="text-left relative px-4 box-border h-[40px] bg-white rounded-l-[25px] text-black font-normal w-full focus:outline-0"
+          className="text-left text-black font-normal h-full w-full focus:outline-0 autofill:shadow-none"
           placeholder="RiotName#TAG"
           value={playerInputName}
           onChange={(e) => setPlayerInputName(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleOnClick();
           }}
+          disabled={isFetching}
         ></input>
-        <div className="absolute w-[40px] h-[40px] -right-[20px] top-0 -z-0 bg-white "></div>
-      </div>
-
-      <div className="flex flex-row z-1">
-        <RegionSelector />
-        <button
-          className="h-[44px] px-4 leading-2 bg-stone-800 rounded-r-[25px] shadow-lg shadow-black/50 disabled:bg-stone-600 disabled:text-stone-400 hover:cursor-pointer hover:bg-stone-700"
-          disabled={!playerInputName.trim() || isLoading}
-          onClick={() => handleOnClick()}
-        >
-          {isLoading ? (
-            <div className="w-full flex items-center justify-center">
-              <HashLoader size={20} color="#00CC00" />
-            </div>
-          ) : (
-            <p className="text-white">Search</p>
-          )}
-        </button>
+          
+        <div className="flex flex-row h-full ml-auto has-disabled:opacity-50">
+          <RegionSelector updateRegionCallback={setRegion} />
+          <button onClick={handleOnClick} className="hover:cursor-pointer" disabled={isFetching}>
+            <IoSearch className="h-full w-auto aspect-square p-2 text-[#171a1c]"/>
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -37,7 +37,7 @@ const FavoriteAugmentsBody = ({ augments }: FavoriteAugmentsBodyProps) => {
   return (
     <div className="flex flex-col w-full gap-[8px]">
       <h2 className="text-[12px] font-semibold">Favorite Augments</h2>
-      <div className="flex flex-row w-full justify-between h-[74px]">
+      <div className="flex flex-row w-full justify-around h-[50px] sm:h-[60px]">
         {augmentData.length > 0 ? (
           <>
             {mostPickedAugments.length > 0 &&

@@ -6,30 +6,37 @@ import StatsOverviewHeader from "./StatsOverviewHeader";
 
 interface StatsOverviewCardProps {
   stats: PlayerStats | championStatsDto;
-  name: string;
+  standalone?: boolean;
+  darkText?: boolean
 }
 
-const StatsOverviewCard = ({ stats, name }: StatsOverviewCardProps) => {
+const StatsOverviewCard = ({ stats, standalone, darkText = false }: StatsOverviewCardProps) => {
+
+  const firstLetterBig = (name: string): string => {
+    return name[0].toUpperCase() + name.slice(1);
+  };
 
   const getImgUrl = (): string => {
     if ('profileIconId' in stats) {
       return `https://ddragon.leagueoflegends.com/cdn/15.13.1/img/profileicon/${stats['profileIconId']}.png`;
     }
-    return `https://ddragon.leagueoflegends.com/cdn/15.13.1/img/champion/${name}.png`;
+    return `https://ddragon.leagueoflegends.com/cdn/15.13.1/img/champion/${firstLetterBig(stats.id)}.png`;
   }
 
   return (
-    <div className="bg-stone-200 flex flex-col grow-0 w-fit h-fit rounded-xl p-[32px] gap-[32px] shadow-2xl">
+    <div className={`${standalone ? 'bg-stone-200 shadow-2xl p-[8px] md:p-[32px]' : 'bg-transparent shadow-none'}
+     ${darkText ? 'text-black' : 'text-white'}
+     flex flex-col grow-0 w-full h-fit rounded-xl gap-[24px]`}>
       {stats && stats.placementAvg != 0 ? (
         <>
           <StatsOverviewHeader
             kills={stats.infographics.killsDeathsAssists.kills}
             deaths={stats.infographics.killsDeathsAssists.deaths}
             assists={stats.infographics.killsDeathsAssists.assists}
-            name={name}
+            name={"gameName" in stats ? stats.gameName + '#' + stats.tagLine : stats.name}
             imgUrl={getImgUrl()}
           />
-          <div className="flex flex-col w-full gap-[16px]">
+          <div className="flex flex-col w-full gap-[24px]">
             <DamageStatsBody
               dealtStats={stats.infographics.damageStats}
               takenStats={stats.infographics.damageTakenStats}
@@ -38,6 +45,7 @@ const StatsOverviewCard = ({ stats, name }: StatsOverviewCardProps) => {
             <PlacementsBody
               placements={stats.placements}
               placementAvg={stats.placementAvg}
+              darkGraph={darkText}
             />
           </div>
         </>
