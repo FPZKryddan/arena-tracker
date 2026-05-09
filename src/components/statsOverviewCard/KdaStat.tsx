@@ -4,7 +4,7 @@ import useFormatter from "../../hooks/useFormatter";
 
 interface KdaStatProps {
   type: "kills" | "deaths" | "assists" | "kda";
-  value: number;
+  value: number | string;
 }
 
 const KdaStat = ({ type, value }: KdaStatProps) => {
@@ -29,7 +29,7 @@ const KdaStat = ({ type, value }: KdaStatProps) => {
       {iconSwitch()}
       <p className="text-[12px] font-normal">
         {type === "kda" ? "KDA: " : ""}
-        {formatNumber(value)}
+        {typeof value === "number" ? formatNumber(value) : value}
       </p>
     </div>
   );

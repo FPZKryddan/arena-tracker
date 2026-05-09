@@ -105,13 +105,19 @@ const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
               shieldingStats={stats.infographics.shieldingStats}
               skillShotsStats={stats.infographics.skillShotsStats}
             />
-            <FavoriteAugmentsBody augments={stats.augmentStats} />
-            <PlacementsBody
-              placements={stats.placements}
-              placementAvg={stats.placementAvg}
-            />
+            <div className="border-t border-border/70 pt-[16px]">
+              <FavoriteAugmentsBody augments={stats.augmentStats} />
+            </div>
+            <div className="border-t border-border/70 pt-[16px]">
+              <PlacementsBody
+                placements={stats.placements}
+                placementAvg={stats.placementAvg}
+              />
+            </div>
             {"teammateStats" in stats && stats.teammateStats && (
-              <TeammatesBody teammateStats={stats.teammateStats} />
+              <div className="border-t border-border/70 pt-[16px]">
+                <TeammatesBody teammateStats={stats.teammateStats} />
+              </div>
             )}
           </div>
         </div>

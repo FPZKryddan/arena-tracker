@@ -9,6 +9,8 @@ interface TeammatesBodyProps {
   teammateStats: teammateStatsDto;
 }
 
+const FREQUENT_TEAMMATES_LIMIT = 6;
+
 const getAvgColor = (avg: number): string => {
   if (avg >= 8) return "text-fg";
   if (avg >= 5) return "text-danger";
@@ -23,7 +25,8 @@ const TeammatesBody = ({ teammateStats }: TeammatesBodyProps) => {
   const teammates = useMemo<teammateStatDto[]>(() => {
     return Object.values(teammateStats)
       .filter((t) => t.gamesPlayed >= 3)
-      .sort((a, b) => b.gamesPlayed - a.gamesPlayed);
+      .sort((a, b) => b.gamesPlayed - a.gamesPlayed)
+      .slice(0, FREQUENT_TEAMMATES_LIMIT);
   }, [teammateStats]);
 
   if (teammates.length === 0) return null;
@@ -85,7 +88,7 @@ const TeammateRow = ({ teammate, onSelect }: TeammateRowProps) => {
           <span className="opacity-60">#{teammate.tagLine}</span>
         </p>
         <p className="text-[10px] opacity-70">
-          {profile ? `Lv. ${profile.summonerLevel} • ` : ""}
+          {profile ? `Lv. ${profile.summonerLevel} \u2022 ` : ""}
           {teammate.gamesPlayed} games
         </p>
       </div>

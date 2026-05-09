@@ -41,13 +41,33 @@ const PlacementsBody = ({
     return newArr;
   };
 
+  const cssVar = (name: string, fallback: string) => {
+    if (typeof window === "undefined") return fallback;
+    return (
+      getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+      fallback
+    );
+  };
+
+  const placementColors = [
+    cssVar("--color-danger", "#f87171"),
+    cssVar("--color-danger", "#f87171"),
+    cssVar("--color-warning", "#fbbf24"),
+    cssVar("--color-warning", "#fbbf24"),
+    cssVar("--color-info", "#93c5fd"),
+    cssVar("--color-success", "#4ade80"),
+    cssVar("--color-success", "#4ade80"),
+    cssVar("--color-accent", "#f6f600"),
+  ];
+
   const data = {
     labels: ["8th", "7th", "6th", "5th", "4th", "3rd", "2nd", "1st"],
     datasets: [
       {
         data: placementsToDataArray(),
         borderWidth: 1,
-        backgroundColor: theme === "light" ? "#0f172a" : "#e7eef0",
+        backgroundColor: placementColors,
+        borderRadius: 4,
       },
     ],
   };
@@ -90,7 +110,7 @@ const PlacementsBody = ({
         <p>Average Place: {Math.ceil(placementAvg * 100) / 100}</p>
       </div>
       <div className="h-[200px]">
-        <Bar key={"Player"} data={data} options={options} />
+        <Bar key={`placements-${theme}`} data={data} options={options} />
       </div>
     </div>
   );

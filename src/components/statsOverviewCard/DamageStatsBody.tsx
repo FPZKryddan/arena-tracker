@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import { GiHealthNormal, GiArrowDunk, GiAcrobatic } from "react-icons/gi";
 import { FaShieldAlt } from "react-icons/fa";
 import type {
@@ -25,28 +24,8 @@ const DamageStatsBody = ({
   shieldingStats,
   skillShotsStats,
 }: DamageStatsBodyProps) => {
-  const barRef = useRef<HTMLDivElement>(null);
-  const [barWidth, setBarWidth] = useState(0);
-
-  useEffect(() => {
-    if (!barRef.current) return;
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.contentRect) {
-          setBarWidth(entry.contentRect.width);
-        }
-      }
-    });
-
-    observer.observe(barRef.current);
-
-    return () => observer.disconnect();
-  }, []);
-  console.log(shieldingStats);
-
   return (
-    <div className="flex flex-col w-full gap-[8px] box-border" ref={barRef}>
+    <div className="flex flex-col w-full gap-[8px] box-border">
       {dealtStats && (
         <DamageStat
           type={"dealt"}
@@ -54,7 +33,6 @@ const DamageStatsBody = ({
           phyiscal={dealtStats.physical.champions}
           magic={dealtStats.magic.champions}
           trueDmg={dealtStats.true.champions}
-          parentBarWidth={barWidth}
         />
       )}
       {takenStats && (
@@ -64,9 +42,9 @@ const DamageStatsBody = ({
           phyiscal={takenStats.physical}
           magic={takenStats.magic}
           trueDmg={takenStats.true}
-          parentBarWidth={barWidth}
         />
       )}
+      <DamageLegend />
       <div className="flex flex-row flex-wrap gap-x-[16px] gap-y-[4px]">
         {healingStats && (
           <SimpleStat
@@ -104,5 +82,25 @@ const DamageStatsBody = ({
     </div>
   );
 };
+
+const DAMAGE_LEGEND = [
+  { label: "Physical", color: "var(--color-damage-physical)" },
+  { label: "Magic", color: "var(--color-damage-magic)" },
+  { label: "True", color: "var(--color-damage-true)" },
+] as const;
+
+const DamageLegend = () => (
+  <div className="flex flex-row flex-wrap gap-x-[10px] gap-y-[4px] text-[10px] font-medium text-fg-muted">
+    {DAMAGE_LEGEND.map((item) => (
+      <div key={item.label} className="flex items-center gap-[4px]">
+        <span
+          className="h-[7px] w-[7px] rounded-full"
+          style={{ backgroundColor: item.color }}
+        />
+        {item.label}
+      </div>
+    ))}
+  </div>
+);
 
 export default DamageStatsBody;

@@ -11,7 +11,6 @@ interface DamageStatProps {
   phyiscal: numericalStatsDto;
   magic: numericalStatsDto;
   trueDmg: numericalStatsDto;
-  parentBarWidth: number;
 }
 
 const DamageStat = ({
@@ -20,9 +19,9 @@ const DamageStat = ({
   total,
   magic,
   trueDmg,
-  parentBarWidth
 }: DamageStatProps) => {
   const { formatNumber } = useFormatter(); 
+  const label = type === "dealt" ? "Damage Dealt" : "Damage Taken";
 
   const iconSwitch = (): JSX.Element | undefined => {
     switch (type) {
@@ -40,86 +39,91 @@ const DamageStat = ({
   const getColor = (source: "physical" | "magic" | "true"): string => {
     switch (source) {
       case "physical":
-        return type === "dealt"
-          ? "var(--color-damage-physical)"
-          : "var(--color-damage-true)";
+        return "var(--color-damage-physical)";
       case "magic":
-        return type === "dealt"
-          ? "var(--color-damage-magic)"
-          : "var(--color-damage-spell)";
+        return "var(--color-damage-magic)";
       case "true":
-        return "var(--color-fg)";
+        return "var(--color-damage-true)";
     }
   };
 
   const getBarWidthStyling = (value: number): string => {
-    return (value / total.value) * parentBarWidth + "px";
+    if (total.value <= 0) return "0%";
+    return (value / total.value) * 100 + "%";
   };
 
 
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-row gap-[4px] items-center">
-        <p className="text-[12px] font-normal">{formatNumber(total.value)}</p>
-        <Tooltip
-          text={type === "dealt" ? "Total damage dealt" : "Total damage taken"}
-          extra={
-            type === "dealt"
-              ? "Highest damage dealt: " + formatNumber(total.records[0]?.value)
-              : "Highest damage taken: " + formatNumber(total.records[0]?.value)
-          }
-        >
-          {iconSwitch()}
-        </Tooltip>
-        <RecordMatchButton
-          matchId={total.records[0]?.matchId}
-          label={
-            type === "dealt"
-              ? "View highest damage dealt match"
-              : "View highest damage taken match"
-          }
-        />
+      <div className="flex flex-row flex-wrap items-center justify-between gap-x-[8px] gap-y-[2px]">
+        <div className="flex flex-row gap-[4px] items-center">
+          <Tooltip
+            text={type === "dealt" ? "Total damage dealt" : "Total damage taken"}
+            extra={
+              type === "dealt"
+                ? "Highest damage dealt: " + formatNumber(total.records[0]?.value)
+                : "Highest damage taken: " + formatNumber(total.records[0]?.value)
+            }
+          >
+            {iconSwitch()}
+          </Tooltip>
+          <p className="text-[12px] font-semibold">{label}</p>
+          <RecordMatchButton
+            matchId={total.records[0]?.matchId}
+            label={
+              type === "dealt"
+                ? "View highest damage dealt match"
+                : "View highest damage taken match"
+            }
+          />
+        </div>
+        <p className="text-[12px] font-medium tabular-nums">
+          {formatNumber(total.value)}
+        </p>
       </div>
       <div
-        className={`flex flex-row w-full bg-transparent h-[10px] rounded-2xl`}
+        className={`flex flex-row w-full bg-border/60 h-[10px] rounded-2xl overflow-hidden`}
       >
-        <Tooltip
-          text={"Total physical damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + formatNumber(phyiscal.value)}
-          extra={"Highest physical damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(phyiscal.records[0]?.value)}
+        <div
+          className="h-full"
+          style={{ width: getBarWidthStyling(phyiscal.value) }}
         >
-          <div
-            className="h-full rounded-l-2xl hover:outline-1 outline-black-400 hover:z-2"
-            style={{
-              width: getBarWidthStyling(phyiscal.value),
-              backgroundColor: getColor("physical"),
-            }}
-          ></div>
-        </Tooltip>
-        <Tooltip
-          text={"Total magic damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + formatNumber(magic.value)}
-          extra={"Highest magic damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(magic.records[0]?.value)}
+          <Tooltip
+            text={"Total physical damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + formatNumber(phyiscal.value)}
+            extra={"Highest physical damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(phyiscal.records[0]?.value)}
+          >
+            <div
+              className="h-[10px] w-full rounded-l-2xl hover:outline-1 outline-black-400 hover:z-2"
+              style={{ backgroundColor: getColor("physical") }}
+            ></div>
+          </Tooltip>
+        </div>
+        <div className="h-full" style={{ width: getBarWidthStyling(magic.value) }}>
+          <Tooltip
+            text={"Total magic damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + formatNumber(magic.value)}
+            extra={"Highest magic damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(magic.records[0]?.value)}
+          >
+            <div
+              className="h-[10px] w-full hover:outline-1 outline-black-400 hover:z-2"
+              style={{ backgroundColor: getColor("magic") }}
+            ></div>
+          </Tooltip>
+        </div>
+        <div
+          className="h-full"
+          style={{ width: getBarWidthStyling(trueDmg.value) }}
         >
-          <div
-            className="h-full hover:outline-1 outline-black-400 hover:z-2"
-            style={{
-              width: getBarWidthStyling(magic.value),
-              backgroundColor: getColor("magic"),
-            }}
-          ></div>
-        </Tooltip>
-        <Tooltip
-          text={"Total true damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + formatNumber(trueDmg.value)}
-          extra={"Highest true damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(trueDmg.records[0]?.value)}
-        >
-          <div
-            className="h-full grow rounded-r-2xl hover:outline-1 outline-black-400 hover:z-2"
-            style={{
-              width: getBarWidthStyling(trueDmg.value),
-              backgroundColor: getColor("true"),
-            }}
-          ></div>
-        </Tooltip>
+          <Tooltip
+            text={"Total true damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + formatNumber(trueDmg.value)}
+            extra={"Highest true damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(trueDmg.records[0]?.value)}
+          >
+            <div
+              className="h-[10px] w-full rounded-r-2xl hover:outline-1 outline-black-400 hover:z-2"
+              style={{ backgroundColor: getColor("true") }}
+            ></div>
+          </Tooltip>
+        </div>
       </div>
     </div>
   );

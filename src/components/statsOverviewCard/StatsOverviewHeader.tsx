@@ -27,9 +27,13 @@ const StatsOverviewHeader = ({
   favoriteTarget,
   trailing,
 }: StatsOverviewHeaderProps) => {
-  const kda =
-    Math.ceil(((kills.value + assists.value) / deaths.value) * 10) / 10;
-  const kdRatio = Math.ceil((kills.value / deaths.value) * 10) / 10;
+  const hasPerfectKda = deaths.value === 0;
+  const kda = hasPerfectKda
+    ? "Perfect"
+    : Math.ceil(((kills.value + assists.value) / deaths.value) * 10) / 10;
+  const kdRatio = hasPerfectKda
+    ? "Perfect"
+    : Math.ceil((kills.value / deaths.value) * 10) / 10;
 
   const stats = (
     <div className="flex flex-row gap-[16px]">
