@@ -1,11 +1,9 @@
 import {
   lazy,
-  memo,
   Suspense,
   useCallback,
   useMemo,
   useState,
-  type ReactNode,
 } from "react";
 import { ChampionsContext } from "../../contexts/ChampionsContext";
 import { PlayerStatsContext } from "../../contexts/PlayerStatsContext";
@@ -22,11 +20,10 @@ const StatsOverviewCard = lazy(
 );
 import BottomSheet from "../common/BottomSheet";
 import StatsSkeleton from "../statsOverviewCard/StatsSkeleton";
-import ChampionStageProgress from "./ChampionStageProgress";
-import { getWinrate } from "../../hooks/useStatsAggregator";
+import ChampionPodium from "./ChampionPodium";
+import ChampionCardGrid from "./ChampionCardGrid";
 import { HiMiniChevronDown, HiMiniChevronUpDown } from "react-icons/hi2";
 import useChampionSorter from "../../hooks/useChampionSorter";
-import useDdragonVersion from "../../hooks/useDdragonVersion";
 import useFuzzy from "../../hooks/useFuzzy";
 import useDebouncedValue from "../../hooks/useDebouncedValue";
 import ChampionFiltering from "./ChampionFiltering";
@@ -36,11 +33,17 @@ import {
   type ChampionFilters,
 } from "./championFilters";
 
+const SORT_OPTIONS: { label: string; value: Sort }[] = [
+  { label: "Name", value: "NAME" },
+  { label: "Played", value: "PLAYED" },
+  { label: "Avg", value: "AVG" },
+  { label: "WR%", value: "WR" },
+];
+
 const ChampionList = () => {
   const { playerStats } = useContextIfDefined(PlayerStatsContext);
   const { champions } = useContextIfDefined(ChampionsContext);
   const fuzzySearch = useFuzzy();
-  const version = useDdragonVersion();
   const { SortByName, SortByAvgPlacement, SortByTimesPlayed, SortByWinrate } =
     useChampionSorter();
 
@@ -49,8 +52,8 @@ const ChampionList = () => {
   const [filters, setFilters] = useState<ChampionFilters>(
     DEFAULT_CHAMPION_FILTERS
   );
-  const [sortBy, setSortBy] = useState<Sort>("NAME");
-  const [order, setOrder] = useState<Orders>("ASC");
+  const [sortBy, setSortBy] = useState<Sort>("PLAYED");
+  const [order, setOrder] = useState<Orders>("DESC");
   const [selectedChampion, setSelectedChampion] = useState<championStatsDto>();
   const [bottomSheetIsOpen, setBottomSheetIsOpen] = useState<boolean>(false);
 
@@ -99,20 +102,23 @@ const ChampionList = () => {
     setBottomSheetIsOpen(true);
   }, []);
 
-  const handleHeaderClicked = useCallback(
+  const handleSortClicked = useCallback(
     (item: Sort) => {
       if (sortBy === item) {
         setOrder((o) => (o === "ASC" ? "DESC" : "ASC"));
         return;
       }
-      setOrder("ASC");
+      setOrder("DESC");
       setSortBy(item);
     },
     [sortBy]
   );
 
+  const podiumChampions = displayedChampions.slice(0, 3);
+  const gridChampions = displayedChampions.slice(3);
+
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-3">
       <div className="flex flex-row-reverse justify-end gap-[8px]">
         <ChampionFiltering filters={filters} onFiltersChange={setFilters} />
         <input
@@ -123,26 +129,37 @@ const ChampionList = () => {
           onChange={(e) => setChampionNameFilter(e.target.value)}
         />
       </div>
-      <table className="w-full max-w-full table-auto border-separate border-spacing-y-[8px]">
-        <thead>
-          <ChampionListHeaderRow
-            sortBy={sortBy}
-            order={order}
-            onHeaderClick={handleHeaderClicked}
+      <div className="flex flex-row flex-wrap gap-1.5">
+        {SORT_OPTIONS.map((opt) => (
+          <SortPill
+            key={opt.value}
+            label={opt.label}
+            sorted={
+              sortBy === opt.value ? order : ("OTHER_HEADER_SORTED" as const)
+            }
+            onClick={() => handleSortClicked(opt.value)}
           />
-        </thead>
-        <tbody>
-          {displayedChampions.map((champion, index) => (
-            <ChampionListBodyRow
-              key={champion.id}
-              index={index + 1}
-              champion={champion}
-              version={version}
+        ))}
+      </div>
+      {displayedChampions.length === 0 ? (
+        <p className="text-fg-muted text-[12px] text-center py-8">
+          No champions match your filters.
+        </p>
+      ) : (
+        <>
+          <ChampionPodium
+            champions={podiumChampions}
+            clickCallback={onClickChampion}
+          />
+          {gridChampions.length > 0 && (
+            <ChampionCardGrid
+              champions={gridChampions}
+              startRank={4}
               clickCallback={onClickChampion}
             />
-          ))}
-        </tbody>
-      </table>
+          )}
+        </>
+      )}
       <BottomSheet
         isOpen={bottomSheetIsOpen}
         closeCallback={() => setBottomSheetIsOpen(false)}
@@ -159,168 +176,35 @@ const ChampionList = () => {
   );
 };
 
-type ChampionListHeaderRowProps = {
-  sortBy: Sort;
-  order: Orders;
-  onHeaderClick: (item: Sort) => void;
-};
-
-const ChampionListHeaderRow = ({
-  sortBy,
-  order,
-  onHeaderClick,
-}: ChampionListHeaderRowProps) => {
-  const getItemSortedState = (item: Sort): SortedState =>
-    sortBy === item ? order : "OTHER_HEADER_SORTED";
-
-  return (
-    <tr className="text-[10px] font-bold text-left text-fg">
-      <ChampionListHeaderRowItem label={"#"} leftEdge setWidth={25} />
-      <ChampionListHeaderRowItem
-        label={"CHAMPION"}
-        setWidth={150}
-        sorted={getItemSortedState("NAME")}
-        clickCallback={() => onHeaderClick("NAME")}
-      />
-      <ChampionListHeaderRowItem
-        label={"PLAYED"}
-        setWidth={70}
-        sorted={getItemSortedState("PLAYED")}
-        clickCallback={() => onHeaderClick("PLAYED")}
-      />
-      <ChampionListHeaderRowItem
-        label={"AVG"}
-        setWidth={45}
-        sorted={getItemSortedState("AVG")}
-        clickCallback={() => onHeaderClick("AVG")}
-      />
-      <ChampionListHeaderRowItem
-        label={"WR%"}
-        setWidth={45}
-        rightEdge
-        sorted={getItemSortedState("WR")}
-        clickCallback={() => onHeaderClick("WR")}
-      />
-    </tr>
-  );
-};
-
-type ChampionListHeaderRowItemProps = {
+type SortPillProps = {
   label: string;
-  setWidth?: number;
-  leftEdge?: boolean;
-  rightEdge?: boolean;
-  sorted?: SortedState;
-  clickCallback?: () => void;
+  sorted: SortedState;
+  onClick: () => void;
 };
 
-const ChampionListHeaderRowItem = ({
-  label,
-  setWidth,
-  leftEdge = false,
-  rightEdge = false,
-  sorted = "OTHER_HEADER_SORTED",
-  clickCallback,
-}: ChampionListHeaderRowItemProps) => {
+const SortPill = ({ label, sorted, onClick }: SortPillProps) => {
+  const active = sorted !== "OTHER_HEADER_SORTED";
   return (
-    <th
-      className={`px-1 py-2 box-border bg-surface-elevated text-fg text-wrap text-ellipsis hover:cursor-pointer
-         ${leftEdge ? "rounded-l-md" : "rounded-l-none"}
-         ${rightEdge ? "rounded-r-md" : "rounded-r-none"}`}
-      style={{ width: setWidth ? setWidth + "px" : "auto" }}
-      onClick={clickCallback}
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex flex-row items-center gap-0.5 px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors cursor-pointer ${
+        active
+          ? "bg-accent text-accent-fg"
+          : "bg-surface-elevated text-fg-muted hover:text-fg"
+      }`}
     >
-      <p className="flex flex-row items-center gap-0">
-        {label}
-        {sorted === "OTHER_HEADER_SORTED" ? (
-          <HiMiniChevronUpDown
-            className={`text-xl opacity-30 ${leftEdge ? "hidden" : ""}`}
-          />
-        ) : (
-          <HiMiniChevronDown
-            className={`text-xl transition-all duration-75 ease-out ${
-              sorted === "ASC" ? "" : "-rotate-180"
-            }`}
-          />
-        )}
-      </p>
-    </th>
-  );
-};
-
-type ChampionListBodyRowProps = {
-  index: number;
-  champion: championStatsDto;
-  version: string;
-  clickCallback: (champion: championStatsDto) => void;
-};
-
-const ChampionListBodyRow = memo(
-  ({ index, champion, version, clickCallback }: ChampionListBodyRowProps) => {
-    return (
-      <tr
-        className="text-[10px] font-normal text-left text-fg"
-        onClick={() => clickCallback(champion)}
-      >
-        <ChampionListBodyRowItem edge={"LEFT"}>
-          <p>{String(index)}</p>
-        </ChampionListBodyRowItem>
-        <ChampionListBodyRowItem edge={"NONE"}>
-          <div className="relative">
-            <div className="h-[45px] aspect-square rounded-full overflow-hidden">
-              <img
-                className="h-full w-auto aspect-square rounded-full scale-110"
-                src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.id}.png`}
-                alt={champion.name}
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-2">
-              <ChampionStageProgress stage={champion.stage} />
-            </div>
-          </div>
-          <p className="text-wrap">{champion.name}</p>
-        </ChampionListBodyRowItem>
-        <ChampionListBodyRowItem edge={"NONE"}>
-          <p>{champion.timesPlayed}</p>
-        </ChampionListBodyRowItem>
-        <ChampionListBodyRowItem edge={"NONE"}>
-          <p>
-            {champion.timesPlayed > 0
-              ? Math.ceil(champion.placementAvg * 100) / 100
-              : "-"}
-          </p>
-        </ChampionListBodyRowItem>
-        <ChampionListBodyRowItem edge={"RIGHT"}>
-          <p>
-            {champion.timesPlayed > 0
-              ? getWinrate(champion.placements) + "%"
-              : "-"}
-          </p>
-        </ChampionListBodyRowItem>
-      </tr>
-    );
-  }
-);
-
-type ChampionListBodyRowItemProps = {
-  children: ReactNode;
-  edge: "LEFT" | "NONE" | "RIGHT";
-};
-
-const ChampionListBodyRowItem = ({
-  edge,
-  children,
-}: ChampionListBodyRowItemProps) => {
-  return (
-    <td
-      className={`px-1 box-border h-[64px] bg-surface ${
-        edge === "LEFT" ? "rounded-l-md w-[20px]" : "rounded-l-none"
-      } ${edge === "RIGHT" ? "rounded-r-md" : "rounded-r-none"}`}
-    >
-      <div className="flex flex-row gap-[8px] items-center">{children}</div>
-    </td>
+      {label}
+      {active ? (
+        <HiMiniChevronDown
+          className={`text-base transition-transform duration-75 ease-out ${
+            sorted === "ASC" ? "-rotate-180" : ""
+          }`}
+        />
+      ) : (
+        <HiMiniChevronUpDown className="text-base opacity-40" />
+      )}
+    </button>
   );
 };
 
