@@ -10,7 +10,7 @@ const ChampionFilterInput = () => {
   return (
     <input
       type="text"
-      className="text-center h-8 rounded-sm bg-surface-elevated text-fg font-semibold w-full"
+      className="text-center h-8 rounded-sm border border-border-strong bg-surface text-fg font-semibold w-full placeholder:text-fg-muted focus:outline-none focus:ring-2 focus:ring-accent"
       placeholder="SEARCH"
       value={searchFilter}
       onChange={(e) => handleUpdateSearchFilter(e.target.value)}

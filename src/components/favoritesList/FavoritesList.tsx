@@ -14,7 +14,7 @@ const FavoritesList = () => {
   return (
     <div className="w-full">
       <div className="flex items-center gap-2 mb-3 text-fg-muted text-sm">
-        <IoStar className="w-4 h-4 text-yellow-400" />
+        <IoStar className="w-4 h-4 text-favorite" />
         <span>Favorites</span>
       </div>
       <ul className="flex flex-wrap gap-2">

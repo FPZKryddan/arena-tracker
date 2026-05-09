@@ -18,7 +18,7 @@ interface MatchDetailModalProps {
 }
 
 const placementClass = (placement: number): string => {
-  if (placement === 1) return "bg-accent/15 border-accent";
+  if (placement === 1) return "bg-placement-first/20 border-placement-first";
   if (placement <= 4) return "bg-success/15 border-success";
   return "bg-surface border-border";
 };

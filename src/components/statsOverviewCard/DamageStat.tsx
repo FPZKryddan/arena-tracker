@@ -94,7 +94,7 @@ const DamageStat = ({
             extra={"Highest physical damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(phyiscal.records[0]?.value)}
           >
             <div
-              className="h-[10px] w-full rounded-l-2xl hover:outline-1 outline-black-400 hover:z-2"
+              className="h-[10px] w-full rounded-l-2xl hover:outline-1 outline-border-strong hover:z-2"
               style={{ backgroundColor: getColor("physical") }}
             ></div>
           </Tooltip>
@@ -105,7 +105,7 @@ const DamageStat = ({
             extra={"Highest magic damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(magic.records[0]?.value)}
           >
             <div
-              className="h-[10px] w-full hover:outline-1 outline-black-400 hover:z-2"
+              className="h-[10px] w-full hover:outline-1 outline-border-strong hover:z-2"
               style={{ backgroundColor: getColor("magic") }}
             ></div>
           </Tooltip>
@@ -119,7 +119,7 @@ const DamageStat = ({
             extra={"Highest true damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(trueDmg.records[0]?.value)}
           >
             <div
-              className="h-[10px] w-full rounded-r-2xl hover:outline-1 outline-black-400 hover:z-2"
+              className="h-[10px] w-full rounded-r-2xl hover:outline-1 outline-border-strong hover:z-2"
               style={{ backgroundColor: getColor("true") }}
             ></div>
           </Tooltip>

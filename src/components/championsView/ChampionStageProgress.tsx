@@ -14,7 +14,7 @@ const ChampionStageProgress = ({
   return (
     <HiMiniCheckCircle
       aria-label="Stage 3 complete"
-      className="h-full w-full text-success drop-shadow-[0_0_4px_rgba(74,222,128,0.55)]"
+      className="h-full w-full text-success drop-shadow-[0_0_4px_var(--color-success-glow)]"
     />
   );
 };

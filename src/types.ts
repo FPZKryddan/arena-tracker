@@ -1,7 +1,16 @@
 export type championData = {
   displayName: string,
   id: string,
+  roles: ChampionRole[],
 };
+
+export type ChampionRole =
+  | "Assassin"
+  | "Fighter"
+  | "Mage"
+  | "Marksman"
+  | "Support"
+  | "Tank";
 
 export interface augmentsData {
   apiName: string;
@@ -125,6 +134,7 @@ export interface championStatsDto {
   name: string;
   id: string;
   stage: number;
+  roles?: ChampionRole[];
 };
 
 export interface infographicsDto {

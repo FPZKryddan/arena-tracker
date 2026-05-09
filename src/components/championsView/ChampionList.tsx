@@ -52,6 +52,7 @@ const createEmptyChampionStats = (
   name: champion.displayName,
   id: champion.id,
   stage: 0,
+  roles: champion.roles,
   infographics: {
     damageStats: {
       total: {
@@ -116,11 +117,11 @@ const ChampionList = () => {
 
   const playerChampionStats = useMemo((): championStatsDto[] => {
     if (!playerStats) return [];
-    return champions.map(
-      (champion: championData) =>
-        playerStats.championStats[champion.id] ??
-        createEmptyChampionStats(champion)
-    );
+    return champions.map((champion: championData) => ({
+      ...(playerStats.championStats[champion.id] ??
+        createEmptyChampionStats(champion)),
+      roles: champion.roles,
+    }));
   }, [champions, playerStats]);
 
   const displayedChampions = useMemo((): championStatsDto[] => {
@@ -181,7 +182,7 @@ const ChampionList = () => {
           type="text"
           value={championNameFilter}
           placeholder="Search"
-          className="bg-surface-elevated rounded-full w-1/2 px-4 py-1 text-fg text-[12px] font-normal"
+          className="bg-surface rounded-full w-1/2 border border-border-strong px-4 py-1 text-fg text-[12px] font-normal placeholder:text-fg-muted focus:outline-none focus:ring-2 focus:ring-accent"
           onChange={(e) => setChampionNameFilter(e.target.value)}
         />
       </div>
@@ -282,10 +283,10 @@ const SortPill = ({ label, sorted, onClick }: SortPillProps) => {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-row items-center gap-0.5 px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors cursor-pointer ${
+      className={`flex flex-row items-center gap-0.5 px-2.5 py-1 rounded-full border text-[10px] font-bold transition-colors cursor-pointer ${
         active
-          ? "bg-accent text-accent-fg"
-          : "bg-surface-elevated text-fg-muted hover:text-fg"
+          ? "border-accent bg-accent text-accent-fg"
+          : "border-border-strong bg-surface text-fg-muted hover:border-fg hover:text-fg"
       }`}
     >
       {label}

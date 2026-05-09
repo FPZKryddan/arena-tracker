@@ -57,9 +57,9 @@ const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
               }`}
               style={{
                 WebkitMaskImage:
-                  "linear-gradient(to bottom, black 0%, black 46%, transparent 100%)",
+                  "linear-gradient(to bottom, var(--color-media-mask) 0%, var(--color-media-mask) 46%, transparent 100%)",
                 maskImage:
-                  "linear-gradient(to bottom, black 0%, black 46%, transparent 100%)",
+                  "linear-gradient(to bottom, var(--color-media-mask) 0%, var(--color-media-mask) 46%, transparent 100%)",
               }}
               aria-hidden
             >
@@ -68,7 +68,7 @@ const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-b from-media-scrim/10 via-media-scrim/30 to-transparent" />
             </div>
           )}
           <div className={bannerImgUrl ? "relative pt-[150px]" : "relative"}>
@@ -144,8 +144,8 @@ const NoStatsState = ({
       alt={name}
       className="absolute inset-0 h-full w-full object-cover object-[center_25%]"
     />
-    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/10" />
-    <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-4 text-white">
+    <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/60 to-media-scrim/10" />
+    <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-4 text-on-media">
       <div className="flex items-center gap-2">
         <IoStatsChart className="h-5 w-5 text-success" />
         <p className="text-sm font-semibold">No recorded stats</p>

@@ -3,6 +3,7 @@ import { HiOutlineAdjustmentsHorizontal } from "react-icons/hi2";
 import {
   hasActiveChampionFilters,
   type ChampionFilters,
+  type ChampionRoleFilter,
   type ChampionStageFilter,
 } from "./championFilters";
 
@@ -18,6 +19,16 @@ const STAGE_FILTER_OPTIONS: { label: string; value: ChampionStageFilter }[] = [
   { label: "Top 4", value: "STAGE_2" },
   { label: "Stage 3", value: "STAGE_3" },
   { label: "Unfinished", value: "UNFINISHED" },
+];
+
+const ROLE_FILTER_OPTIONS: { label: string; value: ChampionRoleFilter }[] = [
+  { label: "All", value: "ALL" },
+  { label: "Assassin", value: "Assassin" },
+  { label: "Fighter", value: "Fighter" },
+  { label: "Mage", value: "Mage" },
+  { label: "Marksman", value: "Marksman" },
+  { label: "Support", value: "Support" },
+  { label: "Tank", value: "Tank" },
 ];
 
 const toFilterNumber = (value: string): number => {
@@ -38,6 +49,8 @@ const ChampionFiltering = ({
     onFiltersChange({ ...filters, showNotPlayed });
   const setStageFilter = (stageFilter: ChampionStageFilter) =>
     onFiltersChange({ ...filters, stageFilter });
+  const setRoleFilter = (roleFilter: ChampionRoleFilter) =>
+    onFiltersChange({ ...filters, roleFilter });
   const setMinPlayedRequired = (minPlayedRequired: number) =>
     onFiltersChange({ ...filters, minPlayedRequired });
   const setMaxPlayedAllowed = (maxPlayedAllowed: number) =>
@@ -84,6 +97,12 @@ const ChampionFiltering = ({
               options={STAGE_FILTER_OPTIONS}
               updateValueCallback={setStageFilter}
             />
+            <ChampionFilteringSelect
+              label="Role"
+              value={filters.roleFilter}
+              options={ROLE_FILTER_OPTIONS}
+              updateValueCallback={setRoleFilter}
+            />
             <ChampionFilteringNumber
               label="Min times played"
               value={String(filters.minPlayedRequired)}
@@ -118,19 +137,19 @@ const ChampionFiltering = ({
   );
 };
 
-type ChampionFilteringSelectProps = {
+type ChampionFilteringSelectProps<TValue extends string> = {
   label: string;
-  value: ChampionStageFilter;
-  options: { label: string; value: ChampionStageFilter }[];
-  updateValueCallback: (value: ChampionStageFilter) => void;
+  value: TValue;
+  options: { label: string; value: TValue }[];
+  updateValueCallback: (value: TValue) => void;
 };
 
-const ChampionFilteringSelect = ({
+const ChampionFilteringSelect = <TValue extends string,>({
   label,
   value,
   options,
   updateValueCallback,
-}: ChampionFilteringSelectProps) => {
+}: ChampionFilteringSelectProps<TValue>) => {
   return (
     <li className="w-full">
       <label className="flex flex-row w-full justify-between items-center gap-3">
@@ -138,9 +157,7 @@ const ChampionFilteringSelect = ({
         <select
           value={value}
           className="w-32 rounded-md border border-border-strong bg-surface px-2 py-1 text-fg outline-none"
-          onChange={(e) =>
-            updateValueCallback(e.target.value as ChampionStageFilter)
-          }
+          onChange={(e) => updateValueCallback(e.target.value as TValue)}
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>

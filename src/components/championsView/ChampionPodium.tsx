@@ -49,23 +49,23 @@ type RankStyle = {
 const RANK_STYLES: Record<1 | 2 | 3, RankStyle> = {
   1: {
     height: "h-[260px] sm:h-[300px]",
-    ring: "ring-2 ring-yellow-400",
-    glow: "shadow-[0_0_24px_rgba(250,204,21,0.45)]",
-    badge: "bg-yellow-400 text-black",
+    ring: "ring-2 ring-placement-first",
+    glow: "shadow-[0_0_24px_var(--color-placement-first-glow)]",
+    badge: "bg-placement-first text-placement-first-fg",
     label: "1st",
   },
   2: {
     height: "h-[220px] sm:h-[250px]",
-    ring: "ring-2 ring-zinc-300",
-    glow: "shadow-[0_0_18px_rgba(212,212,216,0.35)]",
-    badge: "bg-zinc-300 text-black",
+    ring: "ring-2 ring-rank-second",
+    glow: "shadow-[0_0_18px_var(--color-rank-second-glow)]",
+    badge: "bg-rank-second text-rank-second-fg",
     label: "2nd",
   },
   3: {
     height: "h-[200px] sm:h-[225px]",
-    ring: "ring-2 ring-amber-700",
-    glow: "shadow-[0_0_16px_rgba(180,83,9,0.35)]",
-    badge: "bg-amber-700 text-white",
+    ring: "ring-2 ring-rank-third",
+    glow: "shadow-[0_0_16px_var(--color-rank-third-glow)]",
+    badge: "bg-rank-third text-rank-third-fg",
     label: "3rd",
   },
 };
@@ -89,7 +89,7 @@ const PodiumSlot = memo(
       <button
         type="button"
         onClick={() => clickCallback(champion)}
-        className={`relative flex-1 min-w-0 ${style.height} rounded-lg overflow-hidden border ${style.ring} ${style.glow} hover:scale-[1.02] transition-transform group cursor-pointer ${
+        className={`relative flex-1 min-w-0 ${style.height} rounded-lg overflow-hidden border ${style.ring} ${style.glow} transition-transform group cursor-pointer ${
           isComplete ? "border-success/50" : "border-transparent"
         }`}
       >
@@ -100,18 +100,18 @@ const PodiumSlot = memo(
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/65 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/65 to-transparent" />
         <div
           className={`absolute top-2 left-2 ${style.badge} text-[10px] font-bold rounded-full px-2 py-0.5`}
         >
           {style.label}
         </div>
         {isComplete && (
-          <div className="absolute top-2 right-2 h-6 w-6 rounded-full bg-black/55 p-0.5">
+          <div className="absolute top-2 right-2 h-6 w-6 rounded-full bg-media-scrim/55 p-0.5">
             <ChampionStageProgress stage={champion.stage} />
           </div>
         )}
-        <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col gap-1.5 text-white text-left">
+        <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col gap-1.5 text-on-media text-left">
           <p className="font-bold text-sm truncate">{champion.name}</p>
           <div className="grid grid-cols-3 gap-1 text-[10px]">
             <PodiumStat label="Played" value={String(played)} />

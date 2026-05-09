@@ -17,6 +17,22 @@ interface PlacementsBodyProps {
   placementAvg: number;
 }
 
+const getAveragePlacementTone = (averagePlacement: number): string => {
+  if (averagePlacement <= 2) {
+    return "border-placement-first/70 bg-placement-first/15 text-placement-first shadow-[0_0_18px_var(--color-placement-first-glow)]";
+  }
+  if (averagePlacement <= 4) {
+    return "border-success/70 bg-success/15 text-success";
+  }
+  if (averagePlacement <= 5) {
+    return "border-info/70 bg-info/15 text-info";
+  }
+  if (averagePlacement <= 6.5) {
+    return "border-warning/70 bg-warning/15 text-warning";
+  }
+  return "border-danger/70 bg-danger/15 text-danger";
+};
+
 ChartJS.register(
   BarElement,
   CategoryScale,
@@ -32,6 +48,9 @@ const PlacementsBody = ({
   const { getLosses, getTotalMatches, getWinrate, getWins } =
     useStatsAggregator();
   const { theme } = useTheme();
+  const averagePlacement = Math.ceil(placementAvg * 100) / 100;
+  const averagePlacementTone = getAveragePlacementTone(averagePlacement);
+
   const placementsToDataArray = (): number[] => {
     const newArr: number[] = [];
     for (let i = 8; i >= 1; i--) {
@@ -41,23 +60,23 @@ const PlacementsBody = ({
     return newArr;
   };
 
-  const cssVar = (name: string, fallback: string) => {
-    if (typeof window === "undefined") return fallback;
+  const cssVar = (name: string) => {
+    if (typeof window === "undefined") return `var(${name})`;
     return (
       getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
-      fallback
+      `var(${name})`
     );
   };
 
   const placementColors = [
-    cssVar("--color-danger", "#f87171"),
-    cssVar("--color-danger", "#f87171"),
-    cssVar("--color-warning", "#fbbf24"),
-    cssVar("--color-warning", "#fbbf24"),
-    cssVar("--color-info", "#93c5fd"),
-    cssVar("--color-success", "#4ade80"),
-    cssVar("--color-success", "#4ade80"),
-    cssVar("--color-accent", "#f6f600"),
+    cssVar("--color-danger"),
+    cssVar("--color-danger"),
+    cssVar("--color-warning"),
+    cssVar("--color-warning"),
+    cssVar("--color-info"),
+    cssVar("--color-success"),
+    cssVar("--color-success"),
+    cssVar("--color-placement-first"),
   ];
 
   const data = {
@@ -99,15 +118,26 @@ const PlacementsBody = ({
   };
 
   return (
-    <div className="flex flex-col ">
-      <div className="flex flex-row gap-[8px] text-[12px] font-medium">
-        <p>Played: {getTotalMatches(placements)}</p>
-        <p>
-          <span className="text-success">{getWins(placements)}</span> /
-          <span className="text-danger">{" " + getLosses(placements)}</span> (
-          {getWinrate(placements)}%)
-        </p>
-        <p>Average Place: {Math.ceil(placementAvg * 100) / 100}</p>
+    <div className="flex flex-col gap-[8px]">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-[8px]">
+        <div
+          className={`flex min-w-[112px] flex-col rounded-md border px-[10px] py-[8px] ${averagePlacementTone}`}
+        >
+          <p className="text-[10px] font-bold uppercase leading-none opacity-80">
+            Avg Place
+          </p>
+          <p className="mt-[4px] text-[28px] font-extrabold leading-none tabular-nums">
+            {averagePlacement.toFixed(2)}
+          </p>
+        </div>
+        <div className="flex flex-1 flex-row flex-wrap justify-start gap-x-[10px] gap-y-[4px] text-[12px] font-medium text-fg-muted sm:justify-end">
+          <p>Played: {getTotalMatches(placements)}</p>
+          <p>
+            <span className="text-success">{getWins(placements)}</span> /
+            <span className="text-danger">{" " + getLosses(placements)}</span>{" "}
+            ({getWinrate(placements)}%)
+          </p>
+        </div>
       </div>
       <div className="h-[200px]">
         <Bar key={`placements-${theme}`} data={data} options={options} />

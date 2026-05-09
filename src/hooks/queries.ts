@@ -1,14 +1,36 @@
 import { useQuery, useQueries } from "@tanstack/react-query";
-import type { augmentsData, championData, MatchDto, Regions } from "../types";
+import type {
+  ChampionRole,
+  augmentsData,
+  championData,
+  MatchDto,
+  Regions,
+} from "../types";
 import { getApiBase, getStoredRegion } from "./useApiBase";
 import useDdragonVersion from "./useDdragonVersion";
 import { ApiError, parseApiError } from "../utils/apiError";
 
-const isChampionRecord = (v: unknown): v is { name: string; id: string } =>
+const CHAMPION_ROLES: ChampionRole[] = [
+  "Assassin",
+  "Fighter",
+  "Mage",
+  "Marksman",
+  "Support",
+  "Tank",
+];
+
+const isChampionRole = (role: string): role is ChampionRole =>
+  (CHAMPION_ROLES as string[]).includes(role);
+
+const isChampionRecord = (
+  v: unknown
+): v is { name: string; id: string; tags: string[] } =>
   typeof v === "object" &&
   v !== null &&
   typeof (v as { name?: unknown }).name === "string" &&
-  typeof (v as { id?: unknown }).id === "string";
+  typeof (v as { id?: unknown }).id === "string" &&
+  Array.isArray((v as { tags?: unknown }).tags) &&
+  (v as { tags: unknown[] }).tags.every((tag) => typeof tag === "string");
 
 const isAugmentRecord = (v: unknown): v is augmentsData =>
   typeof v === "object" &&
@@ -45,7 +67,11 @@ const fetchChampions = async (version: string): Promise<championData[]> => {
   const data = await res.json();
   return Object.values(data.data)
     .filter(isChampionRecord)
-    .map((c) => ({ displayName: c.name, id: c.id }));
+    .map((c) => ({
+      displayName: c.name,
+      id: c.id,
+      roles: c.tags.filter(isChampionRole),
+    }));
 };
 
 const fetchMatch = async (

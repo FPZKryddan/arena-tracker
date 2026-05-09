@@ -8,13 +8,13 @@ import {
   useRecentMatchIdsQuery,
 } from "../../hooks/queries";
 import type { augmentsData, MatchDto, ParticipantDto } from "../../types";
-import { getChampionIconUrl } from "../../championIcon";
+import { getChampionIconUrl, getProfileIconUrl } from "../../championIcon";
 const MatchDetailModal = lazy(() => import("../matchDetail"));
 
 const RECENT_LIMIT = 10;
 
 const placementColor = (placement: number): string => {
-  if (placement === 1) return "bg-accent/20 border-accent";
+  if (placement === 1) return "bg-placement-first/20 border-placement-first";
   if (placement <= 4) return "bg-success/15 border-success";
   return "bg-surface-elevated border-border";
 };
@@ -161,9 +161,7 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
       <div className="flex flex-col flex-1 min-w-0">
         <p className="font-bold">#{me.placement}</p>
         <p className="truncate">{me.championName}</p>
-        {teammate && (
-          <p className="text-fg-muted truncate">w/ {teammate.riotIdGameName}</p>
-        )}
+        {teammate && <TeammatePreview teammate={teammate} version={version} />}
       </div>
       <div className="flex flex-col gap-[2px]">
         <div className="flex flex-row gap-[2px]">
@@ -208,6 +206,41 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
         <p className="text-fg-subtle">{formatRelative(match.info.gameCreation)}</p>
       </div>
     </li>
+  );
+};
+
+interface TeammatePreviewProps {
+  teammate: ParticipantDto;
+  version: string;
+}
+
+const TeammatePreview = ({ teammate, version }: TeammatePreviewProps) => {
+  const teammateName = teammate.riotIdGameName || teammate.summonerName;
+
+  return (
+    <div className="flex flex-row items-center gap-[4px] min-w-0 text-fg-muted">
+      <div className="relative h-[22px] w-[38px] shrink-0">
+        <img
+          src={getProfileIconUrl(version, teammate.profileIcon)}
+          alt={`${teammateName} profile icon`}
+          title={`${teammateName} profile icon`}
+          loading="lazy"
+          decoding="async"
+          className="absolute left-0 top-[1px] h-[20px] w-[20px] rounded-full object-cover bg-surface-elevated"
+        />
+        <img
+          src={getChampionIconUrl(version, teammate.championName)}
+          alt={teammate.championName}
+          title={teammate.championName}
+          loading="lazy"
+          decoding="async"
+          className="absolute left-[16px] top-0 h-[22px] w-[22px] rounded-full object-cover bg-surface-elevated ring-2 ring-surface"
+        />
+      </div>
+      <p className="truncate">
+        w/ {teammateName} on {teammate.championName}
+      </p>
+    </div>
   );
 };
 

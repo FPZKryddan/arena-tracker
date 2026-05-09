@@ -42,7 +42,7 @@ const RegionSelector = ({ updateRegionCallback, initialRegion }: RegionSelectorP
 
   return (
     <button className="relative h-full group" onClick={regionSelectorClicked}>
-      <div className="bg-surface text-fg rounded-md px-2 py-1.5 text-[14px] font-normal shadow-md shadow-black/30 group-hover:cursor-pointer group-hover:bg-surface-hover">
+      <div className="bg-surface text-fg rounded-md px-2 py-1.5 text-[14px] font-normal shadow-md shadow-shadow group-hover:cursor-pointer group-hover:bg-surface-hover">
         {regionSelected}
       </div>
       <div

@@ -19,7 +19,7 @@ const FavoriteButton = ({ favorite }: FavoriteButtonProps) => {
       className="hover:cursor-pointer p-1 rounded-md transition-colors hover:bg-surface-hover"
     >
       {active ? (
-        <IoStar className="w-5 h-5 text-yellow-400" />
+        <IoStar className="w-5 h-5 text-favorite" />
       ) : (
         <IoStarOutline className="w-5 h-5 text-fg-muted" />
       )}

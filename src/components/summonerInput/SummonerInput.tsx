@@ -111,7 +111,7 @@ const SummonerInput = () => {
       {showDropdown && (
         <ul className="absolute left-0 right-0 top-[48px] z-20 bg-surface-elevated border border-border rounded-2xl shadow-2xl overflow-hidden max-h-[280px] overflow-y-auto">
           <li className="flex items-center gap-2 px-4 py-2 text-xs text-fg-muted border-b border-border">
-            <IoStar className="w-3.5 h-3.5 text-yellow-400" />
+            <IoStar className="w-3.5 h-3.5 text-favorite" />
             <span>Favorites</span>
           </li>
           {filteredFavorites.map((f) => (
