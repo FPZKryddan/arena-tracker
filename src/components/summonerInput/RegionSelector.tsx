@@ -4,34 +4,29 @@ import type { Regions } from "../../types";
 
 interface RegionSelectorProps {
   updateRegionCallback: (region: Regions) => void;
+  initialRegion?: Regions;
 }
 
-const RegionSelector = ({ updateRegionCallback }: RegionSelectorProps) => {
+const RegionSelector = ({ updateRegionCallback, initialRegion }: RegionSelectorProps) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState<boolean>(false);
-  const [regionSelected, setRegionSelected] = useState<Regions>('EUW');
+  const [regionSelected, setRegionSelected] = useState<Regions>(
+    initialRegion ?? 'EUW'
+  );
 
   useEffect(() => {
-    const urlRegion = new URLSearchParams(window.location.search).get(
-      "region"
-    ) as Regions | null;
-    if (urlRegion) {
-      setRegionSelected(urlRegion);
-      updateRegionCallback(urlRegion);
-      localStorage.setItem("region", urlRegion);
+    if (initialRegion) {
+      setRegionSelected(initialRegion);
+      updateRegionCallback(initialRegion);
+      localStorage.setItem("region", initialRegion);
       return;
     }
     const storedRegion = localStorage.getItem("region");
     if (storedRegion) {
-      try {
-        const parsedRegion: Regions = storedRegion as Regions;
-        setRegionSelected(parsedRegion);
-        updateRegionCallback(parsedRegion);
-        return;
-      } catch (error) {
-        console.error(`Could not parse stored region: ${error}`);
-      }
+      const parsedRegion = storedRegion as Regions;
+      setRegionSelected(parsedRegion);
+      updateRegionCallback(parsedRegion);
     }
-  }, [updateRegionCallback]);
+  }, [initialRegion, updateRegionCallback]);
 
   const regionSelectorClicked = (): void => {
     setIsSelectorOpen(!isSelectorOpen);

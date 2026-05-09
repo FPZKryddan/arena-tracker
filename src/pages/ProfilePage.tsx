@@ -1,3 +1,5 @@
+import { Link, useParams } from "react-router-dom";
+import { IoFlash } from "react-icons/io5";
 import ChampionList from "../components/championsView/ChampionList";
 import MatchHistoryList from "../components/matchHistory";
 import ChampionMatchTabs from "./ChampionMatchTabs";
@@ -7,22 +9,43 @@ import SummonerInput from "../components/summonerInput";
 import ThemeToggle from "../components/themeToggle";
 import { PlayerStatsContext } from "../contexts/PlayerStatsContext";
 import useContextIfDefined from "../hooks/useContextIfDefined";
+import usePlayerHydration from "../hooks/usePlayerHydration";
+import type { Regions } from "../types";
 
-const HomePage = () => {
+const ProfilePage = () => {
   const { playerStats } = useContextIfDefined(PlayerStatsContext);
+  const params = useParams<{ region: string; gameName: string; tagLine: string }>();
+  const region = (params.region ?? null) as Exclude<Regions, null> | null;
+  const gameName = params.gameName ?? null;
+  const tagLine = params.tagLine ?? null;
+
+  usePlayerHydration({ region, gameName, tagLine });
+
   return (
     <div
-      className="flex w-full h-dvh box-border bg-bg overflow-auto gap-[32px] md:gap-[64px]
+      className="flex w-full h-dvh box-border bg-bg overflow-auto gap-[24px] md:gap-[48px]
     flex-col p-[12px]
     md:p-[32px]
     "
     >
+      <header className="flex items-center justify-between w-full">
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-fg hover:text-accent transition-colors group"
+          aria-label="Back to home"
+        >
+          <IoFlash className="w-5 h-5 text-accent group-hover:scale-110 transition-transform" />
+          <span className="font-extrabold text-base md:text-lg tracking-tight">
+            Arena Tracker
+          </span>
+        </Link>
+        <ThemeToggle />
+      </header>
+
       <div className="flex flex-row items-start gap-3 w-full md:w-[400px] lg:w-[600px] self-center">
         <div className="flex-1 min-w-0">
           <SummonerInput />
         </div>
-        <ThemeToggle />
-        {/* <ProfileHeader /> */}
       </div>
 
       <div className="flex flex-col md:flex-row gap-[16px]">
@@ -52,25 +75,8 @@ const HomePage = () => {
           )}
         </div>
       </div>
-      {/* {playerStats ? (
-          <ProfileHeader
-            name={playerStats?.gameName + "#" + playerStats?.tagLine}
-            percentProgress={getPlayerProgress()}
-            iconId={playerStats?.profileIconId}
-          />
-        ) : (
-          <ProfileHeader percentProgress={getPlayerProgress()} />
-        )}
-        <div className="w-[350px] mt-[8px]">
-          <Progress
-            total={total}
-            played={played}
-            top4={top4}
-            won={won}
-          ></Progress>
-        </div> */}
     </div>
   );
 };
 
-export default HomePage;
+export default ProfilePage;
