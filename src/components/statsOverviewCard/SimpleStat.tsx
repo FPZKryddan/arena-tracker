@@ -13,6 +13,7 @@ interface SimpleStatProps {
 
 const SimpleStat = ({ icon, label, recordLabel, stat }: SimpleStatProps) => {
   const { formatNumber } = useFormatter();
+  console.log(stat);
   return (
     <div className="flex flex-row gap-[4px] items-center">
       <p className="text-[12px] font-normal">{formatNumber(stat.value)}</p>

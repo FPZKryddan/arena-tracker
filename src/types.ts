@@ -133,8 +133,13 @@ export interface infographicsDto {
   goldStats: goldStatsDto;
   skillShotsStats: skillShotsDto;
   killsDeathsAssists: killDeathAssistsDto;
-  healingStats?: numericalStatsDto;
-  shieldingStats?: numericalStatsDto;
+  healingStats?: healingShieldingStatsDto;
+  shieldingStats?: Omit<healingShieldingStatsDto, 'total'>;
+};
+
+export interface healingShieldingStatsDto {
+  total: numericalStatsDto;
+  onTeammates: numericalStatsDto;
 };
 
 export interface augmentsStatsDto {
