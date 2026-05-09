@@ -1,44 +1,58 @@
 import type { championStatsDto, PlayerStats } from "../../types";
+import useDdragonVersion from "../../hooks/useDdragonVersion";
 import DamageStatsBody from "./DamageStatsBody";
 import FavoriteAugmentsBody from "./FavoriteAugmentsBody";
 import PlacementsBody from "./PlacementsBody";
 import StatsOverviewHeader from "./StatsOverviewHeader";
+import TeammatesBody from "./TeammatesBody";
 
 interface StatsOverviewCardProps {
   stats: PlayerStats | championStatsDto;
-  name: string;
+  standalone?: boolean;
 }
 
-const StatsOverviewCard = ({ stats, name }: StatsOverviewCardProps) => {
+const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
+  const version = useDdragonVersion();
+
+  const firstLetterBig = (name: string): string => {
+    return name[0].toUpperCase() + name.slice(1);
+  };
 
   const getImgUrl = (): string => {
     if ('profileIconId' in stats) {
-      return `https://ddragon.leagueoflegends.com/cdn/15.13.1/img/profileicon/${stats['profileIconId']}.png`;
+      return `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${stats['profileIconId']}.png`;
     }
-    return `https://ddragon.leagueoflegends.com/cdn/15.13.1/img/champion/${name}.png`;
+    return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${firstLetterBig(stats.id)}.png`;
   }
 
   return (
-    <div className="bg-stone-200 flex flex-col grow-0 w-fit h-fit rounded-xl p-[32px] gap-[32px] shadow-2xl">
+    <div className={`${standalone ? 'bg-surface shadow-2xl p-[8px] md:p-[32px]' : 'bg-transparent shadow-none'}
+     text-fg flex flex-col grow-0 w-full h-fit rounded-xl gap-[24px]`}>
       {stats && stats.placementAvg != 0 ? (
         <>
           <StatsOverviewHeader
             kills={stats.infographics.killsDeathsAssists.kills}
             deaths={stats.infographics.killsDeathsAssists.deaths}
             assists={stats.infographics.killsDeathsAssists.assists}
-            name={name}
+            name={"gameName" in stats ? stats.gameName + '#' + stats.tagLine : stats.name}
             imgUrl={getImgUrl()}
           />
-          <div className="flex flex-col w-full gap-[16px]">
+          <div className="flex flex-col w-full gap-[24px]">
             <DamageStatsBody
               dealtStats={stats.infographics.damageStats}
               takenStats={stats.infographics.damageTakenStats}
+              healingStats={stats.infographics.healingStats}
+              shieldingStats={stats.infographics.shieldingStats}
+              skillShotsStats={stats.infographics.skillShotsStats}
             />
             <FavoriteAugmentsBody augments={stats.augmentStats} />
             <PlacementsBody
               placements={stats.placements}
               placementAvg={stats.placementAvg}
             />
+            {"teammateStats" in stats && stats.teammateStats && (
+              <TeammatesBody teammateStats={stats.teammateStats} />
+            )}
           </div>
         </>
       ) : (

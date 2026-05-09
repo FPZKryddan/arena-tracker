@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import type { championData } from "../types";
 
 // Custom hook for fuzzy searching implemented with help from: https://learnersbucket.com/examples/interview/implement-a-fuzzy-search-in-javascript/
 function useFuzzy() {
@@ -20,9 +19,16 @@ function useFuzzy() {
     return true;
   }, []);
 
-  const search = useCallback((arr: championData[], query: string) => {
-    return arr.filter((champion) => fuzzySearch(champion.name, query));
-  }, [fuzzySearch]);
+  const search = useCallback(
+    <T,>(
+      arr: T[],
+      query: string,
+      accessor: (item: T) => string
+    ): T[] => {
+      return arr.filter((item) => fuzzySearch(accessor(item), query));
+    },
+    [fuzzySearch]
+  );
 
   return search;
 }

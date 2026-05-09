@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { GiPlainDagger, GiDeathSkull, GiThreeFriends } from "react-icons/gi";
+import useFormatter from "../../hooks/useFormatter";
 
 interface KdaStatProps {
   type: "kills" | "deaths" | "assists" | "kda";
@@ -7,6 +8,8 @@ interface KdaStatProps {
 }
 
 const KdaStat = ({ type, value }: KdaStatProps) => {
+  const { formatNumber } = useFormatter();
+
   const iconSwitch = (): JSX.Element | undefined => {
     switch (type) {
       case "kills":
@@ -26,7 +29,7 @@ const KdaStat = ({ type, value }: KdaStatProps) => {
       {iconSwitch()}
       <p className="text-[12px] font-normal">
         {type === "kda" ? "KDA: " : ""}
-        {value}
+        {formatNumber(value)}
       </p>
     </div>
   );

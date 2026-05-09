@@ -1,23 +1,22 @@
-import { useCallback, useState } from 'react';
-import { v4 as uuid } from 'uuid'
-import type { Toast } from '../types';
+import { useCallback } from "react";
+import useContextIfDefined from "./useContextIfDefined";
+import { ToastsContext } from "../contexts/ToastsContext";
+import type { ToastVariant } from "../types";
 
 function useToast() {
-    const [toasts, setToasts] = useState<Toast[]>([]);
-    const CreateToast = useCallback((message: string, type: 'SUCCESS' | 'ERROR') => {
-        const id = uuid();
-        const newToast = { id, message, type };
-        setToasts(prev => [...prev, newToast]);
+  const { toasts, upsertToast, dismissToast } = useContextIfDefined(ToastsContext);
 
-        setTimeout(() => {
-            setToasts(prev => prev.filter(toast => toast.id !== id));
-        }, 3000)
-    }, []);
+  const createToast = useCallback(
+    (message: string, type: ToastVariant) => upsertToast({ message, type }),
+    [upsertToast]
+  );
 
-    return {
-        CreateToast,
-        toasts
-    }
+  return {
+    toasts,
+    createToast,
+    upsertToast,
+    dismissToast,
+  };
 }
 
 export default useToast;

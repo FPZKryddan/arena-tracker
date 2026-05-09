@@ -34,7 +34,6 @@ const Tooltip = ({
     if (isHovering && tooltipElementRef.current && triggerElementRef.current) {
       const tooltipRect = tooltipElementRef.current.getBoundingClientRect();
       const triggerRect = triggerElementRef.current.getBoundingClientRect();
-      console.log("HUBBE", tooltipRect.height);
 
       const hasSpaceAbove = triggerRect.top - tooltipRect.height > 0;
       const gap = 8;
@@ -59,10 +58,10 @@ const Tooltip = ({
       {children}
       {createPortal(
         <div
-          className={`fixed z-10 bg-gray-300 rounded-2xl shadow-2xl
-          ${isHovering ? "opacity-100" : "opacity-0 pointer-events-none"} 
+          className={`fixed z-100 bg-surface-elevated text-fg border border-border rounded-2xl shadow-2xl
+          ${isHovering ? "opacity-100" : "opacity-0 pointer-events-none"}
           ${text ? "px-4 py-2" : ""}
-          transition-opacity duration-150 delay-[${delay}] text-black text-[14px] text-nowrap font-medium max-w-screen shadow-md`}
+          transition-opacity duration-150 delay-[${delay}] text-[14px] text-nowrap font-medium max-w-screen shadow-md`}
           ref={tooltipElementRef}
         >
           {text && <p>{text}</p>}

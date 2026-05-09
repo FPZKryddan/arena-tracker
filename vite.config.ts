@@ -8,4 +8,16 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          'react-query': ['@tanstack/react-query'],
+          chart: ['chart.js', 'react-chartjs-2'],
+          motion: ['framer-motion'],
+        },
+      },
+    },
+  },
 })

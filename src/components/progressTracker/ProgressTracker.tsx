@@ -21,15 +21,15 @@ const ProgressTracker = ({
   const { colorClass } = useMemo(() => {
     switch (tracking) {
       case "played":
-        return { label: "Played", colorClass: "bg-amber-400" };
+        return { label: "Played", colorClass: "bg-warning" };
       case "top-4":
-        return { label: "Placed in the top-4", colorClass: "bg-blue-400" };
+        return { label: "Placed in the top-4", colorClass: "bg-info" };
       case "victory":
-        return { label: "Won", colorClass: "bg-green-500" };
+        return { label: "Won", colorClass: "bg-success" };
       case "none":
-        return { label: "Not played", colorClass: "bg-slate-200" };
+        return { label: "Not played", colorClass: "bg-border" };
       default:
-        return { label: "", colorClass: "bg-gray-400" };
+        return { label: "", colorClass: "bg-border" };
     }
   }, [tracking]);
 
@@ -51,7 +51,7 @@ const ProgressTracker = ({
   return (
     <Tooltip text={tooltipTextSwitch()}>
       <div
-        className={`h-full ${colorClass} relative hover:outline-2 outline-amber-500 hover:drop-shadow-2xl hover:z-10`}
+        className={`h-full ${colorClass} relative hover:outline-2 outline-accent hover:drop-shadow-2xl hover:z-10`}
         style={{ width: getBarWidthStyling(), transition: "width 0.3s" }}
         >
       </div>

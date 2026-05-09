@@ -1,10 +1,12 @@
+import type { Regions } from "../../types";
+
 interface RegionSelectorItemProps {
-  label: string;
-  onClickCallBack: (label: string) => void;
+  region: Regions;
+  onClickCallBack: (region: Regions) => void;
 }
 
-const RegionSelectorItem = ({ label, onClickCallBack }: RegionSelectorItemProps) => {
-  return <li className="py-[2px] hover:bg-stone-600 cursor-pointer select-none" onClick={() => onClickCallBack(label)}>{label}</li>;
+const RegionSelectorItem = ({ region, onClickCallBack }: RegionSelectorItemProps) => {
+  return <li className="py-[2px] hover:scale-100 hover:brightness-150 hover:tracking-widest hover:font-extrabold box-border cursor-pointer select-none transition-all duration-150 ease-out" onClick={() => onClickCallBack(region)}>{region}</li>;
 };
 
 export default RegionSelectorItem;
