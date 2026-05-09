@@ -6,7 +6,7 @@ interface SelectorItemProps {
 const SelectorItem = ({ label, onSelect }: SelectorItemProps) => {
   return (
     <li
-      className="w-full px-2 py-1 text-white hover:bg-stone-400 hover:cursor-pointer"
+      className="w-full px-2 py-1 text-fg hover:bg-surface-hover hover:cursor-pointer"
       onClick={() => onSelect(label)}
     >
       {label}

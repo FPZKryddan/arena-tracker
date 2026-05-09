@@ -24,13 +24,13 @@ const Selector = ({
       <div className="relative" onClick={toggleCallBack}>
         <p
           className={`px-10 py-1 font-semibold text-center hover:cursor-pointer rounded-full text-md select-none ${
-            isOpen ? "bg-white text-black" : "bg-stone-700 text-white"
+            isOpen ? "bg-accent text-accent-fg" : "bg-surface-elevated text-fg"
           }`}
         >
           {label}
         </p>
         {isOpen && (
-          <ul className="absolute bg-stone-500 z-11 w-full mt-1 rounded-md py-2 drop-shadow-md">
+          <ul className="absolute bg-surface-elevated text-fg border border-border z-11 w-full mt-1 rounded-md py-2 drop-shadow-md">
             {items.map((item) => (
               <SelectorItem
                 key={item}

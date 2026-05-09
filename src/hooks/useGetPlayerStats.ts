@@ -1,311 +1,184 @@
-import { useState } from "react";
-import {
-  type GetPUUIDDto,
-  type MatchDto,
-  type Regions,
-  type summonerData,
+import { useEffect, useRef, useState } from "react";
+import type {
+  ApiErrorPayload,
+  JobState,
+  PlayerStats,
+  Regions,
 } from "../types";
 import useToast from "./useToast";
-import useFetchData from "./useFetchData";
-import useFetchStatusTracker from "./useFethingStatusTracker";
-import useMatchParser from "./useMatchParser";
 import useContextIfDefined from "./useContextIfDefined";
 import { PlayerStatsContext } from "../contexts/PlayerStatsContext";
-import { ChampionsContext } from "../contexts/ChampionsContext";
+import {
+  coerceApiErrorPayload,
+  formatApiError,
+  getRetryAfterSeconds,
+  parseApiError,
+} from "../utils/apiError";
 
-function useGetPlayerStats(region: Regions = 'EUW') {
+const POLL_INTERVAL_MS = 1500;
+const RATE_LIMIT_TOAST_ID = "rate-limit";
+
+function useGetPlayerStats(region: Regions = "EUW") {
   const [isFetching, setIsFetching] = useState<boolean>(false);
-  const { champions } = useContextIfDefined(ChampionsContext);
-  const { playerStats, setPlayerStats } =
-    useContextIfDefined(PlayerStatsContext);
-  const {
-    FetchMatchData,
-    FetchPlayerMatchList,
-    FetchUserPuuid,
-    FetchSummonerData,
-  } = useFetchData();
-  const { createToast } = useToast();
-  const {
-    addStatusMessage,
-    updateStatusMessage,
-    completeStatusMessage,
-    resetStatusMessages,
-    failStatusMessage,
-  } = useFetchStatusTracker();
-  const {
-    GetParticipantIdByPuuid,
-    PopulatePlayerStatsFromMatch,
-    createEmptyPlayerStats,
-  } = useMatchParser();
+  const [jobState, setJobState] = useState<JobState | null>(null);
+  const { setPlayerStats } = useContextIfDefined(PlayerStatsContext);
+  const { upsertToast, dismissToast } = useToast();
+  const apiBase = import.meta.env.VITE_API_BASE;
+  const effectiveRegion: Exclude<Regions, null> = region ?? "EUW";
+  const pollTimerRef = useRef<number | null>(null);
+  const rateLimitTimerRef = useRef<number | null>(null);
 
-  const mapToPlatformRoutingValues = (selectedRegion: Regions): string => {
-    switch (selectedRegion) {
-      case "EUNE":
-        return "eun1";
-      case "NA":
-        return "na1";
-      case "EUW":
-      default:
-        return "euw1";
+  useEffect(() => {
+    return () => {
+      if (pollTimerRef.current !== null) clearInterval(pollTimerRef.current);
+      if (rateLimitTimerRef.current !== null)
+        clearInterval(rateLimitTimerRef.current);
+    };
+  }, []);
+
+  const stopPolling = () => {
+    if (pollTimerRef.current !== null) {
+      clearInterval(pollTimerRef.current);
+      pollTimerRef.current = null;
     }
   };
 
-  const mapToRegionalRoutingValues = (selectedRegion: Regions): string => {
-    switch (selectedRegion) {
-      case "NA":
-        return "AMERICAS";
-      case "EUNE":
-      case "EUW":
-      default:
-        return "EUROPE";
+  const stopRateLimitCountdown = () => {
+    if (rateLimitTimerRef.current !== null) {
+      clearInterval(rateLimitTimerRef.current);
+      rateLimitTimerRef.current = null;
     }
   };
 
-  const retrievePlayerData = (name: string) => {
-    if (!playerStats
-      || playerStats.gameName + '#' + playerStats.tagLine !== name
-    ) return GetFullPlayerData(name);
-    return GetRecentStats(name);
-  }
+  const showRateLimitCountdown = (seconds: number) => {
+    stopRateLimitCountdown();
+    let remaining = Math.max(1, Math.round(seconds));
+    const render = () =>
+      upsertToast({
+        id: RATE_LIMIT_TOAST_ID,
+        type: "WARNING",
+        message: `Riot API rate limited — try again in ${remaining}s.`,
+        durationMs: Number.POSITIVE_INFINITY,
+      });
+    render();
+    rateLimitTimerRef.current = window.setInterval(() => {
+      remaining -= 1;
+      if (remaining <= 0) {
+        stopRateLimitCountdown();
+        dismissToast(RATE_LIMIT_TOAST_ID);
+        return;
+      }
+      render();
+    }, 1000);
+  };
 
-  const GetRecentStats = async (name: string) => {
-    if (!playerStats) return;
-    const splitName = name.split("#");
-    const gameName = splitName[0];
-    const tagline = splitName[1];
+  const handleSearchError = (
+    err: ApiErrorPayload,
+    ctx: { gameName: string; tagLine: string }
+  ) => {
+    const formatted = formatApiError(err, {
+      gameName: ctx.gameName,
+      tagLine: ctx.tagLine,
+      region: effectiveRegion,
+    });
 
-    if (!tagline) {
-      return;
+    if (err.code === "UPSTREAM_RATE_LIMITED") {
+      showRateLimitCountdown(getRetryAfterSeconds(err));
+    } else if (err.code === "PLAYER_NOT_TRACKED") {
+      upsertToast({ message: formatted, type: "WARNING" });
+    } else {
+      upsertToast({ message: formatted, type: "ERROR" });
     }
 
+    console.error("[useGetPlayerStats]", err.code, err.message, err.details);
+  };
+
+  const retrievePlayerData = async (name: string) => {
+    const [gameName, tagLine] = name.split("#");
+    if (!tagLine) return;
+
+    stopPolling();
+    setJobState(null);
     setIsFetching(true);
 
-    const puuidData: GetPUUIDDto = await FetchUserPuuid(
-      gameName,
-      tagline,
-      mapToRegionalRoutingValues(region)
-    );
-    const playerUuid = puuidData.puuid;
-
-    let backtracking = true;
-    let idx = 0;
-    const matchDatas: MatchDto[] = [];
-
-    while (backtracking) {
-      const matchListSegment: string[] = await FetchPlayerMatchList(
-        playerUuid,
-        idx * 100,
-        100,
-        1741088416,
-        mapToRegionalRoutingValues(region)
-      );
-      for (const match of matchListSegment) {
-        const matchData: MatchDto = await FetchMatchData(
-          match,
-          mapToRegionalRoutingValues(region)
-        );
-        if (matchData.info.gameEndTimestamp <= playerStats.latestGamePlayed) {
-          backtracking = false;
-          break;
-        }
-        matchDatas.push(matchData);
-      }
-      idx++;
-    }
-
-    const playerParticipantIdToMatch: { playerId: number; match: MatchDto }[] =
-      matchDatas
-        .map((match) => {
-          const id = GetParticipantIdByPuuid(match, playerUuid);
-          return id !== null ? { playerId: id, match } : null;
-        })
-        .filter(
-          (item): item is { playerId: number; match: MatchDto } => item !== null
-        );
-
-    let tempPlayerStats = { ...playerStats };
-    for (const matchMapping of playerParticipantIdToMatch) {
-      try {
-        tempPlayerStats = PopulatePlayerStatsFromMatch(
-          tempPlayerStats,
-          matchMapping.match,
-          matchMapping.playerId
-        );
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    createToast(
-      String(matchDatas.length) + " Updates were retrieved!",
-      "SUCCESS"
-    );
-    setIsFetching(false);
-    setPlayerStats(tempPlayerStats);
-  };
-
-  const GetFullPlayerData = async (name: string) => {
-    const splitName = name.split("#");
-    const gameName = splitName[0];
-    const tagline = splitName[1];
-
-    if (!tagline) {
-      return;
-    }
-
-    let tempPlayerStats = createEmptyPlayerStats(champions);
-    tempPlayerStats.gameName = gameName;
-    tempPlayerStats.tagLine = tagline;
-
-    setIsFetching(true);
-    // setIsPlayerStatsModalOpen(true);
-    resetStatusMessages();
-
-    // Get Players UUID
-    const smIdPuuid = addStatusMessage("Getting Player UUID...", 1);
-    let puuidData: GetPUUIDDto;
     try {
-      puuidData = await FetchUserPuuid(
-        gameName,
-        tagline,
-        mapToRegionalRoutingValues(region)
+      const startRes = await fetch(
+        `${apiBase}/players/${effectiveRegion}/${encodeURIComponent(
+          gameName
+        )}/${encodeURIComponent(tagLine)}/refresh`,
+        { method: "POST" }
       );
-    } catch (error) {
-      createToast("Could not find player!", 'ERROR');
-      failStatusMessage(smIdPuuid);
+      if (!startRes.ok) {
+        const err = await parseApiError(startRes);
+        handleSearchError(err, { gameName, tagLine });
+        setIsFetching(false);
+        return;
+      }
+      const { jobId } = (await startRes.json()) as { jobId: string };
+
+      await new Promise<void>((resolve) => {
+        const finish = () => {
+          stopPolling();
+          setIsFetching(false);
+          resolve();
+        };
+
+        const poll = async () => {
+          try {
+            const res = await fetch(`${apiBase}/jobs/${jobId}`);
+            if (!res.ok) {
+              const err = await parseApiError(res);
+              handleSearchError(err, { gameName, tagLine });
+              finish();
+              return;
+            }
+            const state = (await res.json()) as JobState;
+            setJobState(state);
+
+            if (state.status === "done") {
+              const statsRes = await fetch(
+                `${apiBase}/players/${effectiveRegion}/${encodeURIComponent(
+                  gameName
+                )}/${encodeURIComponent(tagLine)}`
+              );
+              if (statsRes.ok) {
+                const stats = (await statsRes.json()) as PlayerStats;
+                setPlayerStats(stats);
+                upsertToast({ message: "Stats updated!", type: "SUCCESS" });
+              } else {
+                const err = await parseApiError(statsRes);
+                handleSearchError(err, { gameName, tagLine });
+              }
+              finish();
+            } else if (state.status === "error") {
+              const err = coerceApiErrorPayload(state.error, 500);
+              handleSearchError(err, { gameName, tagLine });
+              setJobState(null);
+              finish();
+            }
+          } catch (err) {
+            console.error("poll failed:", err);
+          }
+        };
+
+        poll();
+        pollTimerRef.current = window.setInterval(poll, POLL_INTERVAL_MS);
+      });
+    } catch (err) {
+      upsertToast({
+        message: "Failed to load player stats.",
+        type: "ERROR",
+      });
+      console.error(err);
+      stopPolling();
       setIsFetching(false);
-      console.error("Failed to fetch Player UUID:", error);
-      return;
     }
-    const playerUuid = puuidData.puuid;
-    tempPlayerStats.puuid = playerUuid;
-    updateStatusMessage(smIdPuuid);
-
-    // Retrieve Match History
-    let matchList: string[] = [];
-    let findingMatches = true;
-    let idx = 0;
-
-    const smIdMatchHistory = addStatusMessage("Fetching match history...", -1);
-    while (findingMatches) {
-      let matchListSegment: string[];
-      try {
-        matchListSegment = await FetchPlayerMatchList(
-          playerUuid,
-          idx * 100,
-          100,
-          1741088416,
-          mapToRegionalRoutingValues(region)
-        );
-      } catch (error) {
-        createToast("Failed to fetch Player's match history", 'ERROR');
-        failStatusMessage(smIdMatchHistory);
-        setIsFetching(false);
-        console.error("Failed to fetch Player's match history:", error);
-        return;
-      }
-      if (matchListSegment.length === 0) {
-        findingMatches = false;
-      } else {
-        matchList = matchList.concat(matchListSegment);
-        updateStatusMessage(smIdMatchHistory, matchListSegment.length);
-        idx++;
-      }
-    }
-    completeStatusMessage(smIdMatchHistory);
-
-    // Get match data from match history
-    const smIdMatchData = addStatusMessage(
-      "Fetching match data...",
-      matchList.length
-    );
-    const matchDatas: MatchDto[] = [];
-    for (const match of matchList) {
-      let data: MatchDto;
-      try {
-        data = await FetchMatchData(match, mapToRegionalRoutingValues(region));
-      } catch (error) {
-        createToast("Failed to fetch match data!", 'ERROR');
-        failStatusMessage(smIdMatchData);
-        setIsFetching(false);
-        console.error("Failed to fetch match data:", error);
-        return;
-      }
-      matchDatas.push(data);
-      updateStatusMessage(smIdMatchData);
-    }
-
-    // Map player to every match
-    const smIdPlayerInMatches = addStatusMessage(
-      "Finding player in matches...",
-      matchList.length
-    );
-    const playerParticipantIdToMatch: { playerId: number; match: MatchDto }[] =
-      matchDatas
-        .map((match) => {
-          const id = GetParticipantIdByPuuid(match, playerUuid);
-          updateStatusMessage(smIdPlayerInMatches);
-          return id !== null ? { playerId: id, match } : null;
-        })
-        .filter(
-          (item): item is { playerId: number; match: MatchDto } => item !== null
-        );
-
-    // Populate player stats from all retrieved matches
-    const smIdPlayerStats = addStatusMessage(
-      "Populating player stats",
-      matchList.length
-    );
-    for (const matchMapping of playerParticipantIdToMatch) {
-      try {
-        tempPlayerStats = PopulatePlayerStatsFromMatch(
-          tempPlayerStats,
-          matchMapping.match,
-          matchMapping.playerId
-        );
-        updateStatusMessage(smIdPlayerStats);
-      } catch (error) {
-        createToast("Failed to aggregate stats from match!", 'ERROR');
-        failStatusMessage(smIdPlayerStats);
-        setIsFetching(false);
-        console.error(
-          "Failed to fetch populate player stats from match:",
-          error
-        );
-        return;
-      }
-    }
-
-    const smIdSummonerData = addStatusMessage("Getting summoner data", 1);
-    try {
-      const summonerData: summonerData = await FetchSummonerData(
-        playerUuid,
-        mapToPlatformRoutingValues(region)
-      );
-      updateStatusMessage(smIdSummonerData);
-      tempPlayerStats.profileIconId = summonerData.profileIconId;
-      tempPlayerStats.summonerLevel = summonerData.summonerLevel;
-    } catch (error) {
-      createToast("Failed to get additional player info!", 'ERROR');
-      failStatusMessage(smIdSummonerData);
-      setIsFetching(false);
-      console.error("Failed to fetch summoner data for player:", error);
-      return;
-    }
-
-    console.log(tempPlayerStats);
-
-    console.log(matchDatas);
-
-    setPlayerStats(tempPlayerStats);
-    setIsFetching(false);
   };
 
   return {
     isFetching,
-    GetRecentStats,
-    GetFullPlayerData,
-    retrievePlayerData
+    jobState,
+    retrievePlayerData,
   };
 }
 

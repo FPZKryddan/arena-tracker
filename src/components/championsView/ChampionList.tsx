@@ -1,8 +1,8 @@
 import {
   lazy,
+  memo,
   Suspense,
   useCallback,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -20,81 +20,124 @@ import type {
 const StatsOverviewCard = lazy(
   () => import("../../components/statsOverviewCard")
 );
-import { HiMiniXMark } from "react-icons/hi2";
-import { AnimatePresence, easeOut, motion } from "framer-motion";
+import BottomSheet from "../common/BottomSheet";
 import StatsSkeleton from "../statsOverviewCard/StatsSkeleton";
 import ChampionStageProgress from "./ChampionStageProgress";
-import useStatsAggregator from "../../hooks/useStatsAggregator";
+import { getWinrate } from "../../hooks/useStatsAggregator";
 import { HiMiniChevronDown, HiMiniChevronUpDown } from "react-icons/hi2";
 import useChampionSorter from "../../hooks/useChampionSorter";
+import useDdragonVersion from "../../hooks/useDdragonVersion";
 import useFuzzy from "../../hooks/useFuzzy";
+import useDebouncedValue from "../../hooks/useDebouncedValue";
 import ChampionFiltering from "./ChampionFiltering";
+import {
+  applyChampionFilters,
+  DEFAULT_CHAMPION_FILTERS,
+  type ChampionFilters,
+} from "./championFilters";
 
 const ChampionList = () => {
   const { playerStats } = useContextIfDefined(PlayerStatsContext);
   const { champions } = useContextIfDefined(ChampionsContext);
   const fuzzySearch = useFuzzy();
+  const version = useDdragonVersion();
+  const { SortByName, SortByAvgPlacement, SortByTimesPlayed, SortByWinrate } =
+    useChampionSorter();
 
   const [championNameFilter, setChampionNameFilter] = useState<string>("");
+  const debouncedNameFilter = useDebouncedValue(championNameFilter, 100);
+  const [filters, setFilters] = useState<ChampionFilters>(
+    DEFAULT_CHAMPION_FILTERS
+  );
+  const [sortBy, setSortBy] = useState<Sort>("NAME");
+  const [order, setOrder] = useState<Orders>("ASC");
   const [selectedChampion, setSelectedChampion] = useState<championStatsDto>();
   const [bottomSheetIsOpen, setBottomSheetIsOpen] = useState<boolean>(false);
-  const [filteredChampions, setFilteredChampions] = useState<
-    championStatsDto[]
-  >([]);
-  const [sortedChampions, setSortedChampions] = useState<championStatsDto[]>(
-    []
-  );
 
-  const getChampionStatsList = useMemo((): championStatsDto[] => {
+  const playerChampionStats = useMemo((): championStatsDto[] => {
     if (!playerStats) return [];
-    const unFilteredChampions = champions
-      .map((champion: championData) => {
-        if (champion.id in playerStats.championStats) {
-          return playerStats.championStats[champion.id];
-        }
-        return undefined;
-      })
-      .filter((champion) => champion !== undefined);
-    return fuzzySearch(unFilteredChampions, championNameFilter);
-  }, [championNameFilter, champions, fuzzySearch, playerStats]);
+    return champions
+      .map((champion: championData) =>
+        champion.id in playerStats.championStats
+          ? playerStats.championStats[champion.id]
+          : undefined
+      )
+      .filter((c): c is championStatsDto => c !== undefined);
+  }, [champions, playerStats]);
 
-  const onClickChampion = (champion: championStatsDto): void => {
+  const displayedChampions = useMemo((): championStatsDto[] => {
+    const searched = debouncedNameFilter
+      ? fuzzySearch(playerChampionStats, debouncedNameFilter, (c) => c.name)
+      : playerChampionStats;
+    const filtered = applyChampionFilters(searched, filters);
+    switch (sortBy) {
+      case "PLAYED":
+        return SortByTimesPlayed(filtered, order);
+      case "AVG":
+        return SortByAvgPlacement(filtered, order);
+      case "WR":
+        return SortByWinrate(filtered, order);
+      case "NAME":
+      default:
+        return SortByName(filtered, order);
+    }
+  }, [
+    playerChampionStats,
+    debouncedNameFilter,
+    fuzzySearch,
+    filters,
+    sortBy,
+    order,
+    SortByName,
+    SortByAvgPlacement,
+    SortByTimesPlayed,
+    SortByWinrate,
+  ]);
+
+  const onClickChampion = useCallback((champion: championStatsDto) => {
     setSelectedChampion(champion);
     setBottomSheetIsOpen(true);
-  };
+  }, []);
 
-  useEffect(() => {
-    console.log(sortedChampions);
-  }, [sortedChampions]);
+  const handleHeaderClicked = useCallback(
+    (item: Sort) => {
+      if (sortBy === item) {
+        setOrder((o) => (o === "ASC" ? "DESC" : "ASC"));
+        return;
+      }
+      setOrder("ASC");
+      setSortBy(item);
+    },
+    [sortBy]
+  );
 
   return (
     <div className="flex flex-col">
       <div className="flex flex-row-reverse justify-end gap-[8px]">
-        <ChampionFiltering
-          championList={getChampionStatsList}
-          filteredChampionsCallback={setFilteredChampions}
-        />
+        <ChampionFiltering filters={filters} onFiltersChange={setFilters} />
         <input
           type="text"
           value={championNameFilter}
           placeholder="Search"
-          className="bg-white rounded-full w-1/2 px-4 py-1 text-black text-[12px] font-normal"
+          className="bg-surface-elevated rounded-full w-1/2 px-4 py-1 text-fg text-[12px] font-normal"
           onChange={(e) => setChampionNameFilter(e.target.value)}
         />
       </div>
       <table className="w-full max-w-full table-auto border-separate border-spacing-y-[8px]">
         <thead>
           <ChampionListHeaderRow
-            championList={filteredChampions}
-            setSortedChampionListCallback={setSortedChampions}
+            sortBy={sortBy}
+            order={order}
+            onHeaderClick={handleHeaderClicked}
           />
         </thead>
         <tbody>
-          {sortedChampions.map((champion, index) => (
+          {displayedChampions.map((champion, index) => (
             <ChampionListBodyRow
-              key={index}
+              key={champion.id}
               index={index + 1}
               champion={champion}
+              version={version}
               clickCallback={onClickChampion}
             />
           ))}
@@ -106,10 +149,7 @@ const ChampionList = () => {
       >
         <Suspense fallback={<StatsSkeleton />}>
           {selectedChampion ? (
-            <StatsOverviewCard
-              stats={selectedChampion}
-              darkText
-            ></StatsOverviewCard>
+            <StatsOverviewCard stats={selectedChampion}></StatsOverviewCard>
           ) : (
             <></>
           )}
@@ -119,142 +159,47 @@ const ChampionList = () => {
   );
 };
 
-type BottomSheetProps = {
-  isOpen: boolean;
-  closeCallback: () => void;
-  children: ReactNode;
-};
-
-const BottomSheet = ({ isOpen, children, closeCallback }: BottomSheetProps) => {
-  return (
-    <>
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15, ease: easeOut }}
-              className="absolute z-50 top-0 left-0 w-full h-full backdrop-blur-lg bg-black/50"
-              onClick={closeCallback}
-            ></motion.div>
-            <motion.div
-              initial={{ y: 1000, scaleX: 0.9 }}
-              animate={{ y: 0, scaleX: 1 }}
-              exit={{ y: 1000 }}
-              transition={{ duration: 0.15, ease: easeOut }}
-              className="fixed bottom-0 left-0 bg-white rounded-t-2xl w-full z-100 p-[8px] flex flex-col max-h-5/6 min-h-1/6 overflow-y-auto"
-            >
-              <button
-                className="absolute top-[12px] right-[12px] text-black"
-                onClick={closeCallback}
-              >
-                <HiMiniXMark className="text-2xl" />
-              </button>
-              {children}
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
-  );
-};
-
 type ChampionListHeaderRowProps = {
-  championList: championStatsDto[];
-  setSortedChampionListCallback: (sortedList: championStatsDto[]) => void;
+  sortBy: Sort;
+  order: Orders;
+  onHeaderClick: (item: Sort) => void;
 };
 
 const ChampionListHeaderRow = ({
-  championList,
-  setSortedChampionListCallback,
+  sortBy,
+  order,
+  onHeaderClick,
 }: ChampionListHeaderRowProps) => {
-  const { SortByName, SortByAvgPlacement, SortByTimesPlayed, SortByWinrate } =
-    useChampionSorter();
-  const [order, setOrder] = useState<Orders>("ASC");
-  const [sortBy, setSortBy] = useState<Sort>("NAME");
-
-  const toggleOrder = (): Orders => {
-    return order === "ASC" ? "DESC" : "ASC";
-  };
-
-  const handleHeaderClicked = (item: Sort): void => {
-    if (sortBy === item) {
-      setOrder(toggleOrder());
-      return;
-    }
-
-    setOrder("ASC");
-    setSortBy(item);
-  };
-
-  const getItemSortedState = (item: Sort): SortedState => {
-    if (sortBy === item) return order;
-    return "OTHER_HEADER_SORTED";
-  };
-
-  const sortChampions = useCallback((): championStatsDto[] => {
-    switch (sortBy) {
-      case "PLAYED":
-        return SortByTimesPlayed(championList, order);
-      case "AVG":
-        return SortByAvgPlacement(championList, order);
-      case "WR":
-        return SortByWinrate(championList, order);
-      case "NAME":
-      default:
-        return SortByName(championList, order);
-    }
-  }, [
-    SortByAvgPlacement,
-    SortByName,
-    SortByTimesPlayed,
-    SortByWinrate,
-    championList,
-    order,
-    sortBy,
-  ]);
-
-  useEffect(() => {
-    const sorted = sortChampions();
-    console.log(sorted);
-    setSortedChampionListCallback(sorted);
-  }, [
-    order,
-    sortBy,
-    championList,
-    setSortedChampionListCallback,
-    sortChampions,
-  ]);
+  const getItemSortedState = (item: Sort): SortedState =>
+    sortBy === item ? order : "OTHER_HEADER_SORTED";
 
   return (
-    <tr className="text-[10px] font-bold text-left text-white">
+    <tr className="text-[10px] font-bold text-left text-fg">
       <ChampionListHeaderRowItem label={"#"} leftEdge setWidth={25} />
       <ChampionListHeaderRowItem
         label={"CHAMPION"}
         setWidth={150}
         sorted={getItemSortedState("NAME")}
-        clickCallback={() => handleHeaderClicked("NAME")}
+        clickCallback={() => onHeaderClick("NAME")}
       />
       <ChampionListHeaderRowItem
         label={"PLAYED"}
         setWidth={70}
         sorted={getItemSortedState("PLAYED")}
-        clickCallback={() => handleHeaderClicked("PLAYED")}
+        clickCallback={() => onHeaderClick("PLAYED")}
       />
       <ChampionListHeaderRowItem
         label={"AVG"}
         setWidth={45}
         sorted={getItemSortedState("AVG")}
-        clickCallback={() => handleHeaderClicked("AVG")}
+        clickCallback={() => onHeaderClick("AVG")}
       />
       <ChampionListHeaderRowItem
         label={"WR%"}
         setWidth={45}
         rightEdge
         sorted={getItemSortedState("WR")}
-        clickCallback={() => handleHeaderClicked("WR")}
+        clickCallback={() => onHeaderClick("WR")}
       />
     </tr>
   );
@@ -279,8 +224,8 @@ const ChampionListHeaderRowItem = ({
 }: ChampionListHeaderRowItemProps) => {
   return (
     <th
-      className={`px-1 py-2 box-border bg-slate-500 text-wrap text-ellipsis hover:cursor-pointer
-         ${leftEdge ? "rounded-l-md" : "rounded-l-none"} 
+      className={`px-1 py-2 box-border bg-surface-elevated text-fg text-wrap text-ellipsis hover:cursor-pointer
+         ${leftEdge ? "rounded-l-md" : "rounded-l-none"}
          ${rightEdge ? "rounded-r-md" : "rounded-r-none"}`}
       style={{ width: setWidth ? setWidth + "px" : "auto" }}
       onClick={clickCallback}
@@ -306,57 +251,58 @@ const ChampionListHeaderRowItem = ({
 type ChampionListBodyRowProps = {
   index: number;
   champion: championStatsDto;
+  version: string;
   clickCallback: (champion: championStatsDto) => void;
 };
 
-const ChampionListBodyRow = ({
-  index,
-  champion,
-  clickCallback,
-}: ChampionListBodyRowProps) => {
-  const { getWinrate } = useStatsAggregator();
-  return (
-    <tr
-      className="text-[10px] font-normal text-left text-white"
-      onClick={() => clickCallback(champion)}
-    >
-      <ChampionListBodyRowItem edge={"LEFT"}>
-        <p>{String(index)}</p>
-      </ChampionListBodyRowItem>
-      <ChampionListBodyRowItem edge={"NONE"}>
-        <div className="relative">
-          <div className="h-[45px] aspect-square rounded-full overflow-hidden">
-            <img
-              className="h-full w-auto aspect-square rounded-full scale-110"
-              src={`https://ddragon.leagueoflegends.com/cdn/15.13.1/img/champion/${champion.id}.png`}
-            />
+const ChampionListBodyRow = memo(
+  ({ index, champion, version, clickCallback }: ChampionListBodyRowProps) => {
+    return (
+      <tr
+        className="text-[10px] font-normal text-left text-fg"
+        onClick={() => clickCallback(champion)}
+      >
+        <ChampionListBodyRowItem edge={"LEFT"}>
+          <p>{String(index)}</p>
+        </ChampionListBodyRowItem>
+        <ChampionListBodyRowItem edge={"NONE"}>
+          <div className="relative">
+            <div className="h-[45px] aspect-square rounded-full overflow-hidden">
+              <img
+                className="h-full w-auto aspect-square rounded-full scale-110"
+                src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.id}.png`}
+                alt={champion.name}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-2">
+              <ChampionStageProgress stage={champion.stage} />
+            </div>
           </div>
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-2">
-            <ChampionStageProgress stage={champion.stage} />
-          </div>
-        </div>
-        <p className="text-wrap">{champion.name}</p>
-      </ChampionListBodyRowItem>
-      <ChampionListBodyRowItem edge={"NONE"}>
-        <p>{champion.timesPlayed}</p>
-      </ChampionListBodyRowItem>
-      <ChampionListBodyRowItem edge={"NONE"}>
-        <p>
-          {champion.timesPlayed > 0
-            ? Math.ceil(champion.placementAvg * 100) / 100
-            : "-"}
-        </p>
-      </ChampionListBodyRowItem>
-      <ChampionListBodyRowItem edge={"RIGHT"}>
-        <p>
-          {champion.timesPlayed > 0
-            ? getWinrate(champion.placements) + "%"
-            : "-"}
-        </p>
-      </ChampionListBodyRowItem>
-    </tr>
-  );
-};
+          <p className="text-wrap">{champion.name}</p>
+        </ChampionListBodyRowItem>
+        <ChampionListBodyRowItem edge={"NONE"}>
+          <p>{champion.timesPlayed}</p>
+        </ChampionListBodyRowItem>
+        <ChampionListBodyRowItem edge={"NONE"}>
+          <p>
+            {champion.timesPlayed > 0
+              ? Math.ceil(champion.placementAvg * 100) / 100
+              : "-"}
+          </p>
+        </ChampionListBodyRowItem>
+        <ChampionListBodyRowItem edge={"RIGHT"}>
+          <p>
+            {champion.timesPlayed > 0
+              ? getWinrate(champion.placements) + "%"
+              : "-"}
+          </p>
+        </ChampionListBodyRowItem>
+      </tr>
+    );
+  }
+);
 
 type ChampionListBodyRowItemProps = {
   children: ReactNode;
@@ -369,7 +315,7 @@ const ChampionListBodyRowItem = ({
 }: ChampionListBodyRowItemProps) => {
   return (
     <td
-      className={`px-1 box-border h-[64px] bg-slate-700 ${
+      className={`px-1 box-border h-[64px] bg-surface ${
         edge === "LEFT" ? "rounded-l-md w-[20px]" : "rounded-l-none"
       } ${edge === "RIGHT" ? "rounded-r-md" : "rounded-r-none"}`}
     >

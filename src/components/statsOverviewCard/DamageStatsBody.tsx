@@ -1,13 +1,30 @@
 import { useEffect, useRef, useState } from "react";
-import type { damageStatsDto, damageTakenStatsDto } from "../../types";
+import { GiHealthNormal, GiArrowDunk, GiAcrobatic } from "react-icons/gi";
+import { FaShieldAlt } from "react-icons/fa";
+import type {
+  damageStatsDto,
+  damageTakenStatsDto,
+  numericalStatsDto,
+  skillShotsDto,
+} from "../../types";
 import DamageStat from "./DamageStat";
+import SimpleStat from "./SimpleStat";
 
 interface DamageStatsBodyProps {
   dealtStats: damageStatsDto;
   takenStats: damageTakenStatsDto;
+  healingStats?: numericalStatsDto;
+  shieldingStats?: numericalStatsDto;
+  skillShotsStats?: skillShotsDto;
 }
 
-const DamageStatsBody = ({ dealtStats, takenStats }: DamageStatsBodyProps) => {
+const DamageStatsBody = ({
+  dealtStats,
+  takenStats,
+  healingStats,
+  shieldingStats,
+  skillShotsStats,
+}: DamageStatsBodyProps) => {
   const barRef = useRef<HTMLDivElement>(null);
   const [barWidth, setBarWidth] = useState(0);
 
@@ -49,7 +66,40 @@ const DamageStatsBody = ({ dealtStats, takenStats }: DamageStatsBodyProps) => {
           parentBarWidth={barWidth}
         />
       )}
-      {/* <DamageStat type={"healed"} /> */}
+      <div className="flex flex-row flex-wrap gap-x-[16px] gap-y-[4px]">
+        {healingStats && (
+          <SimpleStat
+            icon={<GiHealthNormal className="text-success" />}
+            label="Total healing"
+            recordLabel="healing"
+            stat={healingStats}
+          />
+        )}
+        {shieldingStats && (
+          <SimpleStat
+            icon={<FaShieldAlt className="text-info" />}
+            label="Total shielding"
+            recordLabel="shielding"
+            stat={shieldingStats}
+          />
+        )}
+        {skillShotsStats?.hit && (
+          <SimpleStat
+            icon={<GiArrowDunk className="text-damage-spell" />}
+            label="Skillshots hit"
+            recordLabel="skillshots hit"
+            stat={skillShotsStats.hit}
+          />
+        )}
+        {skillShotsStats?.dodged && (
+          <SimpleStat
+            icon={<GiAcrobatic className="text-damage-magic" />}
+            label="Skillshots dodged"
+            recordLabel="skillshots dodged"
+            stat={skillShotsStats.dodged}
+          />
+        )}
+      </div>
     </div>
   );
 };

@@ -14,7 +14,13 @@ const FavoriteAugment = ({ picked, augmentData }: FavoriteAugmentProps) => {
       <Tooltip text={augmentData.name}>
 
         <div className={`grow-1 w-auto aspect-square augment-${augmentData.rarity}`}>
-          <img src={baseIconUrl + augmentData.iconLarge} className={` bg-[#171A1C] rounded-[15px] relative h-full w-full`}></img>
+          <img
+            src={baseIconUrl + augmentData.iconLarge}
+            alt={augmentData.name}
+            loading="lazy"
+            decoding="async"
+            className="bg-surface-elevated rounded-[15px] relative h-full w-full"
+          />
         </div>
       </Tooltip>
       <p className="text-[12px] leading-[14px] h-[14px] font-normal text-center">{picked}</p>

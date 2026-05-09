@@ -12,7 +12,7 @@ interface StatsOverviewHeaderProps {
 const StatsOverviewHeader = ({ kills, deaths, assists, name, imgUrl}: StatsOverviewHeaderProps) => {
   return (
     <div className="flex flex-row justify-start items-center gap-[8px]">
-      <img className="bg-gray-700 w-[55px] h-[55px] rounded-full"  src={imgUrl}/>
+      <img className="bg-surface-elevated w-[55px] h-[55px] rounded-full"  src={imgUrl}/>
       <div className="flex flex-col">
         <h1 className="text-[16px] font-extrabold text-ellipsis">{name}</h1>
         <div className="flex flex-row gap-[16px]">

@@ -27,18 +27,48 @@ export type Orders = "ASC" | "DESC";
 export type SortedState = "ASC" | "DESC" | "OTHER_HEADER_SORTED";
 export type Sort = "NAME" | "PLAYED" | "AVG" | "WR";
 
+export type ToastVariant = 'SUCCESS' | 'ERROR' | 'WARNING';
+
 export interface Toast {
   id: string;
   message: string;
-  type: 'SUCCESS' | 'ERROR';
+  type: ToastVariant;
 };
 
-export interface StatusMessage {
-  id: string;
-  status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+export type ErrorCode =
+  | 'BAD_PATH'
+  | 'BAD_REGION'
+  | 'BAD_HOST'
+  | 'METHOD_NOT_ALLOWED'
+  | 'NOT_FOUND'
+  | 'PLAYER_NOT_TRACKED'
+  | 'JOB_NOT_FOUND'
+  | 'UPSTREAM_NOT_FOUND'
+  | 'UPSTREAM_RATE_LIMITED'
+  | 'UPSTREAM_ERROR'
+  | 'INTERNAL_ERROR';
+
+export interface ApiErrorPayload {
+  code: ErrorCode;
   message: string;
-  tasksCompleted: number;
-  totalTasks: number;
+  status: number;
+  details?: Record<string, unknown>;
+};
+
+export interface ApiErrorEnvelope {
+  error: ApiErrorPayload;
+};
+
+export type JobPhase = 'puuid' | 'matchlist' | 'matches' | 'summoner' | 'persisting';
+
+export interface JobState {
+  jobId: string;
+  status: 'queued' | 'running' | 'done' | 'error';
+  phase?: JobPhase;
+  progress?: { current: number; total: number };
+  error?: unknown;
+  startedAt: number;
+  updatedAt: number;
 };
 
 export interface PlayerStats {
@@ -49,22 +79,46 @@ export interface PlayerStats {
   summonerLevel: number; 
   matchesPlayed: number;
   latestGamePlayed: EpochTimeStamp;
-  placements: placementDto
+  placements: PlacementDto
   placementAvg: number;
   infographics: infographicsDto;
   augmentStats: augmentsStatsDto;
   championStats: {
     [championName: string]: championStatsDto;
-  }
+  };
+  teammateStats: teammateStatsDto;
 };
 
-export interface placementDto {
+export interface PlacementDto {
   [key: number]: number;
+};
+
+export interface teammateStatDto {
+  gameName: string;
+  tagLine: string;
+  gamesPlayed: number;
+  placements: PlacementDto;
+  placementAvg: number;
+  lastPlayedAt: number;
+};
+
+export interface teammateStatsDto {
+  [teammatePuuid: string]: teammateStatDto;
+};
+
+export interface ProfileLookupDto {
+  puuid: string;
+  gameName: string;
+  tagLine: string;
+  region: Exclude<Regions, null>;
+  profileIconId: number;
+  summonerLevel: number;
+  tracked: boolean;
 };
 
 export interface championStatsDto {
   timesPlayed: number;
-  placements: placementDto;
+  placements: PlacementDto;
   placementAvg: number;
   infographics: infographicsDto;
   augmentStats: augmentsStatsDto;
@@ -79,6 +133,8 @@ export interface infographicsDto {
   goldStats: goldStatsDto;
   skillShotsStats: skillShotsDto;
   killsDeathsAssists: killDeathAssistsDto;
+  healingStats?: numericalStatsDto;
+  shieldingStats?: numericalStatsDto;
 };
 
 export interface augmentsStatsDto {

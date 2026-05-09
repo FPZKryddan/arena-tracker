@@ -18,7 +18,13 @@ const ToastContainer = ({ toasts }: ToastContainerProps) => {
                     exit={{ opacity: 0, y: -50 }}
                     transition={{ duration: 0.15, ease: easeOut }}
                     layout
-                    className={`w-full rounded-md py-2 shadow-2xl text-center select-none pointer-events-none text-white ${toast.type === 'SUCCESS' ? 'bg-green-700' : 'bg-red-500'}`}>
+                    className={`w-full rounded-md py-2 shadow-2xl text-center select-none pointer-events-none ${
+                        toast.type === 'SUCCESS'
+                            ? 'bg-success text-success-fg'
+                            : toast.type === 'WARNING'
+                            ? 'bg-warning text-warning-fg'
+                            : 'bg-danger text-danger-fg'
+                    }`}>
                         {toast.message}
                     </motion.div>
                 ))}

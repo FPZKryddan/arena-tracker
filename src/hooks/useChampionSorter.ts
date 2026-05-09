@@ -1,8 +1,7 @@
 import type { championStatsDto, Orders } from "../types";
-import useStatsAggregator from "./useStatsAggregator";
+import { getWinrate } from "./useStatsAggregator";
 
 function useChampionSorter() {
-  const { getWinrate } = useStatsAggregator();
 
   const SortByName = (
     data: championStatsDto[],

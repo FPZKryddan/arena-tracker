@@ -1,16 +1,18 @@
 import type { championStatsDto, PlayerStats } from "../../types";
+import useDdragonVersion from "../../hooks/useDdragonVersion";
 import DamageStatsBody from "./DamageStatsBody";
 import FavoriteAugmentsBody from "./FavoriteAugmentsBody";
 import PlacementsBody from "./PlacementsBody";
 import StatsOverviewHeader from "./StatsOverviewHeader";
+import TeammatesBody from "./TeammatesBody";
 
 interface StatsOverviewCardProps {
   stats: PlayerStats | championStatsDto;
   standalone?: boolean;
-  darkText?: boolean
 }
 
-const StatsOverviewCard = ({ stats, standalone, darkText = false }: StatsOverviewCardProps) => {
+const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
+  const version = useDdragonVersion();
 
   const firstLetterBig = (name: string): string => {
     return name[0].toUpperCase() + name.slice(1);
@@ -18,15 +20,14 @@ const StatsOverviewCard = ({ stats, standalone, darkText = false }: StatsOvervie
 
   const getImgUrl = (): string => {
     if ('profileIconId' in stats) {
-      return `https://ddragon.leagueoflegends.com/cdn/15.13.1/img/profileicon/${stats['profileIconId']}.png`;
+      return `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${stats['profileIconId']}.png`;
     }
-    return `https://ddragon.leagueoflegends.com/cdn/15.13.1/img/champion/${firstLetterBig(stats.id)}.png`;
+    return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${firstLetterBig(stats.id)}.png`;
   }
 
   return (
-    <div className={`${standalone ? 'bg-stone-200 shadow-2xl p-[8px] md:p-[32px]' : 'bg-transparent shadow-none'}
-     ${darkText ? 'text-black' : 'text-white'}
-     flex flex-col grow-0 w-full h-fit rounded-xl gap-[24px]`}>
+    <div className={`${standalone ? 'bg-surface shadow-2xl p-[8px] md:p-[32px]' : 'bg-transparent shadow-none'}
+     text-fg flex flex-col grow-0 w-full h-fit rounded-xl gap-[24px]`}>
       {stats && stats.placementAvg != 0 ? (
         <>
           <StatsOverviewHeader
@@ -40,13 +41,18 @@ const StatsOverviewCard = ({ stats, standalone, darkText = false }: StatsOvervie
             <DamageStatsBody
               dealtStats={stats.infographics.damageStats}
               takenStats={stats.infographics.damageTakenStats}
+              healingStats={stats.infographics.healingStats}
+              shieldingStats={stats.infographics.shieldingStats}
+              skillShotsStats={stats.infographics.skillShotsStats}
             />
             <FavoriteAugmentsBody augments={stats.augmentStats} />
             <PlacementsBody
               placements={stats.placements}
               placementAvg={stats.placementAvg}
-              darkGraph={darkText}
             />
+            {"teammateStats" in stats && stats.teammateStats && (
+              <TeammatesBody teammateStats={stats.teammateStats} />
+            )}
           </div>
         </>
       ) : (

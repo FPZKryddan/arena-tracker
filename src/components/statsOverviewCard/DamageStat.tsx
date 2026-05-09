@@ -3,6 +3,7 @@ import { GiBroadsword, GiShield, GiHealthNormal } from "react-icons/gi";
 import Tooltip from "../Tooltip/Tooltip";
 import type { numericalStatsDto } from "../../types";
 import useFormatter from "../../hooks/useFormatter";
+import RecordMatchButton from "../matchDetail/RecordMatchButton";
 
 interface DamageStatProps {
   type: "dealt" | "taken" | "healed";
@@ -39,11 +40,15 @@ const DamageStat = ({
   const getColor = (source: "physical" | "magic" | "true"): string => {
     switch (source) {
       case "physical":
-        return type === "dealt" ? "#FF6000" : "#FFBA0E";
+        return type === "dealt"
+          ? "var(--color-damage-physical)"
+          : "var(--color-damage-true)";
       case "magic":
-        return type === "dealt" ? "#10CCDD" : "#CE8FD3";
+        return type === "dealt"
+          ? "var(--color-damage-magic)"
+          : "var(--color-damage-spell)";
       case "true":
-        return "#fff";
+        return "var(--color-fg)";
     }
   };
 
@@ -67,6 +72,14 @@ const DamageStat = ({
         >
           {iconSwitch()}
         </Tooltip>
+        <RecordMatchButton
+          matchId={total.records[0]?.matchId}
+          label={
+            type === "dealt"
+              ? "View highest damage dealt match"
+              : "View highest damage taken match"
+          }
+        />
       </div>
       <div
         className={`flex flex-row w-full bg-transparent h-[10px] rounded-2xl`}

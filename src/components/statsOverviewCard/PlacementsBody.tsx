@@ -8,13 +8,13 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import type { placementDto } from "../../types";
+import type { PlacementDto } from "../../types";
 import useStatsAggregator from "../../hooks/useStatsAggregator";
+import useTheme from "../../hooks/useTheme";
 
 interface PlacementsBodyProps {
-  placements: placementDto;
+  placements: PlacementDto;
   placementAvg: number;
-  darkGraph?: boolean;
 }
 
 ChartJS.register(
@@ -28,10 +28,10 @@ ChartJS.register(
 const PlacementsBody = ({
   placements,
   placementAvg,
-  darkGraph = false,
 }: PlacementsBodyProps) => {
   const { getLosses, getTotalMatches, getWinrate, getWins } =
     useStatsAggregator();
+  const { theme } = useTheme();
   const placementsToDataArray = (): number[] => {
     const newArr: number[] = [];
     for (let i = 8; i >= 1; i--) {
@@ -47,7 +47,7 @@ const PlacementsBody = ({
       {
         data: placementsToDataArray(),
         borderWidth: 1,
-        backgroundColor: darkGraph ? "#000" : "#fff",
+        backgroundColor: theme === "light" ? "#0f172a" : "#e7eef0",
       },
     ],
   };
@@ -83,8 +83,8 @@ const PlacementsBody = ({
       <div className="flex flex-row gap-[8px] text-[12px] font-medium">
         <p>Played: {getTotalMatches(placements)}</p>
         <p>
-          <span className="text-green-500">{getWins(placements)}</span> /
-          <span className="text-red-500">{" " + getLosses(placements)}</span> (
+          <span className="text-success">{getWins(placements)}</span> /
+          <span className="text-danger">{" " + getLosses(placements)}</span> (
           {getWinrate(placements)}%)
         </p>
         <p>Average Place: {Math.ceil(placementAvg * 100) / 100}</p>

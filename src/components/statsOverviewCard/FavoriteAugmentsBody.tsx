@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import useFetchData from "../../hooks/useFetchData";
+import { useMemo } from "react";
+import { useAugmentsQuery } from "../../hooks/queries";
 import type { augmentsData, augmentsStatsDto } from "../../types";
 import FavoriteAugment from "./FavoriteAugment";
 
@@ -8,72 +8,38 @@ interface FavoriteAugmentsBodyProps {
 }
 
 const FavoriteAugmentsBody = ({ augments }: FavoriteAugmentsBodyProps) => {
-  const { FetchAugmentsData } = useFetchData();
-  const [augmentData, setAugmentData] = useState<augmentsData[]>([]);
+  const { data: augmentData = [] } = useAugmentsQuery();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await FetchAugmentsData();
-      setAugmentData(data);
-    };
-    fetchData();
-  }, [FetchAugmentsData]);
+  const augmentById = useMemo(() => {
+    const map = new Map<number, augmentsData>();
+    for (const a of augmentData) map.set(a.id, a);
+    return map;
+  }, [augmentData]);
 
-  const getMostPickedAugments = (): [string, { picked: number }][] => {
+  const mostPickedAugments = useMemo(() => {
     return Object.entries(augments)
-      .sort(([, a], [, b]) => b.picked - a.picked)
-      .filter((augment) => augment[0] != "0")
+      .filter(([id]) => id !== "0")
+      .map(([id, stats]) => ({
+        data: augmentById.get(Number(id)),
+        picked: stats.picked,
+      }))
+      .filter((entry): entry is { data: augmentsData; picked: number } => !!entry.data)
+      .sort((a, b) => b.picked - a.picked)
       .slice(0, 5);
-  };
-
-  const mostPickedAugments = getMostPickedAugments();
-  console.log(mostPickedAugments);
-
-  const getAugmentData = (id: string): augmentsData => {
-    const intId = Number(id);
-    return augmentData.filter((augment) => augment.id === intId)[0];
-  };
+  }, [augments, augmentById]);
 
   return (
     <div className="flex flex-col w-full gap-[8px]">
       <h2 className="text-[12px] font-semibold">Favorite Augments</h2>
       <div className="flex flex-row w-full justify-around h-[50px] sm:h-[60px]">
-        {augmentData.length > 0 ? (
-          <>
-            {mostPickedAugments.length > 0 &&
-              <FavoriteAugment
-              augmentData={getAugmentData(mostPickedAugments[0][0])}
-              picked={mostPickedAugments[0][1].picked}
-              />
-            }
-            {mostPickedAugments.length > 1 &&
-              <FavoriteAugment
-                augmentData={getAugmentData(mostPickedAugments[1][0])}
-                picked={mostPickedAugments[1][1].picked}
-              />
-            }
-            {mostPickedAugments.length > 2 &&
-              <FavoriteAugment
-                augmentData={getAugmentData(mostPickedAugments[2][0])}
-                picked={mostPickedAugments[2][1].picked}
-              />
-            }
-            {mostPickedAugments.length > 3 &&
-              <FavoriteAugment
-                augmentData={getAugmentData(mostPickedAugments[3][0])}
-                picked={mostPickedAugments[3][1].picked}
-              />
-            }
-            {mostPickedAugments.length > 4 &&
-              <FavoriteAugment
-                augmentData={getAugmentData(mostPickedAugments[4][0])}
-                picked={mostPickedAugments[4][1].picked}
-              />
-            }
-          </>
-        ) : (
-          <></>
-        )}
+        {augmentData.length > 0 &&
+          mostPickedAugments.map((entry) => (
+            <FavoriteAugment
+              key={entry.data.id}
+              augmentData={entry.data}
+              picked={entry.picked}
+            />
+          ))}
       </div>
     </div>
   );
