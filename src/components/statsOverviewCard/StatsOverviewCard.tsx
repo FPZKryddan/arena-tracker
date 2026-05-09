@@ -1,4 +1,5 @@
-import type { championStatsDto, PlayerStats } from "../../types";
+import { useParams } from "react-router-dom";
+import type { championStatsDto, PlayerStats, Regions } from "../../types";
 import useDdragonVersion from "../../hooks/useDdragonVersion";
 import DamageStatsBody from "./DamageStatsBody";
 import FavoriteAugmentsBody from "./FavoriteAugmentsBody";
@@ -13,6 +14,7 @@ interface StatsOverviewCardProps {
 
 const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
   const version = useDdragonVersion();
+  const { region: routeRegion } = useParams<{ region?: string }>();
 
   const firstLetterBig = (name: string): string => {
     return name[0].toUpperCase() + name.slice(1);
@@ -36,6 +38,15 @@ const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
             assists={stats.infographics.killsDeathsAssists.assists}
             name={"gameName" in stats ? stats.gameName + '#' + stats.tagLine : stats.name}
             imgUrl={getImgUrl()}
+            favoriteTarget={
+              "gameName" in stats && routeRegion
+                ? {
+                    gameName: stats.gameName,
+                    tagLine: stats.tagLine,
+                    region: routeRegion as Exclude<Regions, null>,
+                  }
+                : undefined
+            }
           />
           <div className="flex flex-col w-full gap-[24px]">
             <DamageStatsBody
