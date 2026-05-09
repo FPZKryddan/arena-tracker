@@ -4,7 +4,7 @@ import { FaShieldAlt } from "react-icons/fa";
 import type {
   damageStatsDto,
   damageTakenStatsDto,
-  numericalStatsDto,
+  healingShieldingStatsDto,
   skillShotsDto,
 } from "../../types";
 import DamageStat from "./DamageStat";
@@ -13,8 +13,8 @@ import SimpleStat from "./SimpleStat";
 interface DamageStatsBodyProps {
   dealtStats: damageStatsDto;
   takenStats: damageTakenStatsDto;
-  healingStats?: numericalStatsDto;
-  shieldingStats?: numericalStatsDto;
+  healingStats?: healingShieldingStatsDto;
+  shieldingStats?: healingShieldingStatsDto;
   skillShotsStats?: skillShotsDto;
 }
 
@@ -43,6 +43,7 @@ const DamageStatsBody = ({
 
     return () => observer.disconnect();
   }, []);
+  console.log(shieldingStats);
 
   return (
     <div className="flex flex-col w-full gap-[8px] box-border" ref={barRef}>
@@ -72,7 +73,7 @@ const DamageStatsBody = ({
             icon={<GiHealthNormal className="text-success" />}
             label="Total healing"
             recordLabel="healing"
-            stat={healingStats}
+            stat={healingStats.total}
           />
         )}
         {shieldingStats && (
@@ -80,7 +81,7 @@ const DamageStatsBody = ({
             icon={<FaShieldAlt className="text-info" />}
             label="Total shielding"
             recordLabel="shielding"
-            stat={shieldingStats}
+            stat={shieldingStats.onTeammates}
           />
         )}
         {skillShotsStats?.hit && (
