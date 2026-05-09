@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import type { championStatsDto, PlayerStats, Regions } from "../../types";
 import useDdragonVersion from "../../hooks/useDdragonVersion";
+import { getChampionSplashArtUrl } from "../../championIcon";
 import DamageStatsBody from "./DamageStatsBody";
 import FavoriteAugmentsBody from "./FavoriteAugmentsBody";
 import PlacementsBody from "./PlacementsBody";
@@ -38,6 +39,11 @@ const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
             assists={stats.infographics.killsDeathsAssists.assists}
             name={"gameName" in stats ? stats.gameName + '#' + stats.tagLine : stats.name}
             imgUrl={getImgUrl()}
+            bannerImgUrl={
+              "profileIconId" in stats
+                ? undefined
+                : getChampionSplashArtUrl(stats.id)
+            }
             favoriteTarget={
               "gameName" in stats && routeRegion
                 ? {

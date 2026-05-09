@@ -4,7 +4,6 @@ import {
   IoSparkles,
   IoPeople,
   IoTrophy,
-  IoFlash,
   IoArrowDown,
 } from "react-icons/io5";
 import SummonerInput from "../components/summonerInput";
@@ -48,16 +47,12 @@ const Hero = () => (
     </div>
 
     <div className="flex flex-col items-center gap-3 max-w-[640px] w-full text-center">
-      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-elevated border border-border text-xs text-fg-muted">
-        <IoFlash className="w-3.5 h-3.5 text-accent" />
-        League of Legends Arena
-      </span>
       <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.05]">
-        Your <span className="text-accent">Arena</span>, by the numbers.
+        Your <span className="text-accent">Arena</span> history!
       </h1>
       <p className="text-base md:text-lg text-fg-muted max-w-[520px]">
-        Match stats, augment picks, and teammate breakdowns — pure stat candy
-        for Arena fans. Look up any player and dive in.
+        Match stats, augment picks, and teammate breakdowns. Pure stat candy
+        for Arena fans.
       </p>
 
       <div className="w-full mt-6">
