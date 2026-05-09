@@ -34,10 +34,10 @@ function useChampionSorter() {
     order: Orders
   ): championStatsDto[] => {
     if (order === "ASC") {
-      return [...data].sort((a, b) => b.timesPlayed - a.timesPlayed);
+      return [...data].sort((a, b) => a.timesPlayed - b.timesPlayed);
     }
 
-    return [...data].sort((a, b) => a.timesPlayed - b.timesPlayed);
+    return [...data].sort((a, b) => b.timesPlayed - a.timesPlayed);
   };
 
   const SortByAvgPlacement = (

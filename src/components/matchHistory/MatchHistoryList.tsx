@@ -55,7 +55,7 @@ const MatchHistoryList = () => {
 
   const [openMatchId, setOpenMatchId] = useState<string | null>(null);
 
-  const loading = idsLoading || matchesLoading;
+  const loading = !playerStats || idsLoading || matchesLoading;
 
   const matchRows = useMemo(() => {
     if (!playerStats) return [];
@@ -66,8 +66,6 @@ const MatchHistoryList = () => {
         match.info.participants[0],
     }));
   }, [matches, playerStats]);
-
-  if (!playerStats) return null;
 
   return (
     <div className="flex flex-col gap-[8px] w-full">
@@ -95,7 +93,7 @@ const MatchHistoryList = () => {
           matchId={openMatchId}
           isOpen={openMatchId !== null}
           onClose={() => setOpenMatchId(null)}
-          highlightPuuid={playerStats.puuid}
+          highlightPuuid={playerStats?.puuid}
         />
       </Suspense>
     </div>

@@ -29,7 +29,7 @@ const BottomSheet = ({ isOpen, children, closeCallback }: BottomSheetProps) => {
             className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-surface-elevated text-fg rounded-t-2xl w-full max-w-[600px] z-100 p-[8px] flex flex-col max-h-5/6 min-h-1/6 overflow-y-auto"
           >
             <button
-              className="absolute top-[12px] right-[12px] text-fg"
+              className="absolute top-[12px] right-[12px] z-20 text-fg"
               onClick={closeCallback}
             >
               <HiMiniXMark className="text-2xl" />

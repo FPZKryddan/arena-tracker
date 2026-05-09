@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep -l \"tailwind\\\\|styled\\\\|cssModule\\\\|\\\\.module\\\\.css\")",
+      "Bash(xargs grep -l \"react-icons\")"
+    ]
+  }
+}

@@ -1,5 +1,8 @@
-import { useEffect } from "react";
-import { PlayerStatsContext } from "../contexts/PlayerStatsContext";
+import { useEffect, useRef } from "react";
+import {
+  PlayerStatsContext,
+  type LoadedProfile,
+} from "../contexts/PlayerStatsContext";
 import useContextIfDefined from "./useContextIfDefined";
 import type { PlayerStats, Regions } from "../types";
 import { getRetryAfterSeconds, parseApiError } from "../utils/apiError";
@@ -10,17 +13,42 @@ interface HydrationParams {
   tagLine: string | null;
 }
 
+const sameProfile = (
+  a: LoadedProfile,
+  b: LoadedProfile
+): boolean =>
+  a.region === b.region &&
+  a.gameName.toLowerCase() === b.gameName.toLowerCase() &&
+  a.tagLine.toLowerCase() === b.tagLine.toLowerCase();
+
 function usePlayerHydration({ region, gameName, tagLine }: HydrationParams) {
-  const { playerStats, setPlayerStats } = useContextIfDefined(PlayerStatsContext);
+  const { playerStats, setPlayerStats, loadedProfile, setLoadedProfile } =
+    useContextIfDefined(PlayerStatsContext);
+  const playerStatsRef = useRef(playerStats);
+  const loadedProfileRef = useRef(loadedProfile);
+
+  useEffect(() => {
+    playerStatsRef.current = playerStats;
+  }, [playerStats]);
+
+  useEffect(() => {
+    loadedProfileRef.current = loadedProfile;
+  }, [loadedProfile]);
 
   useEffect(() => {
     if (!region || !gameName || !tagLine) return;
 
+    const requestedProfile: LoadedProfile = { region, gameName, tagLine };
     const alreadyLoaded =
-      playerStats &&
-      playerStats.gameName.toLowerCase() === gameName.toLowerCase() &&
-      playerStats.tagLine.toLowerCase() === tagLine.toLowerCase();
+      !!playerStatsRef.current &&
+      !!loadedProfileRef.current &&
+      sameProfile(loadedProfileRef.current, requestedProfile);
     if (alreadyLoaded) return;
+
+    if (playerStatsRef.current) {
+      setPlayerStats(null);
+      setLoadedProfile(null);
+    }
 
     let cancelled = false;
     const apiBase = import.meta.env.VITE_API_BASE;
@@ -43,7 +71,10 @@ function usePlayerHydration({ region, gameName, tagLine }: HydrationParams) {
       })
       .then((stats) => {
         if (cancelled) return;
-        if (stats) setPlayerStats(stats);
+        if (stats) {
+          setPlayerStats(stats);
+          setLoadedProfile(requestedProfile);
+        }
       })
       .catch((err) => {
         if (cancelled) return;
@@ -52,7 +83,7 @@ function usePlayerHydration({ region, gameName, tagLine }: HydrationParams) {
     return () => {
       cancelled = true;
     };
-  }, [region, gameName, tagLine, playerStats, setPlayerStats]);
+  }, [region, gameName, tagLine, setLoadedProfile, setPlayerStats]);
 }
 
 export default usePlayerHydration;

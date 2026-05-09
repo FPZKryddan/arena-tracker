@@ -47,7 +47,11 @@ const SummonerInput = () => {
     const [gameName, tagLine] = playerInputName.split("#");
     if (!gameName || !tagLine) return;
     const effectiveRegion = (region ?? "EUW") as Exclude<Regions, null>;
-    await retrievePlayerData(playerInputName);
+    try {
+      await retrievePlayerData(playerInputName);
+    } finally {
+      setIsFocused(false);
+    }
     navigate(
       `/profile/${effectiveRegion}/${encodeURIComponent(
         gameName

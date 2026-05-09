@@ -7,7 +7,10 @@ import type {
 } from "../types";
 import useToast from "./useToast";
 import useContextIfDefined from "./useContextIfDefined";
-import { PlayerStatsContext } from "../contexts/PlayerStatsContext";
+import {
+  PlayerStatsContext,
+  type LoadedProfile,
+} from "../contexts/PlayerStatsContext";
 import {
   coerceApiErrorPayload,
   formatApiError,
@@ -18,10 +21,19 @@ import {
 const POLL_INTERVAL_MS = 1500;
 const RATE_LIMIT_TOAST_ID = "rate-limit";
 
+const sameProfile = (
+  a: LoadedProfile,
+  b: LoadedProfile
+): boolean =>
+  a.region === b.region &&
+  a.gameName.toLowerCase() === b.gameName.toLowerCase() &&
+  a.tagLine.toLowerCase() === b.tagLine.toLowerCase();
+
 function useGetPlayerStats(region: Regions = "EUW") {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [jobState, setJobState] = useState<JobState | null>(null);
-  const { setPlayerStats } = useContextIfDefined(PlayerStatsContext);
+  const { playerStats, setPlayerStats, loadedProfile, setLoadedProfile } =
+    useContextIfDefined(PlayerStatsContext);
   const { upsertToast, dismissToast } = useToast();
   const apiBase = import.meta.env.VITE_API_BASE;
   const effectiveRegion: Exclude<Regions, null> = region ?? "EUW";
@@ -96,9 +108,22 @@ function useGetPlayerStats(region: Regions = "EUW") {
   const retrievePlayerData = async (name: string) => {
     const [gameName, tagLine] = name.split("#");
     if (!tagLine) return;
+    const requestedProfile: LoadedProfile = {
+      region: effectiveRegion,
+      gameName,
+      tagLine,
+    };
+    const requestedProfileIsLoaded =
+      !!playerStats &&
+      !!loadedProfile &&
+      sameProfile(loadedProfile, requestedProfile);
 
     stopPolling();
     setJobState(null);
+    if (playerStats && !requestedProfileIsLoaded) {
+      setPlayerStats(null);
+      setLoadedProfile(null);
+    }
     setIsFetching(true);
 
     try {
@@ -144,6 +169,7 @@ function useGetPlayerStats(region: Regions = "EUW") {
               if (statsRes.ok) {
                 const stats = (await statsRes.json()) as PlayerStats;
                 setPlayerStats(stats);
+                setLoadedProfile(requestedProfile);
                 upsertToast({ message: "Stats updated!", type: "SUCCESS" });
               } else {
                 const err = await parseApiError(statsRes);

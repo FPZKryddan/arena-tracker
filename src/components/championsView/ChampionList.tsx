@@ -40,6 +40,63 @@ const SORT_OPTIONS: { label: string; value: Sort }[] = [
   { label: "WR%", value: "WR" },
 ];
 
+const emptyStat = () => ({ value: 0, records: [] });
+
+const createEmptyChampionStats = (
+  champion: championData
+): championStatsDto => ({
+  timesPlayed: 0,
+  placements: {},
+  placementAvg: 0,
+  augmentStats: {},
+  name: champion.displayName,
+  id: champion.id,
+  stage: 0,
+  infographics: {
+    damageStats: {
+      total: {
+        total: emptyStat(),
+        champions: emptyStat(),
+      },
+      true: {
+        total: emptyStat(),
+        champions: emptyStat(),
+      },
+      magic: {
+        total: emptyStat(),
+        champions: emptyStat(),
+      },
+      physical: {
+        total: emptyStat(),
+        champions: emptyStat(),
+      },
+      perMinute: emptyStat(),
+    },
+    damageTakenStats: {
+      total: emptyStat(),
+      true: emptyStat(),
+      magic: emptyStat(),
+      physical: emptyStat(),
+      mitigated: emptyStat(),
+    },
+    goldStats: {
+      earned: emptyStat(),
+      spent: emptyStat(),
+      perMinute: emptyStat(),
+    },
+    skillShotsStats: {
+      dodged: emptyStat(),
+      hit: emptyStat(),
+    },
+    killsDeathsAssists: {
+      kda: emptyStat(),
+      kills: emptyStat(),
+      deaths: emptyStat(),
+      assists: emptyStat(),
+    },
+  },
+});
+
 const ChampionList = () => {
   const { playerStats } = useContextIfDefined(PlayerStatsContext);
   const { champions } = useContextIfDefined(ChampionsContext);
@@ -59,13 +116,11 @@ const ChampionList = () => {
 
   const playerChampionStats = useMemo((): championStatsDto[] => {
     if (!playerStats) return [];
-    return champions
-      .map((champion: championData) =>
-        champion.id in playerStats.championStats
-          ? playerStats.championStats[champion.id]
-          : undefined
-      )
-      .filter((c): c is championStatsDto => c !== undefined);
+    return champions.map(
+      (champion: championData) =>
+        playerStats.championStats[champion.id] ??
+        createEmptyChampionStats(champion)
+    );
   }, [champions, playerStats]);
 
   const displayedChampions = useMemo((): championStatsDto[] => {
@@ -116,6 +171,7 @@ const ChampionList = () => {
 
   const podiumChampions = displayedChampions.slice(0, 3);
   const gridChampions = displayedChampions.slice(3);
+  const loading = !playerStats || champions.length === 0;
 
   return (
     <div className="flex flex-col gap-3">
@@ -141,7 +197,9 @@ const ChampionList = () => {
           />
         ))}
       </div>
-      {displayedChampions.length === 0 ? (
+      {loading ? (
+        <ChampionListSkeleton />
+      ) : displayedChampions.length === 0 ? (
         <p className="text-fg-muted text-[12px] text-center py-8">
           No champions match your filters.
         </p>
@@ -175,6 +233,42 @@ const ChampionList = () => {
     </div>
   );
 };
+
+const ChampionListSkeleton = () => (
+  <div className="flex flex-col gap-3 animate-pulse" aria-label="Loading champions">
+    <div className="flex flex-row items-end justify-center gap-2 sm:gap-3 w-full">
+      <ChampionPodiumSkeleton height="h-[220px] sm:h-[250px]" />
+      <ChampionPodiumSkeleton height="h-[260px] sm:h-[300px]" />
+      <ChampionPodiumSkeleton height="h-[200px] sm:h-[225px]" />
+    </div>
+    <div className="grid grid-cols-2 sm:grid-cols-3 2xl:grid-cols-4 gap-2">
+      {Array.from({ length: 8 }).map((_, idx) => (
+        <div
+          key={`champion-card-skeleton-${idx}`}
+          className="aspect-[3/4] rounded-md bg-surface-elevated"
+        >
+          <div className="h-full w-full rounded-md bg-gradient-to-t from-border/80 via-border/35 to-surface-elevated" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const ChampionPodiumSkeleton = ({ height }: { height: string }) => (
+  <div
+    className={`relative flex-1 min-w-0 ${height} rounded-lg overflow-hidden bg-surface-elevated`}
+  >
+    <div className="absolute inset-0 bg-gradient-to-t from-border/80 via-border/35 to-surface-elevated" />
+    <div className="absolute bottom-2 left-2 right-2 flex flex-col gap-2">
+      <div className="h-4 w-2/3 rounded bg-border" />
+      <div className="grid grid-cols-3 gap-1">
+        <div className="h-6 rounded bg-border" />
+        <div className="h-6 rounded bg-border" />
+        <div className="h-6 rounded bg-border" />
+      </div>
+    </div>
+  </div>
+);
 
 type SortPillProps = {
   label: string;

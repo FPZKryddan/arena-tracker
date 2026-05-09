@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { numericalStatsDto, Regions } from "../../types";
 import FavoriteButton from "../favoriteButton/FavoriteButton";
 import Tooltip from "../Tooltip/Tooltip";
@@ -9,12 +10,12 @@ interface StatsOverviewHeaderProps {
   assists: numericalStatsDto;
   name: string;
   imgUrl: string;
-  bannerImgUrl?: string;
   favoriteTarget?: {
     gameName: string;
     tagLine: string;
     region: Exclude<Regions, null>;
   };
+  trailing?: ReactNode;
 }
 
 const StatsOverviewHeader = ({
@@ -23,8 +24,8 @@ const StatsOverviewHeader = ({
   assists,
   name,
   imgUrl,
-  bannerImgUrl,
   favoriteTarget,
+  trailing,
 }: StatsOverviewHeaderProps) => {
   const kda =
     Math.ceil(((kills.value + assists.value) / deaths.value) * 10) / 10;
@@ -53,39 +54,22 @@ const StatsOverviewHeader = ({
     </div>
   );
 
-  if (bannerImgUrl) {
-    return (
-      <div className="relative w-full h-[160px] -mx-2 -mt-2 rounded-t-2xl overflow-hidden">
+  return (
+    <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+      <div className="flex min-w-0 flex-row items-center gap-[8px]">
         <img
-          className="absolute inset-0 w-full h-full object-cover object-[center_25%]"
-          src={bannerImgUrl}
-          alt={name}
+          className="bg-surface-elevated w-[55px] h-[55px] shrink-0 rounded-full"
+          src={imgUrl}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-surface-elevated via-surface-elevated/55 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-6 flex flex-col gap-1.5 text-white drop-shadow">
+        <div className="flex min-w-0 flex-col">
           <div className="flex flex-row items-center gap-2">
-            <h1 className="text-[20px] font-extrabold">{name}</h1>
+            <h1 className="truncate text-[16px] font-extrabold">{name}</h1>
             {favoriteTarget && <FavoriteButton favorite={favoriteTarget} />}
           </div>
           {stats}
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-row justify-start items-center gap-[8px]">
-      <img
-        className="bg-surface-elevated w-[55px] h-[55px] rounded-full"
-        src={imgUrl}
-      />
-      <div className="flex flex-col">
-        <div className="flex flex-row items-center gap-2">
-          <h1 className="text-[16px] font-extrabold text-ellipsis">{name}</h1>
-          {favoriteTarget && <FavoriteButton favorite={favoriteTarget} />}
-        </div>
-        {stats}
-      </div>
+      {trailing && <div className="shrink-0">{trailing}</div>}
     </div>
   );
 };

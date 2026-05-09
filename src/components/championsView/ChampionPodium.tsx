@@ -83,12 +83,15 @@ const PodiumSlot = memo(
     const avg =
       played > 0 ? Math.ceil(champion.placementAvg * 100) / 100 : "-";
     const wr = played > 0 ? getWinrate(champion.placements) + "%" : "-";
+    const isComplete = champion.stage >= 3;
 
     return (
       <button
         type="button"
         onClick={() => clickCallback(champion)}
-        className={`relative flex-1 min-w-0 ${style.height} rounded-lg overflow-hidden ${style.ring} ${style.glow} hover:scale-[1.02] transition-transform group cursor-pointer`}
+        className={`relative flex-1 min-w-0 ${style.height} rounded-lg overflow-hidden border ${style.ring} ${style.glow} hover:scale-[1.02] transition-transform group cursor-pointer ${
+          isComplete ? "border-success/50" : "border-transparent"
+        }`}
       >
         <img
           src={getChampionLoadingArtUrl(champion.id)}
@@ -103,15 +106,17 @@ const PodiumSlot = memo(
         >
           {style.label}
         </div>
+        {isComplete && (
+          <div className="absolute top-2 right-2 h-6 w-6 rounded-full bg-black/55 p-0.5">
+            <ChampionStageProgress stage={champion.stage} />
+          </div>
+        )}
         <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col gap-1.5 text-white text-left">
           <p className="font-bold text-sm truncate">{champion.name}</p>
           <div className="grid grid-cols-3 gap-1 text-[10px]">
             <PodiumStat label="Played" value={String(played)} />
             <PodiumStat label="Avg" value={String(avg)} />
             <PodiumStat label="WR" value={wr} />
-          </div>
-          <div className="h-4 mt-0.5">
-            <ChampionStageProgress stage={champion.stage} />
           </div>
         </div>
       </button>

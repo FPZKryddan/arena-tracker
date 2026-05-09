@@ -1,11 +1,21 @@
-const StatsSkeleton = () => {
+type StatsSkeletonProps = {
+  standalone?: boolean;
+};
+
+const StatsSkeleton = ({ standalone }: StatsSkeletonProps) => {
   return (
-    <div className="bg-surface flex flex-col rounded-xl w-[415px] p-[32px] gap-[32px] shadow-2xl animate-pulse">
+    <div
+      className={`${
+        standalone
+          ? "bg-surface shadow-2xl p-[8px] md:p-[32px]"
+          : "bg-transparent shadow-none"
+      } flex flex-col grow-0 w-full h-fit rounded-xl gap-[24px] animate-pulse`}
+    >
       <div className="flex flex-row items-center gap-4">
         <div className="w-12 h-12 bg-border rounded-full" />
-        <div className="flex flex-col gap-1">
-          <div className="w-40 h-4 bg-border rounded" />
-          <div className="flex gap-2">
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <div className="w-40 max-w-full h-4 bg-border rounded" />
+          <div className="flex flex-wrap gap-2">
             <div className="w-10 h-3 bg-border rounded" />
             <div className="w-10 h-3 bg-border rounded" />
             <div className="w-10 h-3 bg-border rounded" />
@@ -22,9 +32,12 @@ const StatsSkeleton = () => {
 
       <div className="flex flex-col gap-2">
         <div className="w-32 h-4 bg-border rounded" />
-        <div className="flex flex-row gap-4 mt-2 justify-between">
+        <div className="flex flex-row gap-4 mt-2 justify-between overflow-hidden">
           {[...Array(5)].map((_, i) => (
-            <div key={`augment-stat-skeleton-${i}`} className="flex flex-col items-center gap-1">
+            <div
+              key={`augment-stat-skeleton-${i}`}
+              className="flex flex-col items-center gap-1"
+            >
               <div className="w-10 h-10 bg-border rounded-full" />
               <div className="w-4 h-3 bg-border rounded" />
             </div>

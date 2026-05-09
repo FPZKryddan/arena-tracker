@@ -71,7 +71,7 @@ const ProfilePage = () => {
           {playerStats !== null ? (
             <StatsOverviewCard stats={playerStats} standalone />
           ) : (
-            <StatsSkeleton />
+            <StatsSkeleton standalone />
           )}
         </div>
       </div>
