@@ -1,6 +1,21 @@
 export type championData = {
   displayName: string,
   id: string,
+  roles: ChampionRole[],
+};
+
+export type ChampionRole =
+  | "Assassin"
+  | "Fighter"
+  | "Mage"
+  | "Marksman"
+  | "Support"
+  | "Tank";
+
+export interface ChampionSpellIconDto {
+  id: string;
+  name: string;
+  icon: string;
 };
 
 export interface augmentsData {
@@ -13,7 +28,82 @@ export interface augmentsData {
   rarity: number;
 };
 
+export interface ItemDataDto {
+  name: string;
+  description: string;
+  plaintext?: string;
+  stats?: Record<string, number>;
+};
+
 export type Regions = 'EUW' | 'EUNE' | 'NA' | null;
+
+export type LeaderboardSort =
+  | 'gamesPlayed'
+  | 'firstPlaces'
+  | 'top4'
+  | 'placementAvg'
+  | 'damageDealt'
+  | 'damageTanked'
+  | 'healing'
+  | 'shielding'
+  | 'skillshotsHit'
+  | 'skillshotsDodged';
+
+export type LeaderboardOrder = 'asc' | 'desc';
+
+export interface LeaderboardChampion {
+  id: string;
+  name: string;
+  gamesPlayed: number;
+  placementAvg: number;
+}
+
+export interface LeaderboardAugment {
+  id: number;
+  picked: number;
+}
+
+export interface LeaderboardPlayer {
+  name: string;
+  tag: string;
+  region: string;
+  level: number;
+  profileIconId: number;
+  gamesPlayed: number;
+  firstPlaces: number;
+  top4: number;
+  placementAvg: number;
+  topChampions: LeaderboardChampion[];
+  topAugments: LeaderboardAugment[];
+  totalDamageDealt: number;
+  totalDamageTanked: number;
+  healing: number;
+  shielding: number;
+  skillshotsHit: number;
+  skillshotsDodged: number;
+}
+
+export interface LeaderboardPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export interface LeaderboardResponse {
+  players: LeaderboardPlayer[];
+  pagination: LeaderboardPagination;
+  sort: {
+    sortBy: LeaderboardSort;
+    order: LeaderboardOrder;
+  };
+  filters: {
+    region: Exclude<Regions, null>;
+    minGames?: number;
+  };
+}
 
 export interface summonerData {
   id: string;
@@ -125,6 +215,7 @@ export interface championStatsDto {
   name: string;
   id: string;
   stage: number;
+  roles?: ChampionRole[];
 };
 
 export interface infographicsDto {
@@ -219,6 +310,102 @@ export interface GetPlayerMatchListDto {
 export interface MatchDto {
   metadata: MetaDataDto;
   info: InfoDto;
+};
+
+export interface MatchTimelineDto {
+  metadata: MatchTimelineMetaDataDto;
+  info: MatchTimelineInfoDto;
+};
+
+export interface MatchTimelineMetaDataDto {
+  dataVersion: string;
+  matchId: string;
+  participants: string[];
+};
+
+export interface MatchTimelineInfoDto {
+  endOfGameResult?: string;
+  frameInterval: number;
+  gameId?: number;
+  participants?: MatchTimelineParticipantDto[];
+  frames: MatchTimelineFrameDto[];
+};
+
+export interface MatchTimelineParticipantDto {
+  participantId: number;
+  puuid: string;
+};
+
+export interface MatchTimelineFrameDto {
+  events: unknown[];
+  participantFrames?: Record<string, MatchTimelineParticipantFrameDto>;
+  timestamp: number;
+};
+
+export interface MatchTimelineParticipantFrameDto {
+  championStats: MatchTimelineChampionStatsDto;
+  currentGold: number;
+  damageStats: MatchTimelineDamageStatsDto;
+  goldPerSecond: number;
+  jungleMinionsKilled: number;
+  level: number;
+  minionsKilled: number;
+  participantId: number;
+  position: MatchTimelinePositionDto;
+  timeEnemySpentControlled: number;
+  totalGold: number;
+  xp: number;
+};
+
+export interface MatchTimelineChampionStatsDto {
+  abilityHaste?: number;
+  abilityPower: number;
+  armor: number;
+  armorPen: number;
+  armorPenPercent: number;
+  attackDamage: number;
+  attackSpeed: number;
+  bonusArmorPenPercent: number;
+  bonusMagicPenPercent: number;
+  ccReduction: number;
+  cooldownReduction: number;
+  critChance?: number;
+  critDamage?: number;
+  health: number;
+  healthMax: number;
+  healthRegen: number;
+  lifesteal: number;
+  magicPen: number;
+  magicPenPercent: number;
+  magicResist: number;
+  movementSpeed: number;
+  omnivamp?: number;
+  physicalVamp?: number;
+  power: number;
+  powerMax: number;
+  powerRegen: number;
+  resourceType?: string;
+  spellVamp: number;
+};
+
+export interface MatchTimelineDamageStatsDto {
+  magicDamageDone: number;
+  magicDamageDoneToChampions: number;
+  magicDamageTaken: number;
+  physicalDamageDone: number;
+  physicalDamageDoneToChampions: number;
+  physicalDamageTaken: number;
+  totalDamageDone: number;
+  totalDamageDoneToChampions: number;
+  totalDamageTaken: number;
+  trueDamageDone: number;
+  trueDamageDoneToChampions: number;
+  trueDamageTaken: number;
+};
+
+export interface MatchTimelinePositionDto {
+  x: number;
+  y: number;
 };
 
 export interface MetaDataDto {

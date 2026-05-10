@@ -40,8 +40,7 @@ const ChampionPodium = ({
 
 type RankStyle = {
   height: string;
-  ring: string;
-  glow: string;
+  border: string;
   badge: string;
   label: string;
 };
@@ -49,23 +48,20 @@ type RankStyle = {
 const RANK_STYLES: Record<1 | 2 | 3, RankStyle> = {
   1: {
     height: "h-[260px] sm:h-[300px]",
-    ring: "ring-2 ring-yellow-400",
-    glow: "shadow-[0_0_24px_rgba(250,204,21,0.45)]",
-    badge: "bg-yellow-400 text-black",
+    border: "border-placement-first",
+    badge: "bg-placement-first text-placement-first-fg",
     label: "1st",
   },
   2: {
     height: "h-[220px] sm:h-[250px]",
-    ring: "ring-2 ring-zinc-300",
-    glow: "shadow-[0_0_18px_rgba(212,212,216,0.35)]",
-    badge: "bg-zinc-300 text-black",
+    border: "border-rank-second",
+    badge: "bg-rank-second text-rank-second-fg",
     label: "2nd",
   },
   3: {
     height: "h-[200px] sm:h-[225px]",
-    ring: "ring-2 ring-amber-700",
-    glow: "shadow-[0_0_16px_rgba(180,83,9,0.35)]",
-    badge: "bg-amber-700 text-white",
+    border: "border-rank-third",
+    badge: "bg-rank-third text-rank-third-fg",
     label: "3rd",
   },
 };
@@ -83,35 +79,40 @@ const PodiumSlot = memo(
     const avg =
       played > 0 ? Math.ceil(champion.placementAvg * 100) / 100 : "-";
     const wr = played > 0 ? getWinrate(champion.placements) + "%" : "-";
+    const isComplete = champion.stage >= 3;
 
     return (
       <button
         type="button"
         onClick={() => clickCallback(champion)}
-        className={`relative flex-1 min-w-0 ${style.height} rounded-lg overflow-hidden ${style.ring} ${style.glow} hover:scale-[1.02] transition-transform group cursor-pointer`}
+        className={`group relative min-w-0 flex-1 cursor-pointer overflow-hidden rounded-md border ${style.height} ${style.border} transition-colors hover:border-accent ${
+          isComplete ? "outline outline-1 outline-success/60" : ""
+        }`}
       >
         <img
           src={getChampionLoadingArtUrl(champion.id)}
           alt={champion.name}
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+          className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/65 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/65 to-transparent" />
         <div
-          className={`absolute top-2 left-2 ${style.badge} text-[10px] font-bold rounded-full px-2 py-0.5`}
+          className={`absolute left-2 top-2 rounded ${style.badge} px-2 py-0.5 text-[10px] font-bold`}
         >
           {style.label}
         </div>
-        <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col gap-1.5 text-white text-left">
+        {isComplete && (
+          <div className="absolute right-2 top-2 h-6 w-6 rounded bg-media-scrim/55 p-0.5">
+            <ChampionStageProgress stage={champion.stage} />
+          </div>
+        )}
+        <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col gap-1.5 text-on-media text-left">
           <p className="font-bold text-sm truncate">{champion.name}</p>
           <div className="grid grid-cols-3 gap-1 text-[10px]">
             <PodiumStat label="Played" value={String(played)} />
             <PodiumStat label="Avg" value={String(avg)} />
             <PodiumStat label="WR" value={wr} />
-          </div>
-          <div className="h-4 mt-0.5">
-            <ChampionStageProgress stage={champion.stage} />
           </div>
         </div>
       </button>
@@ -121,7 +122,7 @@ const PodiumSlot = memo(
 
 const PodiumStat = ({ label, value }: { label: string; value: string }) => (
   <div className="flex flex-col leading-tight">
-    <span className="opacity-70 text-[8px] uppercase tracking-wide">
+    <span className="text-[8px] uppercase opacity-70">
       {label}
     </span>
     <span className="font-semibold">{value}</span>

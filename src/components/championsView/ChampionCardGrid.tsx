@@ -41,33 +41,40 @@ const ChampionCard = memo(
     const avg =
       played > 0 ? Math.ceil(champion.placementAvg * 100) / 100 : "-";
     const wr = played > 0 ? getWinrate(champion.placements) + "%" : "-";
+    const isComplete = champion.stage >= 3;
 
     return (
       <button
         type="button"
         onClick={() => clickCallback(champion)}
-        className="relative aspect-[3/4] rounded-md overflow-hidden hover:ring-2 hover:ring-accent transition-all group cursor-pointer"
+        className={`group relative aspect-[3/4] cursor-pointer overflow-hidden rounded-md border transition-colors hover:border-accent ${
+          isComplete
+            ? "border-success/70"
+            : "border-transparent"
+        }`}
       >
         <img
           src={getChampionLoadingArtUrl(champion.id)}
           alt={champion.name}
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+          className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent" />
-        <div className="absolute top-1 left-1 text-white/90 text-xs font-bold bg-black/45 rounded-full px-1.5 py-0.5">
+        <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/55 to-transparent" />
+        <div className="absolute left-1 top-1 rounded bg-media-scrim/45 px-1.5 py-0.5 text-xs font-bold text-on-media/90">
           #{rank}
         </div>
-        <div className="absolute bottom-0 left-0 right-0 p-1.5 flex flex-col gap-1 text-white text-left">
+        {isComplete && (
+          <div className="absolute right-1 top-1 h-5 w-5 rounded bg-media-scrim/55 p-0.5">
+            <ChampionStageProgress stage={champion.stage} />
+          </div>
+        )}
+        <div className="absolute bottom-0 left-0 right-0 p-1.5 flex flex-col gap-1 text-on-media text-left">
           <p className="font-bold text-base truncate">{champion.name}</p>
           <div className="flex flex-wrap gap-1 text-[11px]">
             <CardStat label="P" value={String(played)} />
             <CardStat label="A" value={String(avg)} />
             <CardStat label="WR" value={wr} />
-          </div>
-          <div className="h-4">
-            <ChampionStageProgress stage={champion.stage} />
           </div>
         </div>
       </button>
@@ -76,7 +83,7 @@ const ChampionCard = memo(
 );
 
 const CardStat = ({ label, value }: { label: string; value: string }) => (
-  <span className="bg-black/45 rounded px-1 py-[1px]">
+  <span className="rounded bg-media-scrim/45 px-1 py-[1px]">
     <span className="opacity-70">{label} </span>
     <span className="font-semibold">{value}</span>
   </span>

@@ -18,18 +18,18 @@ const BottomSheet = ({ isOpen, children, closeCallback }: BottomSheetProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: easeOut }}
-            className="absolute z-50 top-0 left-0 w-full h-full backdrop-blur-lg bg-overlay"
+            className="absolute left-0 top-0 z-50 h-full w-full bg-overlay"
             onClick={closeCallback}
           ></motion.div>
           <motion.div
-            initial={{ y: 1000, scaleX: 0.9 }}
-            animate={{ y: 0, scaleX: 1 }}
+            initial={{ y: 1000 }}
+            animate={{ y: 0 }}
             exit={{ y: 1000 }}
             transition={{ duration: 0.15, ease: easeOut }}
-            className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-surface-elevated text-fg rounded-t-2xl w-full max-w-[600px] z-100 p-[8px] flex flex-col max-h-5/6 min-h-1/6 overflow-y-auto"
+            className="fixed bottom-0 left-1/2 z-100 flex max-h-5/6 min-h-1/6 w-full max-w-[600px] -translate-x-1/2 flex-col overflow-y-auto rounded-t-lg border border-border bg-surface text-fg p-[8px]"
           >
             <button
-              className="absolute top-[12px] right-[12px] text-fg"
+              className="absolute right-[12px] top-[12px] z-20 rounded-md p-1 text-fg-muted hover:bg-surface-hover hover:text-fg"
               onClick={closeCallback}
             >
               <HiMiniXMark className="text-2xl" />

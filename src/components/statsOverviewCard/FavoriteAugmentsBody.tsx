@@ -7,8 +7,20 @@ interface FavoriteAugmentsBodyProps {
   augments: augmentsStatsDto;
 }
 
+type FavoriteAugmentEntry = {
+  data: augmentsData;
+  picked: number;
+  rank: number;
+};
+
+const MAX_FAVORITE_AUGMENTS = 8;
+
 const FavoriteAugmentsBody = ({ augments }: FavoriteAugmentsBodyProps) => {
-  const { data: augmentData = [] } = useAugmentsQuery();
+  const {
+    data: augmentData = [],
+    isError,
+    isLoading,
+  } = useAugmentsQuery();
 
   const augmentById = useMemo(() => {
     const map = new Map<number, augmentsData>();
@@ -16,33 +28,81 @@ const FavoriteAugmentsBody = ({ augments }: FavoriteAugmentsBodyProps) => {
     return map;
   }, [augmentData]);
 
-  const mostPickedAugments = useMemo(() => {
+  const totalPicked = useMemo(() => {
+    return Object.entries(augments).reduce((total, [id, stats]) => {
+      if (id === "0") return total;
+      return total + Math.max(0, Number(stats.picked) || 0);
+    }, 0);
+  }, [augments]);
+
+  const mostPickedAugments = useMemo((): FavoriteAugmentEntry[] => {
     return Object.entries(augments)
       .filter(([id]) => id !== "0")
-      .map(([id, stats]) => ({
-        data: augmentById.get(Number(id)),
-        picked: stats.picked,
-      }))
-      .filter((entry): entry is { data: augmentsData; picked: number } => !!entry.data)
+      .map(([id, stats]) => {
+        const picked = Math.max(0, Number(stats.picked) || 0);
+
+        return {
+          data: augmentById.get(Number(id)),
+          picked,
+        };
+      })
+      .filter(
+        (entry): entry is Omit<FavoriteAugmentEntry, "rank"> =>
+          !!entry.data && entry.picked > 0
+      )
       .sort((a, b) => b.picked - a.picked)
-      .slice(0, 5);
+      .slice(0, MAX_FAVORITE_AUGMENTS)
+      .map((entry, index) => ({ ...entry, rank: index + 1 }));
   }, [augments, augmentById]);
 
   return (
-    <div className="flex flex-col w-full gap-[8px]">
-      <h2 className="text-[12px] font-semibold">Favorite Augments</h2>
-      <div className="flex flex-row w-full justify-around h-[50px] sm:h-[60px]">
-        {augmentData.length > 0 &&
-          mostPickedAugments.map((entry) => (
+    <div className="flex w-full flex-col gap-[10px]">
+      <div className="flex flex-row items-center justify-between gap-[8px]">
+        <h2 className="text-[12px] font-semibold">Favorite Augments</h2>
+        {!isLoading && !isError && totalPicked > 0 && (
+          <p className="text-[11px] font-medium tabular-nums text-fg-muted">
+            {totalPicked} picks
+          </p>
+        )}
+      </div>
+
+      {isLoading ? (
+        <FavoriteAugmentsSkeleton />
+      ) : isError ? (
+        <FavoriteAugmentsMessage message="Augments unavailable" />
+      ) : mostPickedAugments.length > 0 ? (
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(132px,1fr))] gap-[8px]">
+          {mostPickedAugments.map((entry) => (
             <FavoriteAugment
               key={entry.data.id}
               augmentData={entry.data}
               picked={entry.picked}
+              rank={entry.rank}
             />
           ))}
-      </div>
+        </div>
+      ) : (
+        <FavoriteAugmentsMessage message="No favorite augments yet" />
+      )}
     </div>
   );
 };
+
+const FavoriteAugmentsSkeleton = () => (
+  <div className="grid grid-cols-[repeat(auto-fit,minmax(132px,1fr))] gap-[8px]">
+    {[...Array(MAX_FAVORITE_AUGMENTS)].map((_, index) => (
+      <div
+        key={`favorite-augment-loading-${index}`}
+        className="h-[50px] animate-pulse rounded-md border border-border bg-border/50"
+      />
+    ))}
+  </div>
+);
+
+const FavoriteAugmentsMessage = ({ message }: { message: string }) => (
+  <div className="flex min-h-[52px] w-full items-center justify-center rounded-md border border-dashed border-border px-3 text-center text-[12px] font-medium text-fg-muted">
+    {message}
+  </div>
+);
 
 export default FavoriteAugmentsBody;

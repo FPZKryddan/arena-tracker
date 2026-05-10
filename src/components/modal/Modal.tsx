@@ -9,8 +9,8 @@ interface ModalProps extends React.PropsWithChildren {
 
 const Modal = ({ isOpen, canClose, closeCallback, children }: ModalProps) => (
   isOpen 
-    ? <div className="absolute inset-0 bg-overlay backdrop-blur-xl z-10 flex items-center justify-center">
-        <div className="relative py-8 px-8 min-w-48 bg-surface-elevated text-fg rounded-md flex flex-col border border-border">
+    ? <div className="absolute inset-0 z-10 flex items-center justify-center bg-overlay">
+        <div className="relative flex min-w-48 flex-col rounded-md border border-border bg-surface px-8 py-8 text-fg">
           <button className={`absolute top-2 right-2 text-fg-muted hover:text-fg hover:cursor-pointer ${canClose ? 'block' : 'hidden'}`} onClick={closeCallback}><MdClose className="h-6 w-6"/></button>
           {children}
         </div>

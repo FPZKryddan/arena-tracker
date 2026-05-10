@@ -51,7 +51,7 @@ const ProgressTracker = ({
   return (
     <Tooltip text={tooltipTextSwitch()}>
       <div
-        className={`h-full ${colorClass} relative hover:outline-2 outline-accent hover:drop-shadow-2xl hover:z-10`}
+        className={`relative h-full ${colorClass} outline-accent hover:z-10 hover:outline-1`}
         style={{ width: getBarWidthStyling(), transition: "width 0.3s" }}
         >
       </div>

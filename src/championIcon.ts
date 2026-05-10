@@ -11,6 +11,21 @@ export const getChampionIconUrl = (
 ): string =>
   `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${toDdragonId(championName)}.png`;
 
+export const getChampionDataUrl = (
+  version: string,
+  championName: string
+): string =>
+  `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion/${toDdragonId(championName)}.json`;
+
+export const getSpellIconUrl = (version: string, spellImage: string): string =>
+  `https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/${spellImage}`;
+
+export const getProfileIconUrl = (
+  version: string,
+  profileIconId: number
+): string =>
+  `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${profileIconId}.png`;
+
 export const getChampionLoadingArtUrl = (championName: string): string =>
   `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${toDdragonId(championName)}_0.jpg`;
 

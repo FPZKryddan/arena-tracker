@@ -1,13 +1,31 @@
-import { useMemo, useState } from "react";
-import type { teammateStatDto, teammateStatsDto } from "../../types";
+import { useMemo, useState, type KeyboardEvent } from "react";
+import { Link } from "react-router-dom";
+import type { Regions, teammateStatDto, teammateStatsDto } from "../../types";
 import BottomSheet from "../common/BottomSheet";
 import TeammateDetailCard from "./TeammateDetailCard";
-import useProfileLookup from "../../hooks/useProfileLookup";
+import { useProfileLookupByPuuid } from "../../hooks/useProfileLookup";
 import useDdragonVersion from "../../hooks/useDdragonVersion";
 
 interface TeammatesBodyProps {
   teammateStats: teammateStatsDto;
+  region: Exclude<Regions, null>;
 }
+
+type TeammateEntry = {
+  puuid: string;
+  stats: teammateStatDto;
+};
+
+const FREQUENT_TEAMMATES_LIMIT = 6;
+
+const getProfilePath = (
+  region: Exclude<Regions, null>,
+  gameName: string,
+  tagLine: string
+): string =>
+  `/profile/${region}/${encodeURIComponent(gameName)}/${encodeURIComponent(
+    tagLine
+  )}`;
 
 const getAvgColor = (avg: number): string => {
   if (avg >= 8) return "text-fg";
@@ -16,14 +34,16 @@ const getAvgColor = (avg: number): string => {
   return "text-warning";
 };
 
-const TeammatesBody = ({ teammateStats }: TeammatesBodyProps) => {
-  const [selected, setSelected] = useState<teammateStatDto>();
+const TeammatesBody = ({ teammateStats, region }: TeammatesBodyProps) => {
+  const [selected, setSelected] = useState<TeammateEntry>();
   const [bottomSheetIsOpen, setBottomSheetIsOpen] = useState<boolean>(false);
 
-  const teammates = useMemo<teammateStatDto[]>(() => {
-    return Object.values(teammateStats)
-      .filter((t) => t.gamesPlayed >= 3)
-      .sort((a, b) => b.gamesPlayed - a.gamesPlayed);
+  const teammates = useMemo<TeammateEntry[]>(() => {
+    return Object.entries(teammateStats)
+      .map(([puuid, stats]) => ({ puuid, stats }))
+      .filter((teammate) => teammate.stats.gamesPlayed >= 3)
+      .sort((a, b) => b.stats.gamesPlayed - a.stats.gamesPlayed)
+      .slice(0, FREQUENT_TEAMMATES_LIMIT);
   }, [teammateStats]);
 
   if (teammates.length === 0) return null;
@@ -34,8 +54,10 @@ const TeammatesBody = ({ teammateStats }: TeammatesBodyProps) => {
       <ul className="flex flex-col gap-[4px]">
         {teammates.map((teammate) => (
           <TeammateRow
-            key={`${teammate.gameName}#${teammate.tagLine}`}
-            teammate={teammate}
+            key={teammate.puuid}
+            puuid={teammate.puuid}
+            teammate={teammate.stats}
+            region={region}
             onSelect={() => {
               setSelected(teammate);
               setBottomSheetIsOpen(true);
@@ -47,26 +69,59 @@ const TeammatesBody = ({ teammateStats }: TeammatesBodyProps) => {
         isOpen={bottomSheetIsOpen}
         closeCallback={() => setBottomSheetIsOpen(false)}
       >
-        {selected ? <TeammateDetailCard teammate={selected} /> : <></>}
+        {selected ? (
+          <TeammateDetailCard
+            teammate={selected.stats}
+            puuid={selected.puuid}
+            region={region}
+            onProfileClick={() => setBottomSheetIsOpen(false)}
+          />
+        ) : (
+          <></>
+        )}
       </BottomSheet>
     </div>
   );
 };
 
 interface TeammateRowProps {
+  puuid: string;
   teammate: teammateStatDto;
+  region: Exclude<Regions, null>;
   onSelect: () => void;
 }
 
-const TeammateRow = ({ teammate, onSelect }: TeammateRowProps) => {
-  const { profile } = useProfileLookup(teammate.gameName, teammate.tagLine);
+const TeammateRow = ({
+  puuid,
+  teammate,
+  region,
+  onSelect,
+}: TeammateRowProps) => {
+  const { profile } = useProfileLookupByPuuid(puuid, region);
   const version = useDdragonVersion();
-  const initial = teammate.gameName.trim().charAt(0).toUpperCase() || "?";
+  const displayGameName = profile?.gameName ?? teammate.gameName;
+  const displayTagLine = profile?.tagLine ?? teammate.tagLine;
+  const profilePath = getProfilePath(
+    profile?.region ?? region,
+    displayGameName,
+    displayTagLine
+  );
+  const initial = displayGameName.trim().charAt(0).toUpperCase() || "?";
+  const handleKeyDown = (event: KeyboardEvent<HTMLLIElement>) => {
+    if (event.currentTarget !== event.target) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
+    onSelect();
+  };
 
   return (
     <li
-      className="flex flex-row items-center gap-[8px] p-[6px] rounded-md hover:cursor-pointer hover:bg-surface-hover"
+      className="flex flex-row items-center gap-[8px] rounded-md p-[6px] transition-colors hover:cursor-pointer hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      role="button"
+      tabIndex={0}
       onClick={onSelect}
+      onKeyDown={handleKeyDown}
     >
       <div className="h-[36px] w-[36px] aspect-square rounded-full overflow-hidden bg-surface-elevated text-fg flex items-center justify-center text-[14px] font-bold shrink-0">
         {profile ? (
@@ -80,22 +135,32 @@ const TeammateRow = ({ teammate, onSelect }: TeammateRowProps) => {
         )}
       </div>
       <div className="flex flex-col grow min-w-0">
-        <p className="text-[12px] font-medium truncate">
-          {teammate.gameName}
-          <span className="opacity-60">#{teammate.tagLine}</span>
-        </p>
+        <Link
+          to={profilePath}
+          aria-label={`Open ${displayGameName}#${displayTagLine} profile`}
+          className="block truncate text-[12px] font-medium transition-colors hover:text-accent"
+          onClick={(event) => event.stopPropagation()}
+        >
+          {displayGameName}
+          <span className="opacity-60">#{displayTagLine}</span>
+        </Link>
         <p className="text-[10px] opacity-70">
-          {profile ? `Lv. ${profile.summonerLevel} • ` : ""}
+          {profile ? `Lv. ${profile.summonerLevel} / ` : ""}
           {teammate.gamesPlayed} games
         </p>
       </div>
-      <p
-        className={`text-[14px] font-bold tabular-nums ${getAvgColor(
-          teammate.placementAvg
-        )}`}
-      >
-        {(Math.ceil(teammate.placementAvg * 100) / 100).toFixed(2)}
-      </p>
+      <div className="flex shrink-0 flex-col items-end leading-tight">
+        <span className="text-[9px] font-semibold uppercase text-fg-muted">
+          Avg
+        </span>
+        <p
+          className={`text-[14px] font-bold tabular-nums ${getAvgColor(
+            teammate.placementAvg
+          )}`}
+        >
+          {(Math.ceil(teammate.placementAvg * 100) / 100).toFixed(2)}
+        </p>
+      </div>
     </li>
   );
 };

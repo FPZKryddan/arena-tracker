@@ -11,7 +11,7 @@ interface RecordMatchButtonProps {
 
 const RecordMatchButton = ({ matchId, label }: RecordMatchButtonProps) => {
   const [open, setOpen] = useState(false);
-  const { playerStats } = useContextIfDefined(PlayerStatsContext);
+  const { playerStats, loadedProfile } = useContextIfDefined(PlayerStatsContext);
 
   if (!matchId) return null;
 
@@ -33,6 +33,7 @@ const RecordMatchButton = ({ matchId, label }: RecordMatchButtonProps) => {
         isOpen={open}
         onClose={() => setOpen(false)}
         highlightPuuid={playerStats?.puuid}
+        region={loadedProfile?.region}
       />
     </>
   );

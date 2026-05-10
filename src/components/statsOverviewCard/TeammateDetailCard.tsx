@@ -1,9 +1,23 @@
-import type { teammateStatDto } from "../../types";
+import { Link } from "react-router-dom";
+import type { Regions, teammateStatDto } from "../../types";
+import { useProfileLookupByPuuid } from "../../hooks/useProfileLookup";
 import PlacementsBody from "./PlacementsBody";
 
 interface TeammateDetailCardProps {
   teammate: teammateStatDto;
+  puuid: string;
+  region: Exclude<Regions, null>;
+  onProfileClick?: () => void;
 }
+
+const getProfilePath = (
+  region: Exclude<Regions, null>,
+  gameName: string,
+  tagLine: string
+): string =>
+  `/profile/${region}/${encodeURIComponent(gameName)}/${encodeURIComponent(
+    tagLine
+  )}`;
 
 const formatLastPlayed = (timestamp: number): string => {
   if (!timestamp) return "-";
@@ -17,14 +31,37 @@ const formatLastPlayed = (timestamp: number): string => {
   return `${months} months ago`;
 };
 
-const TeammateDetailCard = ({ teammate }: TeammateDetailCardProps) => {
+const TeammateDetailCard = ({
+  teammate,
+  puuid,
+  region,
+  onProfileClick,
+}: TeammateDetailCardProps) => {
+  const { profile } = useProfileLookupByPuuid(puuid, region);
+  const displayGameName = profile?.gameName ?? teammate.gameName;
+  const displayTagLine = profile?.tagLine ?? teammate.tagLine;
+  const profilePath = getProfilePath(
+    profile?.region ?? region,
+    displayGameName,
+    displayTagLine
+  );
+
   return (
     <div className="flex flex-col gap-[16px] text-fg p-[8px]">
-      <div className="flex flex-col">
-        <p className="text-[18px] font-bold">
-          {teammate.gameName}
-          <span className="text-fg-muted">#{teammate.tagLine}</span>
-        </p>
+      <div className="flex flex-col gap-[4px] pr-[44px]">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <p className="min-w-0 text-[18px] font-bold">
+            {displayGameName}
+            <span className="text-fg-muted">#{displayTagLine}</span>
+          </p>
+          <Link
+            to={profilePath}
+            onClick={onProfileClick}
+            className="text-[12px] font-semibold text-accent transition-colors hover:text-fg"
+          >
+            View profile
+          </Link>
+        </div>
         <p className="text-[12px] text-fg-muted">
           Last played: {formatLastPlayed(teammate.lastPlayedAt)}
         </p>
