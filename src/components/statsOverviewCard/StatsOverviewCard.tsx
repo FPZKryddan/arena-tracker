@@ -4,6 +4,7 @@ import { ChampionsContext } from "../../contexts/ChampionsContext";
 import type { championStatsDto, PlayerStats, Regions } from "../../types";
 import useContextIfDefined from "../../hooks/useContextIfDefined";
 import useDdragonVersion from "../../hooks/useDdragonVersion";
+import { getStoredRegion, normalizeRegion } from "../../hooks/useApiBase";
 import { getChampionSplashArtUrl } from "../../championIcon";
 import ArenaGodProgressTracker from "./ArenaGodProgressTracker";
 import DamageStatsBody from "./DamageStatsBody";
@@ -39,6 +40,9 @@ const StatsOverviewCard = ({
         .length
     : 0;
   const effectiveFavoriteRegion = favoriteRegion ?? routeRegion;
+  const effectiveProfileRegion =
+    profileRegion ??
+    (routeRegion ? normalizeRegion(routeRegion) : getStoredRegion());
   const profilePath =
     "gameName" in stats && profileRegion
       ? `/profile/${profileRegion}/${encodeURIComponent(
@@ -131,7 +135,10 @@ const StatsOverviewCard = ({
             </div>
             {"teammateStats" in stats && stats.teammateStats && (
               <div className="border-t border-border/70 pt-[16px]">
-                <TeammatesBody teammateStats={stats.teammateStats} />
+                <TeammatesBody
+                  teammateStats={stats.teammateStats}
+                  region={effectiveProfileRegion}
+                />
               </div>
             )}
           </div>

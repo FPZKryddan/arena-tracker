@@ -1,8 +1,7 @@
 import { useMemo, type ReactNode } from "react";
-import { Link } from "react-router-dom";
 import { IoPeople, IoStatsChart, IoTrophy } from "react-icons/io5";
+import AppHeader from "../components/appHeader";
 import SummonerInput from "../components/summonerInput";
-import ThemeToggle from "../components/themeToggle";
 import FavoritesList from "../components/favoritesList/FavoritesList";
 import useDdragonVersion from "../hooks/useDdragonVersion";
 import { useAugmentsQuery, useChampionListQuery } from "../hooks/queries";
@@ -17,25 +16,9 @@ const ddragonProfileIcon = (version: string, id: number) =>
 const LandingPage = () => {
   return (
     <div className="min-h-dvh w-full bg-bg text-fg">
-      <header className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-4">
-        <div className="flex items-center gap-3">
-          <div className="grid h-8 w-8 place-items-center rounded-md border border-border bg-surface text-sm font-extrabold text-accent">
-            A
-          </div>
-          <span className="text-sm font-semibold">
-            Arena Tracker
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link
-            to="/compare"
-            className="rounded-md border border-border bg-surface px-3 py-2 text-[12px] font-semibold text-fg-muted transition-colors hover:border-border-strong hover:bg-surface-hover hover:text-fg"
-          >
-            Compare
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+      <div className="mx-auto max-w-[1120px] px-4 pt-3">
+        <AppHeader />
+      </div>
 
       <main>
         <Hero />
@@ -51,9 +34,7 @@ const Hero = () => (
   <section className="mx-auto grid min-h-[78dvh] max-w-[1120px] grid-cols-1 items-center gap-10 px-4 pb-12 pt-8 lg:grid-cols-[minmax(0,560px)_minmax(320px,1fr)]">
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
-        <p className="text-xs font-semibold uppercase text-fg-subtle">
-          Arena match archive
-        </p>
+        
         <div className="flex flex-col gap-3">
           <h1 className="text-4xl font-extrabold leading-tight md:text-6xl">
             Arena Tracker

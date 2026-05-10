@@ -1,12 +1,11 @@
-import { Link, useParams } from "react-router-dom";
-import { IoFlash, IoPeople } from "react-icons/io5";
+import { useParams } from "react-router-dom";
+import AppHeader from "../components/appHeader";
 import ChampionList from "../components/championsView/ChampionList";
 import MatchHistoryList from "../components/matchHistory";
 import ChampionMatchTabs from "./ChampionMatchTabs";
 import StatsOverviewCard from "../components/statsOverviewCard";
 import StatsSkeleton from "../components/statsOverviewCard/StatsSkeleton";
 import SummonerInput from "../components/summonerInput";
-import ThemeToggle from "../components/themeToggle";
 import { PlayerStatsContext } from "../contexts/PlayerStatsContext";
 import useContextIfDefined from "../hooks/useContextIfDefined";
 import usePlayerHydration from "../hooks/usePlayerHydration";
@@ -29,38 +28,17 @@ const ProfilePage = () => {
         }).toString()}`
       : "/compare";
 
-  usePlayerHydration({ region, gameName, tagLine });
+  const routeProgress = usePlayerHydration({ region, gameName, tagLine });
 
   return (
     <div
       className="box-border flex h-dvh w-full flex-col gap-[20px] overflow-auto bg-bg p-[12px] text-fg md:gap-[28px] md:p-[24px]"
     >
-      <header className="flex w-full items-center justify-between border-b border-border pb-3">
-        <Link
-          to="/"
-          className="group flex items-center gap-2 text-fg transition-colors hover:text-accent"
-          aria-label="Back to home"
-        >
-          <IoFlash className="h-5 w-5 text-accent" />
-          <span className="text-base font-semibold md:text-lg">
-            Arena Tracker
-          </span>
-        </Link>
-        <div className="flex items-center gap-2">
-          <Link
-            to={comparePath}
-            className="flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-2 text-[12px] font-semibold text-fg-muted transition-colors hover:border-border-strong hover:bg-surface-hover hover:text-fg"
-          >
-            <IoPeople className="h-4 w-4" />
-            <span className="hidden sm:inline">Compare</span>
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+      <AppHeader comparePath={comparePath} />
 
       <div className="flex w-full flex-row items-start gap-3 self-center md:w-[400px] lg:w-[600px]">
         <div className="flex-1 min-w-0">
-          <SummonerInput />
+          <SummonerInput routeProgress={routeProgress} />
         </div>
       </div>
 

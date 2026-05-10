@@ -4,13 +4,20 @@ import { IoSearch, IoStar, IoClose } from "react-icons/io5";
 import RegionSelector from "./RegionSelector";
 import useGetPlayerStats from "../../hooks/useGetPlayerStats";
 import useFavorites, { type Favorite } from "../../hooks/useFavorites";
-import { type Regions } from "../../types";
+import { type JobState, type Regions } from "../../types";
 import FetchingProgress from "../fetchingProgress";
 
 const profilePath = (f: Favorite): string =>
   `/profile/${f.region}/${encodeURIComponent(f.gameName)}/${encodeURIComponent(f.tagLine)}`;
 
-const SummonerInput = () => {
+interface SummonerInputProps {
+  routeProgress?: {
+    isFetching: boolean;
+    jobState: JobState | null;
+  };
+}
+
+const SummonerInput = ({ routeProgress }: SummonerInputProps) => {
   const params = useParams<{ region?: string; gameName?: string; tagLine?: string }>();
   const initialName =
     params.gameName && params.tagLine ? `${params.gameName}#${params.tagLine}` : "";
@@ -23,6 +30,10 @@ const SummonerInput = () => {
   const { favorites, remove } = useFavorites();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const progressIsFetching = isFetching || routeProgress?.isFetching === true;
+  const progressJobState = isFetching
+    ? jobState
+    : routeProgress?.jobState ?? jobState;
 
   useEffect(() => {
     if (params.gameName && params.tagLine) {
@@ -89,7 +100,7 @@ const SummonerInput = () => {
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSubmit();
           }}
-          disabled={isFetching}
+          disabled={progressIsFetching}
         ></input>
 
         <div className="flex flex-row h-full ml-auto has-disabled:opacity-50">
@@ -100,14 +111,17 @@ const SummonerInput = () => {
           <button
             onClick={handleSubmit}
             className="rounded-r-lg px-2 text-fg-muted transition-colors hover:cursor-pointer hover:bg-surface-hover hover:text-fg"
-            disabled={isFetching}
+            disabled={progressIsFetching}
             aria-label="Search player"
           >
             <IoSearch className="h-full w-auto aspect-square p-2" />
           </button>
         </div>
       </div>
-      <FetchingProgress isFetching={isFetching} jobState={jobState} />
+      <FetchingProgress
+        isFetching={progressIsFetching}
+        jobState={progressJobState}
+      />
 
       {showDropdown && (
         <ul className="absolute left-0 right-0 top-[48px] z-20 max-h-[280px] overflow-y-auto rounded-lg border border-border bg-surface">

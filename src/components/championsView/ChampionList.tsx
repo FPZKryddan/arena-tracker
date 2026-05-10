@@ -223,7 +223,7 @@ const ChampionList = () => {
         isOpen={bottomSheetIsOpen}
         closeCallback={() => setBottomSheetIsOpen(false)}
       >
-        <Suspense fallback={<StatsSkeleton />}>
+        <Suspense fallback={<StatsSkeleton showTeammates={false} />}>
           {selectedChampion ? (
             <StatsOverviewCard stats={selectedChampion}></StatsOverviewCard>
           ) : (

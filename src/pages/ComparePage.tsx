@@ -5,20 +5,19 @@ import {
   useState,
   type FormEvent,
 } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   IoAdd,
   IoClose,
-  IoFlash,
   IoSearch,
   IoStar,
   IoSwapHorizontal,
 } from "react-icons/io5";
 import { ClipLoader } from "react-spinners";
+import AppHeader from "../components/appHeader";
 import StatsOverviewCard from "../components/statsOverviewCard";
 import StatsSkeleton from "../components/statsOverviewCard/StatsSkeleton";
 import RegionSelector from "../components/summonerInput/RegionSelector";
-import ThemeToggle from "../components/themeToggle";
 import { usePlayerStatsQuery } from "../hooks/queries";
 import { getStoredRegion, normalizeRegion } from "../hooks/useApiBase";
 import { getWinrate } from "../hooks/useStatsAggregator";
@@ -591,27 +590,7 @@ const ComparePage = () => {
 
   return (
     <div className="box-border flex min-h-dvh w-full flex-col gap-[20px] overflow-auto bg-bg p-[12px] text-fg md:gap-[28px] md:p-[24px]">
-      <header className="flex w-full items-center justify-between border-b border-border pb-3">
-        <Link
-          to="/"
-          className="group flex items-center gap-2 text-fg transition-colors hover:text-accent"
-          aria-label="Back to home"
-        >
-          <IoFlash className="h-5 w-5 text-accent" />
-          <span className="text-base font-semibold md:text-lg">
-            Arena Tracker
-          </span>
-        </Link>
-        <div className="flex items-center gap-2">
-          <Link
-            to="/"
-            className="rounded-md border border-border bg-surface px-3 py-2 text-[12px] font-semibold text-fg-muted transition-colors hover:border-border-strong hover:bg-surface-hover hover:text-fg"
-          >
-            Profiles
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="mx-auto flex w-full max-w-[1680px] flex-col gap-[16px]">
         <div className="flex flex-row flex-wrap items-center justify-between gap-3">

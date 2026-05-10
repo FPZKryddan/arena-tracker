@@ -1,12 +1,19 @@
 import { useQuery, useQueries } from "@tanstack/react-query";
 import type {
   ChampionRole,
+  ChampionSpellIconDto,
   augmentsData,
   championData,
+  ItemDataDto,
+  LeaderboardOrder,
+  LeaderboardResponse,
+  LeaderboardSort,
   MatchDto,
+  MatchTimelineDto,
   PlayerStats,
   Regions,
 } from "../types";
+import { getChampionDataUrl, getSpellIconUrl } from "../championIcon";
 import { getApiBase, getStoredRegion } from "./useApiBase";
 import useDdragonVersion from "./useDdragonVersion";
 import {
@@ -47,8 +54,13 @@ const isAugmentRecord = (v: unknown): v is augmentsData =>
 export const queryKeys = {
   augments: ["augments"] as const,
   champions: (version: string) => ["champions", version] as const,
+  championSpellIcons: (version: string, championNames: string[]) =>
+    ["championSpellIcons", version, championNames] as const,
+  items: (version: string) => ["items", version] as const,
   match: (region: string, matchId: string) =>
     ["match", region, matchId] as const,
+  matchTimeline: (region: string, matchId: string) =>
+    ["matchTimeline", region, matchId] as const,
   playerStats: (
     region: string,
     gameName: string,
@@ -60,6 +72,13 @@ export const queryKeys = {
     tagLine: string,
     limit: number
   ) => ["recentMatchIds", region, gameName, tagLine, limit] as const,
+  leaderboard: (
+    page: number,
+    limit: number,
+    region: string,
+    sortBy: LeaderboardSort,
+    order: LeaderboardOrder
+  ) => ["leaderboard", page, limit, region, sortBy, order] as const,
 };
 
 const fetchAugments = async (): Promise<augmentsData[]> => {
@@ -86,6 +105,64 @@ const fetchChampions = async (version: string): Promise<championData[]> => {
     }));
 };
 
+type DdragonChampionSpell = {
+  id?: string;
+  name?: string;
+  image?: {
+    full?: string;
+  };
+};
+
+type DdragonChampionDetail = {
+  spells?: DdragonChampionSpell[];
+};
+
+type DdragonChampionDetailResponse = {
+  data?: Record<string, DdragonChampionDetail>;
+};
+
+const fetchChampionSpellIcons = async (
+  version: string,
+  championNames: string[]
+): Promise<Record<string, ChampionSpellIconDto[]>> => {
+  const entries = await Promise.all(
+    championNames.map(async (championName) => {
+      const res = await fetch(getChampionDataUrl(version, championName));
+      if (!res.ok) return [championName, []] as const;
+
+      const data = (await res.json()) as DdragonChampionDetailResponse;
+      const champion = Object.values(data.data ?? {})[0];
+      const spells = (champion?.spells ?? []).map((spell) => ({
+        id: spell.id ?? "",
+        name: spell.name ?? "Spell",
+        icon: spell.image?.full ? getSpellIconUrl(version, spell.image.full) : "",
+      }));
+
+      return [championName, spells] as const;
+    })
+  );
+
+  return Object.fromEntries(entries);
+};
+
+const fetchItems = async (
+  version: string
+): Promise<Record<number, ItemDataDto>> => {
+  const res = await fetch(
+    `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json`
+  );
+  if (!res.ok) throw new Error(`DDragon item fetch failed: ${res.status}`);
+  const data = (await res.json()) as { data?: Record<string, ItemDataDto> };
+  const items: Record<number, ItemDataDto> = {};
+
+  Object.entries(data.data ?? {}).forEach(([id, item]) => {
+    const numericId = Number(id);
+    if (Number.isFinite(numericId)) items[numericId] = item;
+  });
+
+  return items;
+};
+
 const fetchMatch = async (
   region: Exclude<Regions, null>,
   matchId: string
@@ -94,6 +171,16 @@ const fetchMatch = async (
   const res = await fetch(`${apiBase}/matches/${region}/${matchId}`);
   if (!res.ok) throw new ApiError(await parseApiError(res));
   return (await res.json()) as MatchDto;
+};
+
+const fetchMatchTimeline = async (
+  region: Exclude<Regions, null>,
+  matchId: string
+): Promise<MatchTimelineDto> => {
+  const apiBase = getApiBase();
+  const res = await fetch(`${apiBase}/matches/${region}/${matchId}/timeline`);
+  if (!res.ok) throw new ApiError(await parseApiError(res));
+  return (await res.json()) as MatchTimelineDto;
 };
 
 const fetchPlayerStats = async (
@@ -109,6 +196,26 @@ const fetchPlayerStats = async (
   );
   if (!res.ok) throw new ApiError(await parseApiError(res));
   return (await res.json()) as PlayerStats;
+};
+
+const fetchLeaderboard = async (
+  page: number,
+  limit: number,
+  region: Exclude<Regions, null>,
+  sortBy: LeaderboardSort,
+  order: LeaderboardOrder
+): Promise<LeaderboardResponse> => {
+  const apiBase = getApiBase();
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+    region,
+    sortBy,
+    order,
+  });
+  const res = await fetch(`${apiBase}/players/leaderboard?${params}`);
+  if (!res.ok) throw new ApiError(await parseApiError(res));
+  return (await res.json()) as LeaderboardResponse;
 };
 
 const wait = (ms: number): Promise<void> =>
@@ -206,6 +313,28 @@ export const useChampionListQuery = () => {
   });
 };
 
+export const useChampionSpellIconsQuery = (championNames: string[]) => {
+  const version = useDdragonVersion();
+  const uniqueChampionNames = Array.from(new Set(championNames)).sort();
+
+  return useQuery({
+    queryKey: queryKeys.championSpellIcons(version, uniqueChampionNames),
+    queryFn: () => fetchChampionSpellIcons(version, uniqueChampionNames),
+    staleTime: 24 * 60 * 60_000,
+    enabled: !!version && uniqueChampionNames.length > 0,
+  });
+};
+
+export const useItemDataQuery = () => {
+  const version = useDdragonVersion();
+  return useQuery({
+    queryKey: queryKeys.items(version),
+    queryFn: () => fetchItems(version),
+    staleTime: 24 * 60 * 60_000,
+    enabled: !!version,
+  });
+};
+
 export const useMatchQuery = (
   matchId: string | undefined | null,
   region: Exclude<Regions, null> = getStoredRegion()
@@ -213,6 +342,19 @@ export const useMatchQuery = (
   useQuery({
     queryKey: matchId ? queryKeys.match(region, matchId) : ["match", "none"],
     queryFn: () => fetchMatch(region, matchId as string),
+    enabled: !!matchId,
+    staleTime: 60 * 60_000,
+  });
+
+export const useMatchTimelineQuery = (
+  matchId: string | undefined | null,
+  region: Exclude<Regions, null> = getStoredRegion()
+) =>
+  useQuery({
+    queryKey: matchId
+      ? queryKeys.matchTimeline(region, matchId)
+      : ["matchTimeline", "none"],
+    queryFn: () => fetchMatchTimeline(region, matchId as string),
     enabled: !!matchId,
     staleTime: 60 * 60_000,
   });
@@ -230,6 +372,19 @@ export const usePlayerStatsQuery = (
     queryFn: () => fetchPlayerStatsWithRefresh(region!, gameName!, tagLine!),
     enabled: !!region && !!gameName && !!tagLine,
     retry: false,
+    staleTime: 30_000,
+  });
+
+export const useLeaderboardQuery = (
+  page: number,
+  limit: number,
+  region: Exclude<Regions, null>,
+  sortBy: LeaderboardSort,
+  order: LeaderboardOrder
+) =>
+  useQuery({
+    queryKey: queryKeys.leaderboard(page, limit, region, sortBy, order),
+    queryFn: () => fetchLeaderboard(page, limit, region, sortBy, order),
     staleTime: 30_000,
   });
 

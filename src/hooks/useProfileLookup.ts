@@ -7,11 +7,31 @@ type CacheEntry = ProfileLookupDto | null;
 const cache = new Map<string, CacheEntry>();
 const inFlight = new Map<string, Promise<CacheEntry>>();
 
-const cacheKey = (
+const profileByNameCacheKey = (
   region: Exclude<Regions, null>,
   name: string,
   tag: string
-): string => `${region}|${name.toLowerCase()}|${tag.toLowerCase()}`;
+): string => `name|${region}|${name.toLowerCase()}|${tag.toLowerCase()}`;
+
+const profileByPuuidCacheKey = (
+  region: Exclude<Regions, null>,
+  puuid: string
+): string => `puuid|${region}|${puuid}`;
+
+const seedProfileCache = (
+  profile: ProfileLookupDto,
+  region: Exclude<Regions, null>
+) => {
+  const regions = new Set<Exclude<Regions, null>>([region, profile.region]);
+
+  regions.forEach((cacheRegion) => {
+    cache.set(
+      profileByNameCacheKey(cacheRegion, profile.gameName, profile.tagLine),
+      profile
+    );
+    cache.set(profileByPuuidCacheKey(cacheRegion, profile.puuid), profile);
+  });
+};
 
 export const fetchProfile = async (
   gameName: string,
@@ -19,7 +39,7 @@ export const fetchProfile = async (
   region: Exclude<Regions, null> = getStoredRegion()
 ): Promise<CacheEntry> => {
   if (!gameName || !tagLine) return null;
-  const key = cacheKey(region, gameName, tagLine);
+  const key = profileByNameCacheKey(region, gameName, tagLine);
   if (cache.has(key)) return cache.get(key) ?? null;
   const existing = inFlight.get(key);
   if (existing) return existing;
@@ -36,11 +56,48 @@ export const fetchProfile = async (
         return null;
       }
       const data = (await res.json()) as ProfileLookupDto;
+      seedProfileCache(data, region);
       cache.set(key, data);
       return data;
     })
     .catch((err) => {
       console.error("profile lookup failed:", err);
+      cache.set(key, null);
+      return null;
+    })
+    .finally(() => {
+      inFlight.delete(key);
+    });
+
+  inFlight.set(key, promise);
+  return promise;
+};
+
+export const fetchProfileByPuuid = async (
+  puuid: string,
+  region: Exclude<Regions, null> = getStoredRegion()
+): Promise<CacheEntry> => {
+  if (!puuid) return null;
+  const key = profileByPuuidCacheKey(region, puuid);
+  if (cache.has(key)) return cache.get(key) ?? null;
+  const existing = inFlight.get(key);
+  if (existing) return existing;
+
+  const apiBase = getApiBase();
+  const promise = fetch(
+    `${apiBase}/profiles/${region}/by-puuid/${encodeURIComponent(puuid)}`
+  )
+    .then(async (res) => {
+      if (!res.ok) {
+        cache.set(key, null);
+        return null;
+      }
+      const data = (await res.json()) as ProfileLookupDto;
+      seedProfileCache(data, region);
+      return data;
+    })
+    .catch((err) => {
+      console.error("profile lookup by puuid failed:", err);
       cache.set(key, null);
       return null;
     })
@@ -59,7 +116,9 @@ function useProfileLookup(
 ) {
   const effectiveRegion = region ?? getStoredRegion();
   const key =
-    gameName && tagLine ? cacheKey(effectiveRegion, gameName, tagLine) : null;
+    gameName && tagLine
+      ? profileByNameCacheKey(effectiveRegion, gameName, tagLine)
+      : null;
   const [profile, setProfile] = useState<ProfileLookupDto | null>(
     key ? cache.get(key) ?? null : null
   );
@@ -68,14 +127,19 @@ function useProfileLookup(
   );
 
   useEffect(() => {
-    if (!gameName || !tagLine) return;
-    const k = cacheKey(effectiveRegion, gameName, tagLine);
+    if (!gameName || !tagLine) {
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
+    const k = profileByNameCacheKey(effectiveRegion, gameName, tagLine);
     if (cache.has(k)) {
       setProfile(cache.get(k) ?? null);
       setLoading(false);
       return;
     }
     let cancelled = false;
+    setProfile(null);
     setLoading(true);
     fetchProfile(gameName, tagLine, effectiveRegion).then((p) => {
       if (cancelled) return;
@@ -86,6 +150,45 @@ function useProfileLookup(
       cancelled = true;
     };
   }, [gameName, tagLine, effectiveRegion]);
+
+  return { profile, loading };
+}
+
+export function useProfileLookupByPuuid(
+  puuid: string | undefined,
+  region?: Exclude<Regions, null>
+) {
+  const effectiveRegion = region ?? getStoredRegion();
+  const key = puuid ? profileByPuuidCacheKey(effectiveRegion, puuid) : null;
+  const [profile, setProfile] = useState<ProfileLookupDto | null>(
+    key ? cache.get(key) ?? null : null
+  );
+  const [loading, setLoading] = useState<boolean>(!!key && !cache.has(key));
+
+  useEffect(() => {
+    if (!puuid) {
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
+    const k = profileByPuuidCacheKey(effectiveRegion, puuid);
+    if (cache.has(k)) {
+      setProfile(cache.get(k) ?? null);
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setProfile(null);
+    setLoading(true);
+    fetchProfileByPuuid(puuid, effectiveRegion).then((p) => {
+      if (cancelled) return;
+      setProfile(p);
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [puuid, effectiveRegion]);
 
   return { profile, loading };
 }

@@ -4,13 +4,19 @@ import {
   type LoadedProfile,
 } from "../contexts/PlayerStatsContext";
 import useContextIfDefined from "./useContextIfDefined";
-import type { PlayerStats, Regions } from "../types";
+import useGetPlayerStats from "./useGetPlayerStats";
+import type { JobState, PlayerStats, Regions } from "../types";
 import { getRetryAfterSeconds, parseApiError } from "../utils/apiError";
 
 interface HydrationParams {
   region: Exclude<Regions, null> | null;
   gameName: string | null;
   tagLine: string | null;
+}
+
+interface HydrationState {
+  isFetching: boolean;
+  jobState: JobState | null;
 }
 
 const sameProfile = (
@@ -21,11 +27,18 @@ const sameProfile = (
   a.gameName.toLowerCase() === b.gameName.toLowerCase() &&
   a.tagLine.toLowerCase() === b.tagLine.toLowerCase();
 
-function usePlayerHydration({ region, gameName, tagLine }: HydrationParams) {
+function usePlayerHydration({
+  region,
+  gameName,
+  tagLine,
+}: HydrationParams): HydrationState {
   const { playerStats, setPlayerStats, loadedProfile, setLoadedProfile } =
     useContextIfDefined(PlayerStatsContext);
+  const { isFetching, jobState, retrievePlayerData, cancelPlayerDataFetch } =
+    useGetPlayerStats(region ?? "EUW");
   const playerStatsRef = useRef(playerStats);
   const loadedProfileRef = useRef(loadedProfile);
+  const routeSearchStartedRef = useRef<string | null>(null);
 
   useEffect(() => {
     playerStatsRef.current = playerStats;
@@ -36,9 +49,18 @@ function usePlayerHydration({ region, gameName, tagLine }: HydrationParams) {
   }, [loadedProfile]);
 
   useEffect(() => {
-    if (!region || !gameName || !tagLine) return;
+    if (!region || !gameName || !tagLine) {
+      cancelPlayerDataFetch();
+      routeSearchStartedRef.current = null;
+      return;
+    }
 
     const requestedProfile: LoadedProfile = { region, gameName, tagLine };
+    const requestedKey = [
+      region,
+      gameName.toLowerCase(),
+      tagLine.toLowerCase(),
+    ].join("|");
     const alreadyLoaded =
       !!playerStatsRef.current &&
       !!loadedProfileRef.current &&
@@ -67,14 +89,28 @@ function usePlayerHydration({ region, gameName, tagLine }: HydrationParams) {
         } else if (err.code !== "PLAYER_NOT_TRACKED") {
           console.warn("[hydrate]", err.code, err.message);
         }
-        return null;
+        return err.code;
       })
-      .then((stats) => {
+      .then((result) => {
         if (cancelled) return;
-        if (stats) {
-          setPlayerStats(stats);
-          setLoadedProfile(requestedProfile);
+        if (!result) return;
+
+        if (typeof result === "string") {
+          if (
+            result === "PLAYER_NOT_TRACKED" &&
+            routeSearchStartedRef.current !== requestedKey
+          ) {
+            routeSearchStartedRef.current = requestedKey;
+            void retrievePlayerData(`${gameName}#${tagLine}`);
+          }
+          return;
         }
+
+        routeSearchStartedRef.current = null;
+        playerStatsRef.current = result;
+        loadedProfileRef.current = requestedProfile;
+        setPlayerStats(result);
+        setLoadedProfile(requestedProfile);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -82,8 +118,19 @@ function usePlayerHydration({ region, gameName, tagLine }: HydrationParams) {
       });
     return () => {
       cancelled = true;
+      cancelPlayerDataFetch();
     };
-  }, [region, gameName, tagLine, setLoadedProfile, setPlayerStats]);
+  }, [
+    cancelPlayerDataFetch,
+    region,
+    gameName,
+    retrievePlayerData,
+    setLoadedProfile,
+    setPlayerStats,
+    tagLine,
+  ]);
+
+  return { isFetching, jobState };
 }
 
 export default usePlayerHydration;

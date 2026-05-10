@@ -1,12 +1,15 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import { PlayerStatsContext } from "../../contexts/PlayerStatsContext";
 import useContextIfDefined from "../../hooks/useContextIfDefined";
 import useDdragonVersion from "../../hooks/useDdragonVersion";
+import { normalizeRegion } from "../../hooks/useApiBase";
 import {
   useAugmentsQuery,
   useMatchesQuery,
   useRecentMatchIdsQuery,
 } from "../../hooks/queries";
+import { MATCH_QUERY_PARAM } from "../../utils/matchLinks";
 import type { augmentsData, MatchDto, ParticipantDto } from "../../types";
 import { getChampionIconUrl, getProfileIconUrl } from "../../championIcon";
 const MatchDetailModal = lazy(() => import("../matchDetail"));
@@ -36,14 +39,19 @@ const formatRelative = (timestamp: number): string => {
 };
 
 const MatchHistoryList = () => {
-  const { playerStats } = useContextIfDefined(PlayerStatsContext);
+  const { playerStats, loadedProfile } = useContextIfDefined(PlayerStatsContext);
+  const params = useParams<{ region: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const profileRegion = loadedProfile?.region ?? normalizeRegion(params.region);
+  const openMatchId = searchParams.get(MATCH_QUERY_PARAM);
   const { data: matchIds = [], isLoading: idsLoading } = useRecentMatchIdsQuery(
     playerStats?.gameName,
     playerStats?.tagLine,
-    RECENT_LIMIT
+    RECENT_LIMIT,
+    profileRegion
   );
 
-  const matchQueries = useMatchesQuery(matchIds);
+  const matchQueries = useMatchesQuery(matchIds, profileRegion);
   const matches = useMemo(
     () =>
       matchQueries
@@ -53,7 +61,20 @@ const MatchHistoryList = () => {
   );
   const matchesLoading = matchQueries.some((q) => q.isLoading);
 
-  const [openMatchId, setOpenMatchId] = useState<string | null>(null);
+  const setOpenMatchId = useCallback(
+    (matchId: string | null) => {
+      const nextParams = new URLSearchParams(searchParams);
+
+      if (matchId) {
+        nextParams.set(MATCH_QUERY_PARAM, matchId);
+      } else {
+        nextParams.delete(MATCH_QUERY_PARAM);
+      }
+
+      setSearchParams(nextParams);
+    },
+    [searchParams, setSearchParams]
+  );
 
   const loading = !playerStats || idsLoading || matchesLoading;
 
@@ -94,6 +115,7 @@ const MatchHistoryList = () => {
           isOpen={openMatchId !== null}
           onClose={() => setOpenMatchId(null)}
           highlightPuuid={playerStats?.puuid}
+          region={profileRegion}
         />
       </Suspense>
     </div>
@@ -125,9 +147,7 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
 
   const items = useMemo(
     () =>
-      [me.item0, me.item1, me.item2, me.item3, me.item4, me.item5].filter(
-        (id) => id && id !== 0
-      ),
+      [me.item0, me.item1, me.item2, me.item3, me.item4, me.item5],
     [me]
   );
 
@@ -138,7 +158,7 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
         me.playerAugment2,
         me.playerAugment3,
         me.playerAugment4,
-      ].filter((id) => id && id !== 0),
+      ],
     [me]
   );
 
@@ -163,41 +183,12 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
         <p className="truncate">{me.championName}</p>
         {teammate && <TeammatePreview teammate={teammate} version={version} />}
       </div>
-      <div className="flex flex-col gap-[2px]">
-        <div className="flex flex-row gap-[2px]">
-          {augmentIds.map((id, i) => {
-            const a = augments.get(id);
-            if (!a) return null;
-            return (
-              <div
-                key={`a-${i}-${id}`}
-                className={`h-[28px] w-[28px] rounded-sm bg-surface-elevated overflow-hidden augment-${a.rarity}`}
-              >
-                <img
-                  src={`https://raw.communitydragon.org/latest/game/${a.iconSmall}`}
-                  alt={a.name}
-                  title={a.name}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-contain"
-                />
-              </div>
-            );
-          })}
-        </div>
-        <div className="flex flex-row gap-[2px]">
-          {items.map((id, i) => (
-            <img
-              key={`i-${i}-${id}`}
-              src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/item/${id}.png`}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              className="h-[28px] w-[28px] rounded-sm"
-            />
-          ))}
-        </div>
-      </div>
+      <MatchHistoryLoadout
+        augmentIds={augmentIds}
+        augments={augments}
+        items={items}
+        version={version}
+      />
       <div className="flex flex-col text-right shrink-0">
         <p>
           {me.kills}/{me.deaths}/{me.assists}
@@ -208,6 +199,63 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
     </li>
   );
 };
+
+const MatchHistoryLoadout = ({
+  augmentIds,
+  augments,
+  items,
+  version,
+}: {
+  augmentIds: number[];
+  augments: Map<number, augmentsData>;
+  items: number[];
+  version: string;
+}) => (
+  <div className="grid w-[178px] shrink-0 grid-cols-6 gap-[2px]">
+    {Array.from({ length: 6 }).map((_, slot) => {
+      const id = augmentIds[slot];
+      const augment = id ? augments.get(id) : undefined;
+
+      return (
+        <div
+          key={`a-slot-${slot}-${id ?? "empty"}`}
+          className="h-[28px] w-[28px] overflow-hidden rounded-sm border border-border bg-surface-elevated"
+          title={augment?.name}
+        >
+          {augment && (
+            <img
+              src={`https://raw.communitydragon.org/latest/game/${augment.iconLarge}`}
+              alt={augment.name}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-contain"
+            />
+          )}
+        </div>
+      );
+    })}
+    {Array.from({ length: 6 }).map((_, slot) => {
+      const id = items[slot];
+
+      return (
+        <div
+          key={`i-slot-${slot}-${id ?? "empty"}`}
+          className="h-[28px] w-[28px] overflow-hidden rounded-sm border border-border bg-surface-elevated"
+        >
+          {id ? (
+            <img
+              src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/item/${id}.png`}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
+          ) : null}
+        </div>
+      );
+    })}
+  </div>
+);
 
 interface TeammatePreviewProps {
   teammate: ParticipantDto;
@@ -245,13 +293,46 @@ const TeammatePreview = ({ teammate, version }: TeammatePreviewProps) => {
 };
 
 const MatchHistorySkeleton = () => {
+  const rowTones = [
+    "border-placement-first/60 bg-placement-first/10",
+    "border-success/60 bg-success/10",
+    "border-surface-elevated bg-surface-elevated/70",
+    "border-border bg-surface-elevated/50",
+  ];
+
   return (
-    <ul className="flex flex-col gap-[6px]">
+    <ul className="flex flex-col gap-[6px] animate-pulse" aria-label="Loading match history">
       {Array.from({ length: RECENT_LIMIT }).map((_, i) => (
         <li
           key={`match-skeleton-${i}`}
-          className="h-[56px] rounded-md bg-surface-elevated/50 animate-pulse"
-        />
+          className={`flex flex-row items-center gap-[8px] rounded-md border-l-4 p-[8px] ${rowTones[i % rowTones.length]}`}
+        >
+          <div className="h-[40px] aspect-square shrink-0 rounded-full bg-border" />
+          <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+            <div className="h-[11px] w-[24px] rounded bg-border" />
+            <div className="h-[10px] w-[76px] max-w-full rounded bg-border/80" />
+            <div className="flex min-w-0 flex-row items-center gap-[4px]">
+              <div className="relative h-[22px] w-[38px] shrink-0">
+                <div className="absolute left-0 top-[1px] h-[20px] w-[20px] rounded-full bg-border/70" />
+                <div className="absolute left-[16px] top-0 h-[22px] w-[22px] rounded-full bg-border ring-2 ring-surface" />
+              </div>
+              <div className="h-[9px] w-[112px] max-w-[70%] rounded bg-border/70" />
+            </div>
+          </div>
+          <div className="grid w-[178px] shrink-0 grid-cols-6 gap-[2px]">
+            {Array.from({ length: 12 }).map((_, slot) => (
+              <div
+                key={`match-loadout-skeleton-${i}-${slot}`}
+                className="h-[28px] w-[28px] rounded-sm bg-border"
+              />
+            ))}
+          </div>
+          <div className="flex w-[42px] shrink-0 flex-col items-end gap-[4px]">
+            <div className="h-[10px] w-[34px] rounded bg-border" />
+            <div className="h-[9px] w-[28px] rounded bg-border/75" />
+            <div className="h-[8px] w-[36px] rounded bg-border/60" />
+          </div>
+        </li>
       ))}
     </ul>
   );
