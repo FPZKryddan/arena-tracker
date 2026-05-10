@@ -58,10 +58,10 @@ const Tooltip = ({
       {children}
       {createPortal(
         <div
-          className={`fixed z-100 bg-surface-elevated text-fg border border-border rounded-2xl shadow-2xl
+          className={`fixed z-100 rounded-md border border-border bg-surface text-fg
           ${isHovering ? "opacity-100" : "opacity-0 pointer-events-none"}
           ${text ? "px-4 py-2" : ""}
-          transition-opacity duration-150 delay-[${delay}] text-[14px] text-nowrap font-medium max-w-screen shadow-md`}
+          max-w-screen text-nowrap text-[14px] font-medium transition-opacity duration-150 delay-[${delay}]`}
           ref={tooltipElementRef}
         >
           {text && <p>{text}</p>}

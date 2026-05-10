@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, easeOut, motion } from "framer-motion";
 import { HiMiniXMark } from "react-icons/hi2";
 import { GiBroadsword, GiShield, GiHealthNormal, GiArrowDunk, GiAcrobatic } from "react-icons/gi";
@@ -39,7 +40,7 @@ const MatchDetailModal = ({
     isOpen ? matchId : null
   );
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -48,7 +49,7 @@ const MatchDetailModal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: easeOut }}
-            className="fixed inset-0 z-50 backdrop-blur-md bg-overlay"
+            className="fixed inset-0 z-[110] bg-overlay"
             onClick={onClose}
           />
           <motion.div
@@ -56,11 +57,11 @@ const MatchDetailModal = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15, ease: easeOut }}
-            className="fixed inset-0 z-[60] flex items-center justify-center p-[12px] md:p-[24px] pointer-events-none"
+            className="fixed inset-0 z-[120] flex items-center justify-center p-[12px] md:p-[24px] pointer-events-none"
           >
-            <div className="bg-surface-elevated text-fg rounded-2xl w-full max-w-[1100px] max-h-[90vh] overflow-y-auto p-[16px] md:p-[24px] relative pointer-events-auto shadow-2xl">
+            <div className="pointer-events-auto relative max-h-[90vh] w-full max-w-[1100px] overflow-y-auto rounded-lg border border-border bg-surface p-[16px] text-fg md:p-[24px]">
               <button
-                className="absolute top-[12px] right-[12px] text-fg hover:opacity-70"
+                className="absolute right-[12px] top-[12px] rounded-md p-1 text-fg-muted hover:bg-surface-hover hover:text-fg"
                 onClick={onClose}
               >
                 <HiMiniXMark className="text-2xl" />
@@ -79,7 +80,8 @@ const MatchDetailModal = ({
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 
@@ -133,8 +135,8 @@ const MatchDetailContent = ({
       <div className="flex flex-col">
         <p className="text-[18px] md:text-[20px] font-bold">Arena Match</p>
         <p className="text-[11px] text-fg-muted">
-          {new Date(match.info.gameCreation).toLocaleString()} •{" "}
-          {formatDuration(match.info.gameDuration)} • {match.metadata.matchId}
+          {new Date(match.info.gameCreation).toLocaleString()} /{" "}
+          {formatDuration(match.info.gameDuration)} / {match.metadata.matchId}
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-[12px]">
@@ -203,7 +205,7 @@ const ParticipantRow = ({
   return (
     <div
       className={`flex flex-col gap-[6px] text-[11px] p-[8px] rounded ${
-        isHighlighted ? "bg-surface-elevated ring-2 ring-info" : "bg-surface/60"
+        isHighlighted ? "bg-info/15 outline outline-1 outline-info" : "bg-bg/35"
       }`}
     >
       <div className="flex flex-row items-center gap-[8px]">
@@ -220,7 +222,7 @@ const ParticipantRow = ({
             <span className="opacity-50">#{p.riotIdTagline}</span>
           </p>
           <p className="opacity-70">
-            {p.championName} • {p.kills}/{p.deaths}/{p.assists}
+            {p.championName} / {p.kills}/{p.deaths}/{p.assists}
           </p>
         </div>
       </div>
@@ -313,7 +315,7 @@ const Stat = ({
   <div className="flex flex-row items-center gap-[4px]">
     {icon}
     <div className="flex flex-col leading-tight">
-      <span className="opacity-60 text-[9px] uppercase tracking-wide">
+      <span className="text-[9px] uppercase opacity-60">
         {label}
       </span>
       <span className="font-medium tabular-nums flex flex-row items-center gap-[2px]">

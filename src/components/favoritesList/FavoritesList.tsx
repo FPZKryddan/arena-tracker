@@ -13,14 +13,14 @@ const FavoritesList = () => {
 
   return (
     <div className="w-full">
-      <div className="flex items-center gap-2 mb-3 text-fg-muted text-sm">
+      <div className="mb-3 flex items-center gap-2 text-sm text-fg-muted">
         <IoStar className="w-4 h-4 text-favorite" />
         <span>Favorites</span>
       </div>
       <ul className="flex flex-wrap gap-2">
         {favorites.map((f) => (
           <li key={`${f.region}:${f.gameName}#${f.tagLine}`}>
-            <div className="flex items-center bg-surface-elevated border border-border rounded-full pl-3 pr-1 py-1 text-fg hover:bg-surface-hover transition-colors">
+            <div className="flex items-center rounded-md border border-border bg-surface px-1 py-1 pl-3 text-fg transition-colors hover:border-border-strong hover:bg-surface-hover">
               <button
                 type="button"
                 onClick={() => navigate(profilePath(f))}
@@ -30,7 +30,7 @@ const FavoritesList = () => {
                   {f.gameName}
                   <span className="text-fg-muted">#{f.tagLine}</span>
                 </span>
-                <span className="text-[10px] uppercase bg-surface px-1.5 py-0.5 rounded text-fg-muted">
+                <span className="rounded border border-border px-1.5 py-0.5 text-[10px] uppercase text-fg-muted">
                   {f.region}
                 </span>
               </button>
@@ -41,7 +41,7 @@ const FavoritesList = () => {
                   e.stopPropagation();
                   remove(f);
                 }}
-                className="hover:cursor-pointer ml-2 p-1 rounded-full hover:bg-surface text-fg-muted"
+                className="ml-2 rounded-md p-1 text-fg-muted hover:cursor-pointer hover:bg-bg hover:text-fg"
               >
                 <IoClose className="w-3.5 h-3.5" />
               </button>

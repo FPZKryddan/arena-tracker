@@ -69,7 +69,7 @@ function useGetPlayerStats(region: Regions = "EUW") {
       upsertToast({
         id: RATE_LIMIT_TOAST_ID,
         type: "WARNING",
-        message: `Riot API rate limited — try again in ${remaining}s.`,
+        message: `Riot API rate limited. Try again in ${remaining}s.`,
         durationMs: Number.POSITIVE_INFINITY,
       });
     render();

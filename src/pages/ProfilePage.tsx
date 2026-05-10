@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { IoFlash } from "react-icons/io5";
+import { IoFlash, IoPeople } from "react-icons/io5";
 import ChampionList from "../components/championsView/ChampionList";
 import MatchHistoryList from "../components/matchHistory";
 import ChampionMatchTabs from "./ChampionMatchTabs";
@@ -18,37 +18,53 @@ const ProfilePage = () => {
   const region = (params.region ?? null) as Exclude<Regions, null> | null;
   const gameName = params.gameName ?? null;
   const tagLine = params.tagLine ?? null;
+  const comparePath =
+    region && gameName && tagLine
+      ? `/compare?${new URLSearchParams({
+          p: [
+            region,
+            encodeURIComponent(gameName),
+            encodeURIComponent(tagLine),
+          ].join("|"),
+        }).toString()}`
+      : "/compare";
 
   usePlayerHydration({ region, gameName, tagLine });
 
   return (
     <div
-      className="flex w-full h-dvh box-border bg-bg overflow-auto gap-[24px] md:gap-[48px]
-    flex-col p-[12px]
-    md:p-[32px]
-    "
+      className="box-border flex h-dvh w-full flex-col gap-[20px] overflow-auto bg-bg p-[12px] text-fg md:gap-[28px] md:p-[24px]"
     >
-      <header className="flex items-center justify-between w-full">
+      <header className="flex w-full items-center justify-between border-b border-border pb-3">
         <Link
           to="/"
-          className="flex items-center gap-2 text-fg hover:text-accent transition-colors group"
+          className="group flex items-center gap-2 text-fg transition-colors hover:text-accent"
           aria-label="Back to home"
         >
-          <IoFlash className="w-5 h-5 text-accent group-hover:scale-110 transition-transform" />
-          <span className="font-extrabold text-base md:text-lg tracking-tight">
+          <IoFlash className="h-5 w-5 text-accent" />
+          <span className="text-base font-semibold md:text-lg">
             Arena Tracker
           </span>
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <Link
+            to={comparePath}
+            className="flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-2 text-[12px] font-semibold text-fg-muted transition-colors hover:border-border-strong hover:bg-surface-hover hover:text-fg"
+          >
+            <IoPeople className="h-4 w-4" />
+            <span className="hidden sm:inline">Compare</span>
+          </Link>
+          <ThemeToggle />
+        </div>
       </header>
 
-      <div className="flex flex-row items-start gap-3 w-full md:w-[400px] lg:w-[600px] self-center">
+      <div className="flex w-full flex-row items-start gap-3 self-center md:w-[400px] lg:w-[600px]">
         <div className="flex-1 min-w-0">
           <SummonerInput />
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-[16px]">
+      <div className="flex flex-col gap-[16px] md:flex-row">
         <div className="hidden xl:flex xl:w-1/4 h-full order-1">
           <MatchHistoryList />
         </div>

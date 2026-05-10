@@ -4,11 +4,16 @@ import type {
   augmentsData,
   championData,
   MatchDto,
+  PlayerStats,
   Regions,
 } from "../types";
 import { getApiBase, getStoredRegion } from "./useApiBase";
 import useDdragonVersion from "./useDdragonVersion";
-import { ApiError, parseApiError } from "../utils/apiError";
+import {
+  ApiError,
+  coerceApiErrorPayload,
+  parseApiError,
+} from "../utils/apiError";
 
 const CHAMPION_ROLES: ChampionRole[] = [
   "Assassin",
@@ -18,6 +23,8 @@ const CHAMPION_ROLES: ChampionRole[] = [
   "Support",
   "Tank",
 ];
+
+const POLL_INTERVAL_MS = 1500;
 
 const isChampionRole = (role: string): role is ChampionRole =>
   (CHAMPION_ROLES as string[]).includes(role);
@@ -42,6 +49,11 @@ export const queryKeys = {
   champions: (version: string) => ["champions", version] as const,
   match: (region: string, matchId: string) =>
     ["match", region, matchId] as const,
+  playerStats: (
+    region: string,
+    gameName: string,
+    tagLine: string
+  ) => ["playerStats", region, gameName, tagLine] as const,
   recentMatchIds: (
     region: string,
     gameName: string,
@@ -82,6 +94,82 @@ const fetchMatch = async (
   const res = await fetch(`${apiBase}/matches/${region}/${matchId}`);
   if (!res.ok) throw new ApiError(await parseApiError(res));
   return (await res.json()) as MatchDto;
+};
+
+const fetchPlayerStats = async (
+  region: Exclude<Regions, null>,
+  gameName: string,
+  tagLine: string
+): Promise<PlayerStats> => {
+  const apiBase = getApiBase();
+  const res = await fetch(
+    `${apiBase}/players/${region}/${encodeURIComponent(
+      gameName
+    )}/${encodeURIComponent(tagLine)}`
+  );
+  if (!res.ok) throw new ApiError(await parseApiError(res));
+  return (await res.json()) as PlayerStats;
+};
+
+const wait = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+const pollRefreshJob = async (jobId: string): Promise<void> => {
+  const apiBase = getApiBase();
+
+  while (true) {
+    const res = await fetch(`${apiBase}/jobs/${jobId}`);
+    if (!res.ok) throw new ApiError(await parseApiError(res));
+
+    const state = (await res.json()) as {
+      status: "queued" | "running" | "done" | "error";
+      error?: unknown;
+    };
+
+    if (state.status === "done") return;
+    if (state.status === "error") {
+      throw new ApiError(coerceApiErrorPayload(state.error, 500));
+    }
+
+    await wait(POLL_INTERVAL_MS);
+  }
+};
+
+const refreshPlayerStats = async (
+  region: Exclude<Regions, null>,
+  gameName: string,
+  tagLine: string
+): Promise<PlayerStats> => {
+  const apiBase = getApiBase();
+  const startRes = await fetch(
+    `${apiBase}/players/${region}/${encodeURIComponent(
+      gameName
+    )}/${encodeURIComponent(tagLine)}/refresh`,
+    { method: "POST" }
+  );
+  if (!startRes.ok) throw new ApiError(await parseApiError(startRes));
+
+  const { jobId } = (await startRes.json()) as { jobId: string };
+  await pollRefreshJob(jobId);
+  return fetchPlayerStats(region, gameName, tagLine);
+};
+
+const fetchPlayerStatsWithRefresh = async (
+  region: Exclude<Regions, null>,
+  gameName: string,
+  tagLine: string
+): Promise<PlayerStats> => {
+  try {
+    return await fetchPlayerStats(region, gameName, tagLine);
+  } catch (error) {
+    if (
+      error instanceof ApiError &&
+      error.payload.code === "PLAYER_NOT_TRACKED"
+    ) {
+      return refreshPlayerStats(region, gameName, tagLine);
+    }
+    throw error;
+  }
 };
 
 const fetchRecentMatchIds = async (
@@ -127,6 +215,22 @@ export const useMatchQuery = (
     queryFn: () => fetchMatch(region, matchId as string),
     enabled: !!matchId,
     staleTime: 60 * 60_000,
+  });
+
+export const usePlayerStatsQuery = (
+  region: Exclude<Regions, null> | undefined,
+  gameName: string | undefined,
+  tagLine: string | undefined
+) =>
+  useQuery({
+    queryKey:
+      region && gameName && tagLine
+        ? queryKeys.playerStats(region, gameName, tagLine)
+        : ["playerStats", "none"],
+    queryFn: () => fetchPlayerStatsWithRefresh(region!, gameName!, tagLine!),
+    enabled: !!region && !!gameName && !!tagLine,
+    retry: false,
+    staleTime: 30_000,
   });
 
 export const useMatchesQuery = (

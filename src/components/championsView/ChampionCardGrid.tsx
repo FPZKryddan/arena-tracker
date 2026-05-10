@@ -47,9 +47,9 @@ const ChampionCard = memo(
       <button
         type="button"
         onClick={() => clickCallback(champion)}
-        className={`relative aspect-[3/4] rounded-md overflow-hidden border transition-all group cursor-pointer hover:ring-2 hover:ring-accent ${
+        className={`group relative aspect-[3/4] cursor-pointer overflow-hidden rounded-md border transition-colors hover:border-accent ${
           isComplete
-            ? "border-success/50 shadow-[0_0_0_1px_var(--color-success-ring-shadow)]"
+            ? "border-success/70"
             : "border-transparent"
         }`}
       >
@@ -58,14 +58,14 @@ const ChampionCard = memo(
           alt={champion.name}
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+          className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/55 to-transparent" />
-        <div className="absolute top-1 left-1 text-on-media/90 text-xs font-bold bg-media-scrim/45 rounded-full px-1.5 py-0.5">
+        <div className="absolute left-1 top-1 rounded bg-media-scrim/45 px-1.5 py-0.5 text-xs font-bold text-on-media/90">
           #{rank}
         </div>
         {isComplete && (
-          <div className="absolute top-1 right-1 h-5 w-5 rounded-full bg-media-scrim/55 p-0.5">
+          <div className="absolute right-1 top-1 h-5 w-5 rounded bg-media-scrim/55 p-0.5">
             <ChampionStageProgress stage={champion.stage} />
           </div>
         )}
@@ -83,7 +83,7 @@ const ChampionCard = memo(
 );
 
 const CardStat = ({ label, value }: { label: string; value: string }) => (
-  <span className="bg-media-scrim/45 rounded px-1 py-[1px]">
+  <span className="rounded bg-media-scrim/45 px-1 py-[1px]">
     <span className="opacity-70">{label} </span>
     <span className="font-semibold">{value}</span>
   </span>

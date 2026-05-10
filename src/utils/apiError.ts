@@ -160,7 +160,7 @@ export const formatApiError = (
     case "UPSTREAM_NOT_FOUND":
       return `Player ${who} doesn't exist on ${where}.`;
     case "PLAYER_NOT_TRACKED":
-      return `Stats for ${who} aren't ready yet — try refreshing.`;
+      return `Stats for ${who} aren't ready yet. Try refreshing.`;
     case "BAD_REGION": {
       const supported = (err.details as { supported?: unknown } | undefined)
         ?.supported;
@@ -170,14 +170,14 @@ export const formatApiError = (
         : `Region "${where}" is not supported.`;
     }
     case "JOB_NOT_FOUND":
-      return "Refresh expired — please try again.";
+      return "Refresh expired. Please try again.";
     case "UPSTREAM_RATE_LIMITED":
-      return `Riot API rate limited — try again in ${getRetryAfterSeconds(
+      return `Riot API rate limited. Try again in ${getRetryAfterSeconds(
         err
       )}s.`;
     case "UPSTREAM_ERROR":
     case "INTERNAL_ERROR":
-      return "Riot API is having trouble — try again shortly.";
+      return "Riot API is having trouble. Try again shortly.";
     case "BAD_PATH":
     case "METHOD_NOT_ALLOWED":
     case "BAD_HOST":

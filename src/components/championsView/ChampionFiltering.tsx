@@ -67,17 +67,17 @@ const ChampionFiltering = ({
         <button
           type="button"
           aria-label="Open champion filters"
-          className={`rounded-lg p-1 bg-transparent outline-2 hover:cursor-pointer transition-all duration-100 ${
+          className={`rounded-md border p-1 transition-colors hover:cursor-pointer ${
             filtersAreActive
-              ? "outline-accent text-accent"
-              : "outline-border-strong text-fg-muted hover:text-fg hover:outline-fg"
+              ? "border-accent bg-accent text-accent-fg"
+              : "border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg"
           }`}
           onClick={() => setIsOpen(!isOpen)}
         >
           <HiOutlineAdjustmentsHorizontal className=" text-lg" />
         </button>
         <div
-          className={`absolute bg-surface-elevated text-fg border border-border rounded-2xl p-4 w-[280px] top-full left-1/2 -translate-x-1/2 z-20 mt-[8px] text-nowrap shadow-2xl
+          className={`absolute left-1/2 top-full z-20 mt-[8px] w-[280px] -translate-x-1/2 rounded-lg border border-border bg-surface p-4 text-fg
         ${isOpen ? "flex" : "hidden"}`}
         >
           <ul className="text-[12px] flex flex-col gap-3 w-full">
@@ -129,7 +129,7 @@ const ChampionFiltering = ({
       </div>
       <div
         className={`absolute top-0 left-0 w-full h-full bg-transparent z-10 ${
-          isOpen ? "block" : "hidden       "
+          isOpen ? "block" : "hidden"
         }`}
         onClick={() => setIsOpen(false)}
       ></div>
@@ -156,7 +156,7 @@ const ChampionFilteringSelect = <TValue extends string,>({
         <span className="text-wrap">{label}</span>
         <select
           value={value}
-          className="w-32 rounded-md border border-border-strong bg-surface px-2 py-1 text-fg outline-none"
+          className="w-32 rounded-md border border-border bg-surface-elevated px-2 py-1 text-fg outline-none focus:border-accent"
           onChange={(e) => updateValueCallback(e.target.value as TValue)}
         >
           {options.map((option) => (
@@ -189,7 +189,7 @@ const ChampionFilteringCheckbox = ({
           name="checkbox"
           type="checkbox"
           checked={value}
-          className="h-[22px] w-auto aspect-square rounded-2xl"
+          className="h-[18px] w-[18px] accent-accent"
           onChange={(e) => updateValueCallback(e.target.checked)}
         />
       </label>
@@ -226,7 +226,7 @@ const ChampionFilteringNumber = ({
           min="0"
           step={step}
           value={value}
-          className="w-16 border-b-2 border-border-strong bg-transparent px-0.5 text-right outline-none"
+          className="w-16 rounded border border-border bg-surface-elevated px-1.5 py-1 text-right outline-none focus:border-accent"
           onFocus={handleOnFocus}
           onChange={(e) => updateValueCallback(toFilterNumber(e.target.value))}
         />

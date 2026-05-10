@@ -182,7 +182,7 @@ const ChampionList = () => {
           type="text"
           value={championNameFilter}
           placeholder="Search"
-          className="bg-surface rounded-full w-1/2 border border-border-strong px-4 py-1 text-fg text-[12px] font-normal placeholder:text-fg-muted focus:outline-none focus:ring-2 focus:ring-accent"
+          className="w-1/2 rounded-md border border-border bg-surface px-3 py-1.5 text-[12px] font-normal text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
           onChange={(e) => setChampionNameFilter(e.target.value)}
         />
       </div>
@@ -246,10 +246,8 @@ const ChampionListSkeleton = () => (
       {Array.from({ length: 8 }).map((_, idx) => (
         <div
           key={`champion-card-skeleton-${idx}`}
-          className="aspect-[3/4] rounded-md bg-surface-elevated"
-        >
-          <div className="h-full w-full rounded-md bg-gradient-to-t from-border/80 via-border/35 to-surface-elevated" />
-        </div>
+          className="aspect-[3/4] rounded-md border border-border bg-surface-elevated"
+        />
       ))}
     </div>
   </div>
@@ -257,9 +255,8 @@ const ChampionListSkeleton = () => (
 
 const ChampionPodiumSkeleton = ({ height }: { height: string }) => (
   <div
-    className={`relative flex-1 min-w-0 ${height} rounded-lg overflow-hidden bg-surface-elevated`}
+    className={`relative min-w-0 flex-1 overflow-hidden rounded-md border border-border bg-surface-elevated ${height}`}
   >
-    <div className="absolute inset-0 bg-gradient-to-t from-border/80 via-border/35 to-surface-elevated" />
     <div className="absolute bottom-2 left-2 right-2 flex flex-col gap-2">
       <div className="h-4 w-2/3 rounded bg-border" />
       <div className="grid grid-cols-3 gap-1">
@@ -283,10 +280,10 @@ const SortPill = ({ label, sorted, onClick }: SortPillProps) => {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-row items-center gap-0.5 px-2.5 py-1 rounded-full border text-[10px] font-bold transition-colors cursor-pointer ${
+      className={`flex cursor-pointer flex-row items-center gap-0.5 rounded-md border px-2.5 py-1 text-[10px] font-bold transition-colors ${
         active
           ? "border-accent bg-accent text-accent-fg"
-          : "border-border-strong bg-surface text-fg-muted hover:border-fg hover:text-fg"
+          : "border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg"
       }`}
     >
       {label}

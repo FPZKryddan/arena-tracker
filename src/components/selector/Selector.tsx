@@ -23,14 +23,14 @@ const Selector = ({
       } */}
       <div className="relative" onClick={toggleCallBack}>
         <p
-          className={`px-10 py-1 font-semibold text-center hover:cursor-pointer rounded-full text-md select-none ${
+          className={`select-none rounded-md border px-10 py-1 text-center text-md font-semibold hover:cursor-pointer ${
             isOpen ? "bg-accent text-accent-fg" : "bg-surface-elevated text-fg"
           }`}
         >
           {label}
         </p>
         {isOpen && (
-          <ul className="absolute bg-surface-elevated text-fg border border-border z-11 w-full mt-1 rounded-md py-2 drop-shadow-md">
+          <ul className="absolute z-11 mt-1 w-full rounded-md border border-border bg-surface text-fg">
             {items.map((item) => (
               <SelectorItem
                 key={item}

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import type { numericalStatsDto, Regions } from "../../types";
 import FavoriteButton from "../favoriteButton/FavoriteButton";
 import Tooltip from "../Tooltip/Tooltip";
@@ -10,6 +11,7 @@ interface StatsOverviewHeaderProps {
   assists: numericalStatsDto;
   name: string;
   imgUrl: string;
+  profilePath?: string;
   favoriteTarget?: {
     gameName: string;
     tagLine: string;
@@ -24,6 +26,7 @@ const StatsOverviewHeader = ({
   assists,
   name,
   imgUrl,
+  profilePath,
   favoriteTarget,
   trailing,
 }: StatsOverviewHeaderProps) => {
@@ -61,13 +64,39 @@ const StatsOverviewHeader = ({
   return (
     <div className="flex flex-row flex-wrap items-center justify-between gap-3">
       <div className="flex min-w-0 flex-row items-center gap-[8px]">
-        <img
-          className="bg-surface-elevated w-[55px] h-[55px] shrink-0 rounded-full"
-          src={imgUrl}
-        />
+        {profilePath ? (
+          <Link
+            to={profilePath}
+            aria-label={`Open ${name} profile`}
+            className="shrink-0 rounded-md transition-opacity hover:opacity-85"
+          >
+            <img
+              className="h-[55px] w-[55px] rounded-md bg-surface-elevated"
+              src={imgUrl}
+              alt=""
+            />
+          </Link>
+        ) : (
+          <img
+            className="h-[55px] w-[55px] shrink-0 rounded-md bg-surface-elevated"
+            src={imgUrl}
+            alt=""
+          />
+        )}
         <div className="flex min-w-0 flex-col">
           <div className="flex flex-row items-center gap-2">
-            <h1 className="truncate text-[16px] font-extrabold">{name}</h1>
+            <h1 className="min-w-0 truncate text-[16px] font-extrabold">
+              {profilePath ? (
+                <Link
+                  to={profilePath}
+                  className="block truncate transition-colors hover:text-accent"
+                >
+                  {name}
+                </Link>
+              ) : (
+                name
+              )}
+            </h1>
             {favoriteTarget && <FavoriteButton favorite={favoriteTarget} />}
           </div>
           {stats}

@@ -83,7 +83,7 @@ const DamageStat = ({
         </p>
       </div>
       <div
-        className={`flex flex-row w-full bg-border/60 h-[10px] rounded-2xl overflow-hidden`}
+        className="flex h-[10px] w-full flex-row overflow-hidden rounded bg-border/60"
       >
         <div
           className="h-full"
@@ -94,7 +94,7 @@ const DamageStat = ({
             extra={"Highest physical damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(phyiscal.records[0]?.value)}
           >
             <div
-              className="h-[10px] w-full rounded-l-2xl hover:outline-1 outline-border-strong hover:z-2"
+              className="h-[10px] w-full hover:z-2 hover:outline-1 outline-border-strong"
               style={{ backgroundColor: getColor("physical") }}
             ></div>
           </Tooltip>
@@ -119,7 +119,7 @@ const DamageStat = ({
             extra={"Highest true damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(trueDmg.records[0]?.value)}
           >
             <div
-              className="h-[10px] w-full rounded-r-2xl hover:outline-1 outline-border-strong hover:z-2"
+              className="h-[10px] w-full hover:z-2 hover:outline-1 outline-border-strong"
               style={{ backgroundColor: getColor("true") }}
             ></div>
           </Tooltip>

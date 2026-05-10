@@ -74,15 +74,15 @@ const SummonerInput = () => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full items-center rounded-sm"
+      className="relative w-full items-center"
       onFocus={() => setIsFocused(true)}
       onBlur={handleBlur}
     >
-      <div className="flex flex-row w-full px-4 box-border h-[44px] bg-surface-elevated text-fg rounded-[25px] border border-border">
+      <div className="box-border flex h-[44px] w-full flex-row rounded-lg border border-border bg-surface text-fg transition-colors focus-within:border-accent">
         <input
           type="text"
           name="playerInput"
-          className="text-left text-fg font-normal h-full w-full focus:outline-0 autofill:shadow-none placeholder:text-fg-muted"
+          className="h-full w-full rounded-l-lg bg-transparent px-4 text-left font-normal text-fg placeholder:text-fg-muted focus:outline-0 autofill:shadow-none"
           placeholder="RiotName#TAG"
           value={playerInputName}
           onChange={(e) => setPlayerInputName(e.target.value)}
@@ -99,17 +99,18 @@ const SummonerInput = () => {
           />
           <button
             onClick={handleSubmit}
-            className="hover:cursor-pointer"
+            className="rounded-r-lg px-2 text-fg-muted transition-colors hover:cursor-pointer hover:bg-surface-hover hover:text-fg"
             disabled={isFetching}
+            aria-label="Search player"
           >
-            <IoSearch className="h-full w-auto aspect-square p-2 text-fg" />
+            <IoSearch className="h-full w-auto aspect-square p-2" />
           </button>
         </div>
       </div>
       <FetchingProgress isFetching={isFetching} jobState={jobState} />
 
       {showDropdown && (
-        <ul className="absolute left-0 right-0 top-[48px] z-20 bg-surface-elevated border border-border rounded-2xl shadow-2xl overflow-hidden max-h-[280px] overflow-y-auto">
+        <ul className="absolute left-0 right-0 top-[48px] z-20 max-h-[280px] overflow-y-auto rounded-lg border border-border bg-surface">
           <li className="flex items-center gap-2 px-4 py-2 text-xs text-fg-muted border-b border-border">
             <IoStar className="w-3.5 h-3.5 text-favorite" />
             <span>Favorites</span>
@@ -128,7 +129,7 @@ const SummonerInput = () => {
                   {f.gameName}
                   <span className="text-fg-muted">#{f.tagLine}</span>
                 </span>
-                <span className="text-[10px] uppercase bg-surface px-1.5 py-0.5 rounded text-fg-muted">
+                <span className="rounded border border-border px-1.5 py-0.5 text-[10px] uppercase text-fg-muted">
                   {f.region}
                 </span>
               </div>
@@ -140,7 +141,7 @@ const SummonerInput = () => {
                   e.stopPropagation();
                   remove(f);
                 }}
-                className="hover:cursor-pointer ml-2 p-1 rounded-full hover:bg-surface text-fg-muted"
+                className="ml-2 rounded-md p-1 text-fg-muted hover:cursor-pointer hover:bg-surface-hover hover:text-fg"
               >
                 <IoClose className="w-3.5 h-3.5" />
               </button>

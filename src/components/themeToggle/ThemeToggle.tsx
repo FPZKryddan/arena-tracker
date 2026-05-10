@@ -11,7 +11,7 @@ const ThemeToggle = () => {
             onClick={toggleTheme}
             aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
             title={isDark ? "Switch to light theme" : "Switch to dark theme"}
-            className="md:fixed md:top-3 md:right-3 z-50 shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-surface-elevated text-fg border border-border shadow-md hover:bg-surface-hover hover:text-accent transition-colors cursor-pointer"
+            className="z-50 flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-md border border-border bg-surface text-fg transition-colors hover:border-border-strong hover:bg-surface-hover hover:text-accent"
         >
             {isDark ? <HiOutlineSun size={20} /> : <HiOutlineMoon size={20} />}
         </button>

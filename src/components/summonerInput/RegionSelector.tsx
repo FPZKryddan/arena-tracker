@@ -41,12 +41,16 @@ const RegionSelector = ({ updateRegionCallback, initialRegion }: RegionSelectorP
   };
 
   return (
-    <button className="relative h-full group" onClick={regionSelectorClicked}>
-      <div className="bg-surface text-fg rounded-md px-2 py-1.5 text-[14px] font-normal shadow-md shadow-shadow group-hover:cursor-pointer group-hover:bg-surface-hover">
+    <div className="relative flex h-full items-center">
+      <button
+        type="button"
+        className="rounded-md border border-border bg-surface-elevated px-2 py-1.5 text-[13px] font-medium text-fg transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover"
+        onClick={regionSelectorClicked}
+      >
         {regionSelected}
-      </div>
+      </button>
       <div
-        className={`absolute top-full mt-[4px] bg-surface-elevated text-fg border border-border left-1/2 -translate-x-1/2 p-2 w-[100px] rounded-md shadow-2xl overflow-hidden z-1 ${
+        className={`absolute left-1/2 top-full z-30 mt-[6px] w-[104px] -translate-x-1/2 overflow-hidden rounded-md border border-border bg-surface p-1 text-fg ${
           isSelectorOpen ? "block" : "hidden"
         }`}
       >
@@ -56,7 +60,7 @@ const RegionSelector = ({ updateRegionCallback, initialRegion }: RegionSelectorP
           <RegionSelectorItem region="NA" onClickCallBack={selectRegion} />
         </ul>
       </div>
-    </button>
+    </div>
   );
 };
 

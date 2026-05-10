@@ -20,8 +20,8 @@ const FetchingProgress = ({ isFetching, jobState }: FetchingProgressProps) => {
   const label = jobState?.phase
     ? PHASE_LABELS[jobState.phase]
     : jobState?.status === "queued"
-    ? "Queued..."
-    : "Starting...";
+    ? "Queued"
+    : "Starting";
 
   const progress = jobState?.progress;
   const pct =
@@ -30,7 +30,7 @@ const FetchingProgress = ({ isFetching, jobState }: FetchingProgressProps) => {
       : null;
 
   return (
-    <div className="mt-[8px] w-full px-[16px] py-[10px] bg-surface-elevated/70 border border-border rounded-[16px] flex flex-col gap-[6px]">
+    <div className="mt-[8px] flex w-full flex-col gap-[6px] rounded-lg border border-border bg-surface px-[16px] py-[10px]">
       <div className="flex flex-row items-center gap-[8px]">
         <ClipLoader size={14} color="var(--color-info)" />
         <p className="text-[12px] text-fg">
@@ -39,7 +39,7 @@ const FetchingProgress = ({ isFetching, jobState }: FetchingProgressProps) => {
         </p>
       </div>
       {pct !== null && (
-        <div className="w-full h-[4px] bg-border rounded-full overflow-hidden">
+        <div className="h-[4px] w-full overflow-hidden rounded bg-border">
           <div
             className="h-full bg-info transition-all duration-300"
             style={{ width: `${pct}%` }}

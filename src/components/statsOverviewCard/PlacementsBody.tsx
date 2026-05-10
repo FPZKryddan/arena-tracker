@@ -19,18 +19,18 @@ interface PlacementsBodyProps {
 
 const getAveragePlacementTone = (averagePlacement: number): string => {
   if (averagePlacement <= 2) {
-    return "border-placement-first/70 bg-placement-first/15 text-placement-first shadow-[0_0_18px_var(--color-placement-first-glow)]";
+    return "border-placement-first/70 text-placement-first";
   }
   if (averagePlacement <= 4) {
-    return "border-success/70 bg-success/15 text-success";
+    return "border-success/70 text-success";
   }
   if (averagePlacement <= 5) {
-    return "border-info/70 bg-info/15 text-info";
+    return "border-info/70 text-info";
   }
   if (averagePlacement <= 6.5) {
-    return "border-warning/70 bg-warning/15 text-warning";
+    return "border-warning/70 text-warning";
   }
-  return "border-danger/70 bg-danger/15 text-danger";
+  return "border-danger/70 text-danger";
 };
 
 ChartJS.register(
@@ -121,7 +121,7 @@ const PlacementsBody = ({
     <div className="flex flex-col gap-[8px]">
       <div className="flex flex-row flex-wrap items-center justify-between gap-[8px]">
         <div
-          className={`flex min-w-[112px] flex-col rounded-md border px-[10px] py-[8px] ${averagePlacementTone}`}
+          className={`flex min-w-[112px] flex-col rounded-md px-[10px] py-[8px] ${averagePlacementTone}`}
         >
           <p className="text-[10px] font-bold uppercase leading-none opacity-80">
             Avg Place

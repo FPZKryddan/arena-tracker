@@ -15,9 +15,16 @@ import TeammatesBody from "./TeammatesBody";
 interface StatsOverviewCardProps {
   stats: PlayerStats | championStatsDto;
   standalone?: boolean;
+  favoriteRegion?: Exclude<Regions, null>;
+  profileRegion?: Exclude<Regions, null>;
 }
 
-const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
+const StatsOverviewCard = ({
+  stats,
+  standalone,
+  favoriteRegion,
+  profileRegion,
+}: StatsOverviewCardProps) => {
   const version = useDdragonVersion();
   const { region: routeRegion } = useParams<{ region?: string }>();
   const { champions } = useContextIfDefined(ChampionsContext);
@@ -31,6 +38,13 @@ const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
     ? Object.values(stats.championStats).filter((champion) => champion.stage >= 3)
         .length
     : 0;
+  const effectiveFavoriteRegion = favoriteRegion ?? routeRegion;
+  const profilePath =
+    "gameName" in stats && profileRegion
+      ? `/profile/${profileRegion}/${encodeURIComponent(
+          stats.gameName
+        )}/${encodeURIComponent(stats.tagLine)}`
+      : undefined;
 
   const firstLetterBig = (name: string): string => {
     return name[0].toUpperCase() + name.slice(1);
@@ -44,16 +58,16 @@ const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
   }
 
   return (
-    <div className={`${standalone ? 'bg-surface shadow-2xl p-[8px] md:p-[32px]' : 'bg-transparent shadow-none'}
-     text-fg relative flex flex-col grow-0 w-full h-fit rounded-xl gap-[24px]`}>
+    <div className={`${standalone ? 'border border-border bg-surface p-[8px] md:p-[24px]' : 'bg-transparent'}
+     relative flex h-fit w-full grow-0 flex-col gap-[24px] rounded-lg text-fg`}>
       {stats && hasStats ? (
         <div className="relative flex flex-col gap-[24px]">
           {bannerImgUrl && (
             <div
               className={`pointer-events-none absolute h-[340px] overflow-hidden ${
                 standalone
-                  ? "-left-2 -right-2 -top-2 md:-left-8 md:-right-8 md:-top-8 md:rounded-t-xl"
-                  : "-left-2 -right-2 -top-2 rounded-t-2xl"
+                  ? "-left-2 -right-2 -top-2 md:-left-6 md:-right-6 md:-top-6 md:rounded-t-lg"
+                  : "-left-2 -right-2 -top-2 rounded-t-lg"
               }`}
               style={{
                 WebkitMaskImage:
@@ -78,12 +92,13 @@ const StatsOverviewCard = ({ stats, standalone }: StatsOverviewCardProps) => {
               assists={stats.infographics.killsDeathsAssists.assists}
               name={displayName}
               imgUrl={getImgUrl()}
+              profilePath={profilePath}
               favoriteTarget={
-                "gameName" in stats && routeRegion
+                "gameName" in stats && effectiveFavoriteRegion
                   ? {
                       gameName: stats.gameName,
                       tagLine: stats.tagLine,
-                      region: routeRegion as Exclude<Regions, null>,
+                      region: effectiveFavoriteRegion as Exclude<Regions, null>,
                     }
                   : undefined
               }
@@ -138,7 +153,7 @@ const NoStatsState = ({
   name: string;
   imageUrl: string;
 }) => (
-  <div className="relative min-h-[220px] w-full overflow-hidden rounded-xl bg-surface-elevated">
+  <div className="relative min-h-[220px] w-full overflow-hidden rounded-lg border border-border bg-surface-elevated">
     <img
       src={imageUrl}
       alt={name}

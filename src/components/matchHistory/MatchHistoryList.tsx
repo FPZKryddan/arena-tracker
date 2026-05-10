@@ -69,7 +69,7 @@ const MatchHistoryList = () => {
 
   return (
     <div className="flex flex-col gap-[8px] w-full">
-      <h2 className="text-fg text-[12px] font-bold tracking-wider">
+      <h2 className="text-[12px] font-bold text-fg">
         MATCH HISTORY
       </h2>
       {loading && matches.length === 0 && <MatchHistorySkeleton />}
@@ -145,7 +145,7 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
   return (
     <li
       onClick={onClick}
-      className={`flex flex-row items-center gap-[8px] p-[8px] rounded-md border-l-4 text-fg text-[10px] hover:cursor-pointer hover:brightness-110 ${placementColor(
+      className={`flex flex-row items-center gap-[8px] rounded-md border-l-4 p-[8px] text-[10px] text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover ${placementColor(
         me.placement
       )}`}
     >

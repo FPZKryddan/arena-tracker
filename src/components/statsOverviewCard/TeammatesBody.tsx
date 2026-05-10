@@ -88,7 +88,7 @@ const TeammateRow = ({ teammate, onSelect }: TeammateRowProps) => {
           <span className="opacity-60">#{teammate.tagLine}</span>
         </p>
         <p className="text-[10px] opacity-70">
-          {profile ? `Lv. ${profile.summonerLevel} \u2022 ` : ""}
+          {profile ? `Lv. ${profile.summonerLevel} / ` : ""}
           {teammate.gamesPlayed} games
         </p>
       </div>

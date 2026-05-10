@@ -7,9 +7,9 @@ const StatsSkeleton = ({ standalone }: StatsSkeletonProps) => {
     <div
       className={`${
         standalone
-          ? "bg-surface shadow-2xl p-[8px] md:p-[32px]"
-          : "bg-transparent shadow-none"
-      } flex flex-col grow-0 w-full h-fit rounded-xl gap-[24px] animate-pulse`}
+          ? "border border-border bg-surface p-[8px] md:p-[24px]"
+          : "bg-transparent"
+      } flex h-fit w-full grow-0 animate-pulse flex-col gap-[24px] rounded-lg`}
     >
       <div className="flex flex-row items-center gap-4">
         <div className="w-12 h-12 bg-border rounded-full" />

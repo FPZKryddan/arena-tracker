@@ -8,7 +8,7 @@ interface ToastContainerProps {
 const ToastContainer = ({ toasts }: ToastContainerProps) => {
 
     return (
-        <div className="flex flex-col w-1/2 fixed top-4 left-1/2 -translate-x-1/2 gap-2 pointer-events-none z-100">
+        <div className="pointer-events-none fixed left-1/2 top-4 z-100 flex w-[calc(100%-24px)] max-w-[520px] -translate-x-1/2 flex-col gap-2">
             <AnimatePresence>
                 {toasts.map((toast) => (
                     <motion.div 
@@ -18,12 +18,12 @@ const ToastContainer = ({ toasts }: ToastContainerProps) => {
                     exit={{ opacity: 0, y: -50 }}
                     transition={{ duration: 0.15, ease: easeOut }}
                     layout
-                    className={`w-full rounded-md py-2 shadow-2xl text-center select-none pointer-events-none ${
+                    className={`pointer-events-none w-full select-none rounded-md border px-4 py-2 text-center text-sm ${
                         toast.type === 'SUCCESS'
-                            ? 'bg-success text-success-fg'
+                            ? 'border-success bg-success text-success-fg'
                             : toast.type === 'WARNING'
-                            ? 'bg-warning text-warning-fg'
-                            : 'bg-danger text-danger-fg'
+                            ? 'border-warning bg-warning text-warning-fg'
+                            : 'border-danger bg-danger text-danger-fg'
                     }`}>
                         {toast.message}
                     </motion.div>
