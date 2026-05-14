@@ -30,7 +30,7 @@ const FavoritesList = () => {
                   {f.gameName}
                   <span className="text-fg-muted">#{f.tagLine}</span>
                 </span>
-                <span className="rounded border border-border px-1.5 py-0.5 text-[10px] uppercase text-fg-muted">
+                <span className="rounded-sm border border-border px-1.5 py-0.5 text-xs uppercase text-fg-muted">
                   {f.region}
                 </span>
               </button>

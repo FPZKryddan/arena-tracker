@@ -56,11 +56,11 @@ const FavoriteAugmentsBody = ({ augments }: FavoriteAugmentsBodyProps) => {
   }, [augments, augmentById]);
 
   return (
-    <div className="flex w-full flex-col gap-[10px]">
-      <div className="flex flex-row items-center justify-between gap-[8px]">
-        <h2 className="text-[12px] font-semibold">Favorite Augments</h2>
+    <div className="flex w-full flex-col gap-2.5">
+      <div className="flex flex-row items-center justify-between gap-2">
+        <h2 className="text-xs font-semibold">Favorite Augments</h2>
         {!isLoading && !isError && totalPicked > 0 && (
-          <p className="text-[11px] font-medium tabular-nums text-fg-muted">
+          <p className="text-xs font-medium tabular-nums text-fg-muted">
             {totalPicked} picks
           </p>
         )}
@@ -71,7 +71,7 @@ const FavoriteAugmentsBody = ({ augments }: FavoriteAugmentsBodyProps) => {
       ) : isError ? (
         <FavoriteAugmentsMessage message="Augments unavailable" />
       ) : mostPickedAugments.length > 0 ? (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(132px,1fr))] gap-[8px]">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(8.25rem,1fr))] gap-2">
           {mostPickedAugments.map((entry) => (
             <FavoriteAugment
               key={entry.data.id}
@@ -89,18 +89,18 @@ const FavoriteAugmentsBody = ({ augments }: FavoriteAugmentsBodyProps) => {
 };
 
 const FavoriteAugmentsSkeleton = () => (
-  <div className="grid grid-cols-[repeat(auto-fit,minmax(132px,1fr))] gap-[8px]">
+  <div className="grid grid-cols-[repeat(auto-fit,minmax(8.25rem,1fr))] gap-2">
     {[...Array(MAX_FAVORITE_AUGMENTS)].map((_, index) => (
       <div
         key={`favorite-augment-loading-${index}`}
-        className="h-[50px] animate-pulse rounded-md border border-border bg-border/50"
+        className="h-12 animate-pulse rounded-md border border-border bg-border/50"
       />
     ))}
   </div>
 );
 
 const FavoriteAugmentsMessage = ({ message }: { message: string }) => (
-  <div className="flex min-h-[52px] w-full items-center justify-center rounded-md border border-dashed border-border px-3 text-center text-[12px] font-medium text-fg-muted">
+  <div className="flex min-h-12 w-full items-center justify-center rounded-md border border-dashed border-border px-3 text-center text-xs font-medium text-fg-muted">
     {message}
   </div>
 );

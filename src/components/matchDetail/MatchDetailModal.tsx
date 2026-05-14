@@ -129,20 +129,20 @@ const MatchDetailModal = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15, ease: easeOut }}
-            className="fixed inset-0 z-[120] flex items-center justify-center p-[12px] md:p-[24px] pointer-events-none"
+            className="fixed inset-0 z-[120] flex items-center justify-center p-3 md:p-6 pointer-events-none"
           >
-            <div className="pointer-events-auto relative max-h-[90vh] w-full max-w-[1100px] overflow-y-auto rounded-lg border border-border bg-surface p-[16px] text-fg md:p-[24px]">
-              <div className="absolute right-[12px] top-[12px] z-10 flex items-center gap-[6px]">
+            <div className="pointer-events-auto relative max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-lg border border-border bg-surface p-4 text-fg md:p-6">
+              <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5">
                 {shareUrl && (
                   <button
                     type="button"
-                    className="flex items-center gap-[5px] rounded-md border border-border bg-surface-elevated px-[8px] py-[5px] text-[11px] font-semibold text-fg-muted hover:border-border-strong hover:bg-surface-hover hover:text-fg"
+                    className="flex items-center gap-1 rounded-md border border-border bg-surface-elevated px-2 py-1 text-xs font-semibold text-fg-muted hover:border-border-strong hover:bg-surface-hover hover:text-fg"
                     onClick={handleCopyShareUrl}
                   >
                     {shareCopied ? (
-                      <HiMiniCheck className="text-[14px]" />
+                      <HiMiniCheck className="text-sm" />
                     ) : (
-                      <HiMiniLink className="text-[14px]" />
+                      <HiMiniLink className="text-sm" />
                     )}
                     <span className="hidden sm:inline">
                       {shareCopied ? "Copied" : "Copy link"}
@@ -160,7 +160,7 @@ const MatchDetailModal = ({
               </div>
               {loading && <MatchDetailSkeleton />}
               {!loading && !match && (
-                <p className="text-[12px]">Could not load match.</p>
+                <p className="text-xs">Could not load match.</p>
               )}
               {match && (
                 <MatchDetailContent
@@ -250,20 +250,20 @@ const MatchDetailContent = ({
   };
 
   return (
-    <div className="flex flex-col gap-[16px]">
+    <div className="flex flex-col gap-4">
       <MatchSummaryHeader match={match} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-[12px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {orderedTeams.map(([teamId, players]) => (
           <div
             key={teamId}
-            className={`rounded-md border-l-4 p-[8px] ${placementClass(
+            className={`rounded-md border-l-4 p-2 ${placementClass(
               players[0].subteamPlacement
             )}`}
           >
-            <p className="text-[12px] font-bold mb-[6px]">
+            <p className="text-xs font-semibold mb-1.5">
               #{players[0].subteamPlacement} Place
             </p>
-            <div className="flex flex-col gap-[8px]">
+            <div className="flex flex-col gap-2">
               {players.map((p) => (
                 <ParticipantRow
                   key={p.puuid}
@@ -345,12 +345,12 @@ const ParticipantRow = ({
 
   return (
     <div
-      className={`flex flex-col gap-[6px] text-[11px] p-[8px] rounded ${
+      className={`flex flex-col gap-1.5 text-xs p-2 rounded-sm ${
         isHighlighted ? "bg-info/15 outline outline-1 outline-info" : "bg-bg/35"
       }`}
     >
-      <div className="flex flex-row items-center gap-[8px]">
-        <div className="h-[40px] aspect-square rounded-full overflow-hidden shrink-0">
+      <div className="flex flex-row items-center gap-2">
+        <div className="h-10 aspect-square rounded-full overflow-hidden shrink-0">
           <img
             className="h-full w-auto aspect-square scale-110"
             src={getChampionIconUrl(version, p.championName)}
@@ -358,7 +358,7 @@ const ParticipantRow = ({
           />
         </div>
         <div className="flex flex-col flex-1 min-w-0">
-          <p className="truncate font-medium text-[12px]">
+          <p className="truncate font-medium text-xs">
             {p.riotIdGameName}
             <span className="opacity-50">#{p.riotIdTagline}</span>
           </p>
@@ -375,7 +375,7 @@ const ParticipantRow = ({
         version={version}
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-[4px] text-[11px]">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-1 text-xs">
         <Stat
           icon={<GiBroadsword className="text-damage-physical" />}
           label="Dealt"
@@ -447,19 +447,19 @@ const LoadoutStrip = ({
   const itemSlots = Array.from({ length: 6 }, (_, index) => items[index]);
 
   return (
-    <div className="grid grid-cols-1 gap-[8px] rounded-md border border-border/70 bg-surface/45 p-[7px] xl:grid-cols-[auto_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 gap-2 rounded-md border border-border/70 bg-surface/45 p-1.5 xl:grid-cols-[auto_minmax(0,1fr)]">
       <div className="min-w-0">
-        <p className="mb-[4px] text-[9px] font-semibold uppercase text-fg-muted">
+        <p className="mb-1 text-xs font-semibold uppercase text-fg-muted">
           Augments
         </p>
-        <div className="flex flex-row flex-wrap gap-[6px]">
+        <div className="flex flex-row flex-wrap gap-1.5">
           {augmentSlots.map((id, index) => {
             const augment = id ? augmentLookup.get(id) : undefined;
 
             return (
               <div
                 key={`augment-slot-${index}-${id ?? "empty"}`}
-                className={`h-[34px] w-[34px] shrink-0 rounded-md border border-border bg-surface-elevated
+                className={`h-8 w-8 shrink-0 rounded-md border border-border bg-surface-elevated
                 }`}
                 title={augment?.name}
               >
@@ -480,14 +480,14 @@ const LoadoutStrip = ({
         </div>
       </div>
       <div className="min-w-0">
-        <p className="mb-[4px] text-[9px] font-semibold uppercase text-fg-muted">
+        <p className="mb-1 text-xs font-semibold uppercase text-fg-muted">
           Items
         </p>
-        <div className="flex flex-row flex-wrap gap-[6px]">
+        <div className="flex flex-row flex-wrap gap-1.5">
           {itemSlots.map((id, index) => (
             <div
               key={`item-slot-${index}-${id ?? "empty"}`}
-              className="h-[34px] w-[34px] shrink-0 overflow-hidden rounded-md border border-border bg-bg/45"
+              className="h-8 w-8 shrink-0 overflow-hidden rounded-md border border-border bg-bg/45"
             >
               {id && (
                 <img
@@ -516,18 +516,18 @@ const AbilityCasts = ({
   const totalCasts = casts.reduce((total, value) => total + value, 0);
 
   return (
-    <div className="rounded-md border border-border/70 bg-surface/35 px-[7px] py-[6px]">
-      <div className="mb-[5px] flex items-center justify-between gap-[8px]">
-        <div className="flex min-w-0 items-center gap-[5px]">
-          <p className="truncate text-[9px] font-semibold uppercase text-fg-muted">
+    <div className="rounded-md border border-border/70 bg-surface/35 px-1.5 py-1.5">
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-1">
+          <p className="truncate text-xs font-semibold uppercase text-fg-muted">
             Ability casts
           </p>
         </div>
-        <p className="shrink-0 text-[10px] font-bold tabular-nums text-fg">
+        <p className="shrink-0 text-xs font-semibold tabular-nums text-fg">
           {totalCasts}
         </p>
       </div>
-      <div className="grid grid-cols-4 gap-[4px]">
+      <div className="grid grid-cols-4 gap-1">
         {casts.map((value, index) => {
           const spell = spellIcons[index];
           const spellName = spell?.name ?? `Spell ${index + 1}`;
@@ -535,7 +535,7 @@ const AbilityCasts = ({
           return (
             <div
               key={`${spellName}-${index}`}
-              className="flex min-w-0 items-center gap-[5px] rounded-sm bg-bg/45 px-[5px] py-[4px]"
+              className="flex min-w-0 items-center gap-1 rounded-sm bg-bg/45 px-1 py-1"
               title={`${spellName}: ${value} casts`}
               aria-label={`${spellName}: ${value} casts`}
             >
@@ -543,7 +543,7 @@ const AbilityCasts = ({
                 <img
                   src={spell.icon}
                   alt={spellName}
-                  className="h-[20px] w-[20px] shrink-0 rounded-sm object-cover"
+                  className="h-5 w-5 shrink-0 rounded-sm object-cover"
                   loading="lazy"
                   decoding="async"
                   onError={(event) => {
@@ -551,9 +551,9 @@ const AbilityCasts = ({
                   }}
                 />
               ) : (
-                <HiMiniBolt className="h-[20px] w-[20px] shrink-0 text-accent" />
+                <HiMiniBolt className="h-5 w-5 shrink-0 text-accent" />
               )}
-              <span className="min-w-0 flex-1 truncate text-right text-[11px] font-semibold tabular-nums text-fg">
+              <span className="min-w-0 flex-1 truncate text-right text-xs font-semibold tabular-nums text-fg">
                 {value}
               </span>
             </div>
@@ -569,13 +569,13 @@ const MatchSummaryHeader = ({
 }: {
   match: MatchDto;
 }) => (
-  <section className="relative overflow-hidden rounded-lg px-[12px] py-[12px] md:px-[14px]">
-    <div className="flex flex-col gap-[10px] md:flex-row md:items-end md:justify-start">
+  <section className="relative overflow-hidden rounded-lg px-3 py-3 md:px-3">
+    <div className="flex flex-col gap-2.5 md:flex-row md:items-end md:justify-start">
       <div className="min-w-0">
-        <p className="text-[18px] font-bold leading-tight md:text-[20px]">
+        <p className="text-lg font-semibold leading-tight md:text-lg">
           Arena Match
         </p>
-        <p className="mt-[3px] truncate text-[11px] text-fg-muted">
+        <p className="mt-0.5 truncate text-xs text-fg-muted">
           {new Date(match.info.gameCreation).toLocaleString()} /{" "}
           {match.metadata.matchId} / Game duration {formatDuration(match.info.gameDuration)}
         </p>
@@ -1163,10 +1163,10 @@ const PlayerDamageSparkline = ({
   const takenPoints = buildSparklinePoints(timeline.taken, width, height, max);
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-[8px] rounded-sm bg-bg/30 px-[6px] py-[5px]">
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-sm bg-bg/30 px-1.5 py-1">
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="h-[34px] min-w-0"
+        className="h-8 min-w-0"
         role="img"
         aria-label="Damage dealt and tanked preview"
         preserveAspectRatio="none"
@@ -1190,10 +1190,10 @@ const PlayerDamageSparkline = ({
         />
       </svg>
       <div className="flex shrink-0 flex-col items-end leading-tight">
-        <span className="text-[9px] font-semibold uppercase text-fg-muted">
+        <span className="text-xs font-semibold uppercase text-fg-muted">
           Dealt / Tanked
         </span>
-        <span className="text-[10px] font-medium tabular-nums text-fg">
+        <span className="text-xs font-medium tabular-nums text-fg">
           {formatPlainNumber(timeline.finalDealt)} /{" "}
           {formatPlainNumber(timeline.finalTaken)}
         </span>
@@ -1289,17 +1289,17 @@ const PlayerDamageLineChart = ({
   };
 
   return (
-    <div className="flex flex-col gap-[7px] rounded-md border border-border/70 bg-surface/45 p-[8px]">
-      <div className="flex flex-row flex-wrap items-center justify-between gap-[6px]">
-        <p className="text-[9px] font-semibold uppercase tracking-normal text-fg-muted">
+    <div className="flex flex-col gap-1.5 rounded-md border border-border/70 bg-surface/45 p-2">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-1.5">
+        <p className="text-xs font-semibold uppercase tracking-normal text-fg-muted">
           Damage curve
         </p>
-        <p className="text-[10px] font-medium tabular-nums text-fg-muted">
+        <p className="text-xs font-medium tabular-nums text-fg-muted">
           Dealt {formatPlainNumber(timeline.finalDealt)} / Tanked{" "}
           {formatPlainNumber(timeline.finalTaken)}
         </p>
       </div>
-      <div className="grid grid-cols-2 gap-[6px]">
+      <div className="grid grid-cols-2 gap-1.5">
         <DamageCurveTotal
           label="Final dealt"
           value={timeline.finalDealt}
@@ -1311,7 +1311,7 @@ const PlayerDamageLineChart = ({
           color={takenColor}
         />
       </div>
-      <div className="h-[178px] min-w-0">
+      <div className="h-44 min-w-0">
         <Line data={data} options={options} />
       </div>
     </div>
@@ -1327,17 +1327,17 @@ const DamageCurveTotal = ({
   value: number;
   color: string;
 }) => (
-  <div className="rounded-sm bg-bg/35 px-[7px] py-[5px]">
-    <div className="flex items-center gap-[5px]">
+  <div className="rounded-sm bg-bg/35 px-1.5 py-1">
+    <div className="flex items-center gap-1">
       <span
-        className="h-[7px] w-[7px] rounded-full"
+        className="h-1.5 w-1.5 rounded-full"
         style={{ backgroundColor: color }}
       />
-      <p className="text-[9px] font-semibold uppercase text-fg-muted">
+      <p className="text-xs font-semibold uppercase text-fg-muted">
         {label}
       </p>
     </div>
-    <p className="mt-[2px] text-[12px] font-bold tabular-nums text-fg">
+    <p className="mt-0.5 text-xs font-semibold tabular-nums text-fg">
       {formatPlainNumber(value)}
     </p>
   </div>
@@ -1372,22 +1372,22 @@ const EndGameStats = ({
   const hasAdvancedDetails = advancedSections.length > 0 || abilityCasts.length > 0;
 
   return (
-    <div className="flex flex-col gap-[5px] border-t border-border/60 pt-[7px]">
-      <div className="grid grid-cols-3 gap-[5px] sm:grid-cols-4 xl:grid-cols-6">
+    <div className="flex flex-col gap-1 border-t border-border/60 pt-1.5">
+      <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 xl:grid-cols-6">
         {primaryRows.map((row) => (
           <EndGameStatChip key={row.label} row={row} />
         ))}
       </div>
       <button
         type="button"
-        className="flex w-fit flex-row items-center gap-[3px] rounded-sm px-[2px] text-[10px] font-medium uppercase text-fg-muted hover:text-fg disabled:pointer-events-none disabled:opacity-40"
+        className="flex w-fit flex-row items-center gap-0.5 rounded-sm px-0.5 text-xs font-medium uppercase text-fg-muted hover:text-fg disabled:pointer-events-none disabled:opacity-40"
         aria-expanded={expanded}
         disabled={!hasAdvancedDetails}
         onClick={() => setExpanded((isExpanded) => !isExpanded)}
       >
         Advanced
         <HiMiniChevronDown
-          className={`text-[13px] transition-transform ${
+          className={`text-sm transition-transform ${
             expanded ? "rotate-180" : ""
           }`}
         />
@@ -1396,17 +1396,17 @@ const EndGameStats = ({
         <PlayerDamageSparkline timeline={damageTimeline} />
       )}
       {expanded && hasAdvancedDetails && (
-        <div className="flex flex-col gap-[7px] rounded-sm bg-bg/30 p-[6px]">
+        <div className="flex flex-col gap-1.5 rounded-sm bg-bg/30 p-1.5">
           {damageTimeline && (
             <PlayerDamageLineChart timeline={damageTimeline} />
           )}
           <AbilityCasts casts={abilityCasts} spellIcons={spellIcons} />
           {advancedSections.map((section) => (
-            <div key={section.title} className="flex flex-col gap-[4px]">
-              <p className="text-[9px] font-semibold uppercase tracking-normal text-fg-muted">
+            <div key={section.title} className="flex flex-col gap-1">
+              <p className="text-xs font-semibold uppercase tracking-normal text-fg-muted">
                 {section.title}
               </p>
-              <div className="grid grid-cols-2 gap-[5px] sm:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 xl:grid-cols-4">
                 {section.rows.map((row) => (
                   <EndGameStatChip key={row.label} row={row} compact />
                 ))}
@@ -1421,21 +1421,21 @@ const EndGameStats = ({
 
 const EndGameStatsSkeleton = () => (
   <div
-    className="flex flex-col gap-[5px] border-t border-border/60 pt-[7px]"
+    className="flex flex-col gap-1 border-t border-border/60 pt-1.5"
     aria-label="Loading end-game stats"
   >
-    <div className="grid grid-cols-3 gap-[5px] sm:grid-cols-4 xl:grid-cols-6">
+    <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 xl:grid-cols-6">
       {[...Array(END_GAME_PRIMARY_STAT_COUNT)].map((_, i) => (
         <div
           key={`end-stat-skeleton-${i}`}
-          className="flex min-w-0 flex-row items-center gap-[5px] rounded-sm bg-surface-elevated/40 px-[7px] py-[5px]"
+          className="flex min-w-0 flex-row items-center gap-1 rounded-sm bg-surface-elevated/40 px-1.5 py-1"
         >
-          <div className="h-[20px] w-[20px] shrink-0 animate-pulse rounded-sm bg-border/70" />
-          <div className="h-[12px] min-w-0 flex-1 animate-pulse rounded bg-border/60" />
+          <div className="h-5 w-5 shrink-0 animate-pulse rounded-sm bg-border/70" />
+          <div className="h-3 min-w-0 flex-1 animate-pulse rounded-sm bg-border/60" />
         </div>
       ))}
     </div>
-    <div className="h-[14px] w-[76px] animate-pulse rounded-sm bg-border/50" />
+    <div className="h-3.5 w-20 animate-pulse rounded-sm bg-border/50" />
   </div>
 );
 
@@ -1447,15 +1447,15 @@ const EndGameStatChip = ({
   compact?: boolean;
 }) => (
   <div
-    className={`flex min-w-0 flex-row items-center gap-[5px] rounded-sm bg-surface-elevated/55 leading-tight ${
-      compact ? "px-[5px] py-[3px]" : "px-[7px] py-[5px]"
+    className={`flex min-w-0 flex-row items-center gap-1 rounded-sm bg-surface-elevated/55 leading-tight ${
+      compact ? "px-1 py-0.5" : "px-1.5 py-1"
     }`}
     title={row.label}
   >
     <img
       src={row.icon}
       alt={row.label}
-      className={`${compact ? "h-[16px] w-[16px]" : "h-[20px] w-[20px]"} shrink-0 object-contain`}
+      className={`${compact ? "h-4 w-4" : "h-5 w-5"} shrink-0 object-contain`}
       loading="lazy"
       decoding="async"
       onError={(event) => {
@@ -1472,7 +1472,7 @@ const EndGameStatChip = ({
     />
     <p
       className={`min-w-0 truncate font-medium tabular-nums text-fg ${
-        compact ? "text-[11px]" : "text-[12px]"
+        compact ? "text-xs" : "text-xs"
       }`}
     >
       {row.value}
@@ -1491,15 +1491,15 @@ const Stat = ({
   value: string;
   isLeader?: boolean;
 }) => (
-  <div className="grid grid-cols-[14px_minmax(0,1fr)] items-center gap-[4px]">
+  <div className="grid grid-cols-[1rem_minmax(0,1fr)] items-center gap-1">
     <span className="flex items-center justify-center">{icon}</span>
     <div className="flex flex-col leading-tight">
-      <span className="text-[9px] uppercase opacity-60">{label}</span>
-      <span className="grid grid-cols-[minmax(0,auto)_12px] items-center gap-[2px] font-medium tabular-nums leading-none">
+      <span className="text-xs uppercase opacity-60">{label}</span>
+      <span className="grid grid-cols-[minmax(0,auto)_0.75rem] items-center gap-0.5 font-medium tabular-nums leading-none">
         <span className="min-w-0 truncate">{value}</span>
         {isLeader && (
           <HiMiniStar
-            className="text-[12px] text-accent"
+            className="text-xs text-accent"
             title={`Match leader: ${label.toLowerCase()}`}
           />
         )}
@@ -1509,19 +1509,19 @@ const Stat = ({
 );
 
 const MatchDetailSkeleton = () => (
-  <div className="flex flex-col gap-[16px] animate-pulse">
-    <div className="flex flex-col gap-[6px]">
-      <div className="h-[20px] w-[140px] bg-border rounded" />
-      <div className="h-[11px] w-[260px] bg-border/70 rounded" />
+  <div className="flex flex-col gap-4 animate-pulse">
+    <div className="flex flex-col gap-1.5">
+      <div className="h-5 w-36 bg-border rounded-sm" />
+      <div className="h-2.5 w-64 bg-border/70 rounded-sm" />
     </div>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-[12px]">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {[...Array(4)].map((_, teamIdx) => (
         <div
           key={`team-skeleton-${teamIdx}`}
-          className="rounded-md border-l-4 border-border bg-surface p-[8px]"
+          className="rounded-md border-l-4 border-border bg-surface p-2"
         >
-          <div className="h-[12px] w-[64px] bg-border rounded mb-[8px]" />
-          <div className="flex flex-col gap-[8px]">
+          <div className="h-3 w-16 bg-border rounded-sm mb-2" />
+          <div className="flex flex-col gap-2">
             {[...Array(2)].map((_, playerIdx) => (
               <ParticipantRowSkeleton key={`player-skeleton-${playerIdx}`} />
             ))}
@@ -1533,45 +1533,45 @@ const MatchDetailSkeleton = () => (
 );
 
 const ParticipantRowSkeleton = () => (
-  <div className="flex flex-col gap-[6px] p-[8px] rounded bg-surface/60">
-    <div className="flex flex-row items-center gap-[8px]">
-      <div className="h-[40px] w-[40px] rounded-full bg-border shrink-0" />
-      <div className="flex flex-col flex-1 gap-[4px] min-w-0">
-        <div className="h-[12px] w-[140px] bg-border rounded" />
-        <div className="h-[10px] w-[100px] bg-border/70 rounded" />
+  <div className="flex flex-col gap-1.5 p-2 rounded-sm bg-surface/60">
+    <div className="flex flex-row items-center gap-2">
+      <div className="h-10 w-10 rounded-full bg-border shrink-0" />
+      <div className="flex flex-col flex-1 gap-1 min-w-0">
+        <div className="h-3 w-36 bg-border rounded-sm" />
+        <div className="h-2.5 w-24 bg-border/70 rounded-sm" />
       </div>
     </div>
-    <div className="grid grid-cols-1 gap-[8px] rounded-md border border-border/70 bg-surface/45 p-[7px] xl:grid-cols-[auto_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 gap-2 rounded-md border border-border/70 bg-surface/45 p-1.5 xl:grid-cols-[auto_minmax(0,1fr)]">
       <div className="min-w-0">
-        <div className="mb-[4px] h-[9px] w-[52px] rounded bg-border/70" />
-        <div className="flex flex-row flex-wrap gap-[6px]">
+        <div className="mb-1 h-2 w-12 rounded-sm bg-border/70" />
+        <div className="flex flex-row flex-wrap gap-1.5">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={`augment-skeleton-${i}`}
-              className="h-[34px] w-[34px] shrink-0 rounded-md bg-border"
+              className="h-8 w-8 shrink-0 rounded-md bg-border"
             />
           ))}
         </div>
       </div>
       <div className="min-w-0">
-        <div className="mb-[4px] h-[9px] w-[34px] rounded bg-border/70" />
-        <div className="flex flex-row flex-wrap gap-[6px]">
+        <div className="mb-1 h-2 w-8 rounded-sm bg-border/70" />
+        <div className="flex flex-row flex-wrap gap-1.5">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={`item-skeleton-${i}`}
-              className="h-[34px] w-[34px] shrink-0 rounded-md bg-border"
+              className="h-8 w-8 shrink-0 rounded-md bg-border"
             />
           ))}
         </div>
       </div>
     </div>
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-[4px]">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
       {[...Array(6)].map((_, i) => (
-        <div key={`stat-skeleton-${i}`} className="flex flex-row items-center gap-[4px]">
-          <div className="h-[14px] w-[14px] bg-border rounded" />
-          <div className="flex flex-col gap-[2px]">
-            <div className="h-[8px] w-[40px] bg-border/70 rounded" />
-            <div className="h-[10px] w-[28px] bg-border rounded" />
+        <div key={`stat-skeleton-${i}`} className="flex flex-row items-center gap-1">
+          <div className="h-3.5 w-3.5 bg-border rounded-sm" />
+          <div className="flex flex-col gap-0.5">
+            <div className="h-2 w-10 bg-border/70 rounded-sm" />
+            <div className="h-2.5 w-7 bg-border rounded-sm" />
           </div>
         </div>
       ))}

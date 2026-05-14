@@ -39,7 +39,7 @@ const StatsOverviewHeader = ({
     : Math.ceil((kills.value / deaths.value) * 10) / 10;
 
   const stats = (
-    <div className="flex flex-row gap-[16px]">
+    <div className="flex flex-row gap-4">
       <Tooltip text="Kills" extra={"Highest kills: " + kills.records[0]?.value}>
         <KdaStat type={"kills"} value={kills.value} />
       </Tooltip>
@@ -63,7 +63,7 @@ const StatsOverviewHeader = ({
 
   return (
     <div className="flex flex-row flex-wrap items-center justify-between gap-3">
-      <div className="flex min-w-0 flex-row items-center gap-[8px]">
+      <div className="flex min-w-0 flex-row items-center gap-2">
         {profilePath ? (
           <Link
             to={profilePath}
@@ -71,21 +71,21 @@ const StatsOverviewHeader = ({
             className="shrink-0 rounded-md transition-opacity hover:opacity-85"
           >
             <img
-              className="h-[55px] w-[55px] rounded-md bg-surface-elevated"
+              className="h-14 w-14 rounded-md bg-surface-elevated"
               src={imgUrl}
               alt=""
             />
           </Link>
         ) : (
           <img
-            className="h-[55px] w-[55px] shrink-0 rounded-md bg-surface-elevated"
+            className="h-14 w-14 shrink-0 rounded-md bg-surface-elevated"
             src={imgUrl}
             alt=""
           />
         )}
         <div className="flex min-w-0 flex-col">
           <div className="flex flex-row items-center gap-2">
-            <h1 className="min-w-0 truncate text-[16px] font-extrabold">
+            <h1 className="min-w-0 truncate text-base font-semibold">
               {profilePath ? (
                 <Link
                   to={profilePath}

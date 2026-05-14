@@ -176,13 +176,13 @@ const ChampionList = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-row-reverse justify-end gap-[8px]">
+      <div className="flex flex-row-reverse justify-end gap-2">
         <ChampionFiltering filters={filters} onFiltersChange={setFilters} />
         <input
           type="text"
           value={championNameFilter}
           placeholder="Search"
-          className="w-1/2 rounded-md border border-border bg-surface px-3 py-1.5 text-[12px] font-normal text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
+          className="w-1/2 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-normal text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
           onChange={(e) => setChampionNameFilter(e.target.value)}
         />
       </div>
@@ -201,7 +201,7 @@ const ChampionList = () => {
       {loading ? (
         <ChampionListSkeleton />
       ) : displayedChampions.length === 0 ? (
-        <p className="text-fg-muted text-[12px] text-center py-8">
+        <p className="text-fg-muted text-xs text-center py-8">
           No champions match your filters.
         </p>
       ) : (
@@ -238,9 +238,9 @@ const ChampionList = () => {
 const ChampionListSkeleton = () => (
   <div className="flex flex-col gap-3 animate-pulse" aria-label="Loading champions">
     <div className="flex flex-row items-end justify-center gap-2 sm:gap-3 w-full">
-      <ChampionPodiumSkeleton height="h-[220px] sm:h-[250px]" />
-      <ChampionPodiumSkeleton height="h-[260px] sm:h-[300px]" />
-      <ChampionPodiumSkeleton height="h-[200px] sm:h-[225px]" />
+      <ChampionPodiumSkeleton height="h-56 sm:h-64" />
+      <ChampionPodiumSkeleton height="h-64 sm:h-72" />
+      <ChampionPodiumSkeleton height="h-48 sm:h-56" />
     </div>
     <div className="grid grid-cols-2 sm:grid-cols-3 2xl:grid-cols-4 gap-2">
       {Array.from({ length: 8 }).map((_, idx) => (
@@ -258,11 +258,11 @@ const ChampionPodiumSkeleton = ({ height }: { height: string }) => (
     className={`relative min-w-0 flex-1 overflow-hidden rounded-md border border-border bg-surface-elevated ${height}`}
   >
     <div className="absolute bottom-2 left-2 right-2 flex flex-col gap-2">
-      <div className="h-4 w-2/3 rounded bg-border" />
+      <div className="h-4 w-2/3 rounded-sm bg-border" />
       <div className="grid grid-cols-3 gap-1">
-        <div className="h-6 rounded bg-border" />
-        <div className="h-6 rounded bg-border" />
-        <div className="h-6 rounded bg-border" />
+        <div className="h-6 rounded-sm bg-border" />
+        <div className="h-6 rounded-sm bg-border" />
+        <div className="h-6 rounded-sm bg-border" />
       </div>
     </div>
   </div>
@@ -280,7 +280,7 @@ const SortPill = ({ label, sorted, onClick }: SortPillProps) => {
     <button
       type="button"
       onClick={onClick}
-      className={`flex cursor-pointer flex-row items-center gap-0.5 rounded-md border px-2.5 py-1 text-[10px] font-bold transition-colors ${
+      className={`flex cursor-pointer flex-row items-center gap-0.5 rounded-md border px-2.5 py-1 text-xs font-semibold transition-colors ${
         active
           ? "border-accent bg-accent text-accent-fg"
           : "border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg"

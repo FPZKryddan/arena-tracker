@@ -30,16 +30,16 @@ const FetchingProgress = ({ isFetching, jobState }: FetchingProgressProps) => {
       : null;
 
   return (
-    <div className="mt-[8px] flex w-full flex-col gap-[6px] rounded-lg border border-border bg-surface px-[16px] py-[10px]">
-      <div className="flex flex-row items-center gap-[8px]">
+    <div className="mt-2 flex w-full flex-col gap-1.5 rounded-lg border border-border bg-surface px-4 py-2.5">
+      <div className="flex flex-row items-center gap-2">
         <ClipLoader size={14} color="var(--color-info)" />
-        <p className="text-[12px] text-fg">
+        <p className="text-xs text-fg">
           {label}
           {progress ? ` (${progress.current}/${progress.total})` : ""}
         </p>
       </div>
       {pct !== null && (
-        <div className="h-[4px] w-full overflow-hidden rounded bg-border">
+        <div className="h-1 w-full overflow-hidden rounded-sm bg-border">
           <div
             className="h-full bg-info transition-all duration-300"
             style={{ width: `${pct}%` }}

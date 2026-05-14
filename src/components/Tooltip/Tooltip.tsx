@@ -8,6 +8,15 @@ interface TooltipProps extends React.PropsWithChildren {
   delay?: number;
 }
 
+const clamp = (value: number, min: number, max: number): number =>
+  Math.min(Math.max(value, min), max);
+
+const toRem = (value: number): string => {
+  const rootFontSize =
+    parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  return `${value / rootFontSize}rem`;
+};
+
 const Tooltip = ({
   text,
   extra,
@@ -37,14 +46,16 @@ const Tooltip = ({
 
       const hasSpaceAbove = triggerRect.top - tooltipRect.height > 0;
       const gap = 8;
+      const maxTop = window.innerHeight - tooltipRect.height;
+      const maxLeft = window.innerWidth - tooltipRect.width;
 
-      if (hasSpaceAbove) {
-        tooltipElementRef.current.style.top = `clamp(0px, ${triggerRect.top - tooltipRect.height - gap}px, ${window.innerHeight - tooltipRect.height}px)`;
-      } else {
-        tooltipElementRef.current.style.top = `clamp(0px, ${triggerRect.top + triggerRect.height + gap}px, ${window.innerHeight - tooltipRect.height}px)`;
-      }
+      const top = hasSpaceAbove
+        ? triggerRect.top - tooltipRect.height - gap
+        : triggerRect.top + triggerRect.height + gap;
+      const left = triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
 
-      tooltipElementRef.current.style.left = `clamp(0px, ${triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2}px, ${window.innerWidth - tooltipRect.width}px)`;
+      tooltipElementRef.current.style.top = toRem(clamp(top, 0, maxTop));
+      tooltipElementRef.current.style.left = toRem(clamp(left, 0, maxLeft));
     }
   }, [isHovering]);
 
@@ -61,11 +72,11 @@ const Tooltip = ({
           className={`fixed z-100 rounded-md border border-border bg-surface text-fg
           ${isHovering ? "opacity-100" : "opacity-0 pointer-events-none"}
           ${text ? "px-4 py-2" : ""}
-          max-w-screen text-nowrap text-[14px] font-medium transition-opacity duration-150 delay-[${delay}]`}
+          max-w-screen text-nowrap text-sm font-medium transition-opacity duration-150`}
           ref={tooltipElementRef}
         >
           {text && <p>{text}</p>}
-          {extra && <p className="text-[12px] font-normal mt-[4px]">{extra}</p>}
+          {extra && <p className="text-xs font-normal mt-1">{extra}</p>}
           {isHovering && renderContent && renderContent()}
         </div>
       , document.body)}

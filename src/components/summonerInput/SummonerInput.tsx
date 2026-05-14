@@ -89,11 +89,11 @@ const SummonerInput = ({ routeProgress }: SummonerInputProps) => {
       onFocus={() => setIsFocused(true)}
       onBlur={handleBlur}
     >
-      <div className="box-border flex h-[44px] w-full flex-row rounded-lg border border-border bg-surface text-fg transition-colors focus-within:border-accent">
+      <div className="box-border flex h-11 w-full flex-row rounded-lg border border-border bg-surface text-fg transition-colors focus-within:border-accent">
         <input
           type="text"
           name="playerInput"
-          className="h-full w-full rounded-l-lg bg-transparent px-4 text-left font-normal text-fg placeholder:text-fg-muted focus:outline-0 autofill:shadow-none"
+          className="h-full w-full rounded-lg bg-transparent px-4 text-left font-normal text-fg placeholder:text-fg-muted focus:outline-0 "
           placeholder="RiotName#TAG"
           value={playerInputName}
           onChange={(e) => setPlayerInputName(e.target.value)}
@@ -110,7 +110,7 @@ const SummonerInput = ({ routeProgress }: SummonerInputProps) => {
           />
           <button
             onClick={handleSubmit}
-            className="rounded-r-lg px-2 text-fg-muted transition-colors hover:cursor-pointer hover:bg-surface-hover hover:text-fg"
+            className="rounded-lg px-2 text-fg-muted transition-colors hover:cursor-pointer hover:bg-surface-hover hover:text-fg"
             disabled={progressIsFetching}
             aria-label="Search player"
           >
@@ -124,7 +124,7 @@ const SummonerInput = ({ routeProgress }: SummonerInputProps) => {
       />
 
       {showDropdown && (
-        <ul className="absolute left-0 right-0 top-[48px] z-20 max-h-[280px] overflow-y-auto rounded-lg border border-border bg-surface">
+        <ul className="absolute left-0 right-0 top-12 z-20 max-h-72 overflow-y-auto rounded-lg border border-border bg-surface">
           <li className="flex items-center gap-2 px-4 py-2 text-xs text-fg-muted border-b border-border">
             <IoStar className="w-3.5 h-3.5 text-favorite" />
             <span>Favorites</span>
@@ -143,7 +143,7 @@ const SummonerInput = ({ routeProgress }: SummonerInputProps) => {
                   {f.gameName}
                   <span className="text-fg-muted">#{f.tagLine}</span>
                 </span>
-                <span className="rounded border border-border px-1.5 py-0.5 text-[10px] uppercase text-fg-muted">
+                <span className="rounded-sm border border-border px-1.5 py-0.5 text-xs uppercase text-fg-muted">
                   {f.region}
                 </span>
               </div>

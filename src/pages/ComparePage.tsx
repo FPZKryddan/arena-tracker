@@ -589,14 +589,14 @@ const ComparePage = () => {
   );
 
   return (
-    <div className="box-border flex min-h-dvh w-full flex-col gap-[20px] overflow-auto bg-bg p-[12px] text-fg md:gap-[28px] md:p-[24px]">
+    <div className="box-border flex min-h-dvh w-full flex-col gap-5 overflow-auto bg-bg p-3 text-fg md:gap-7 md:p-6">
       <AppHeader />
 
-      <main className="mx-auto flex w-full max-w-[1680px] flex-col gap-[16px]">
+      <main className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4">
         <div className="flex flex-row flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
             <IoSwapHorizontal className="h-5 w-5 shrink-0 text-accent" />
-            <h1 className="truncate text-[22px] font-extrabold md:text-[28px]">
+            <h1 className="truncate text-lg font-semibold md:text-2xl">
               Compare Players
             </h1>
           </div>
@@ -628,7 +628,7 @@ const ComparePage = () => {
           {canAddPlayer && (
             <button
               type="button"
-              className="flex h-[44px] w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-surface/45 px-4 text-sm font-semibold text-fg-muted transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover hover:text-fg lg:w-fit"
+              className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-surface/45 px-4 text-sm font-semibold text-fg-muted transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover hover:text-fg lg:w-fit"
               onClick={addPlayerSlot}
             >
               <IoAdd className="h-4 w-4" />
@@ -750,7 +750,7 @@ const FavoriteCompareQuickAdd = ({
                 {target.gameName}
                 <span className="text-fg-muted">#{target.tagLine}</span>
               </span>
-              <span className="rounded border border-border px-1.5 py-0.5 text-[10px] uppercase text-fg-muted">
+              <span className="rounded-sm border border-border px-1.5 py-0.5 text-xs uppercase text-fg-muted">
                 {target.region}
               </span>
             </button>
@@ -794,7 +794,7 @@ const ComparePlayerPicker = ({
         <h2 className="text-sm font-semibold">{label}</h2>
         <div className="flex items-center gap-2">
           {target && (
-            <span className="rounded border border-border px-2 py-1 text-[11px] font-semibold uppercase text-fg-muted">
+            <span className="rounded-sm border border-border px-2 py-1 text-xs font-semibold uppercase text-fg-muted">
               {target.region}
             </span>
           )}
@@ -811,10 +811,10 @@ const ComparePlayerPicker = ({
         </div>
       </div>
 
-      <div className="box-border flex h-[44px] w-full flex-row rounded-lg border border-border bg-bg text-fg transition-colors focus-within:border-accent">
+      <div className="box-border flex h-11 w-full flex-row rounded-lg border border-border bg-bg text-fg transition-colors focus-within:border-accent">
         <input
           type="text"
-          className="h-full w-full min-w-0 rounded-l-lg bg-transparent px-4 text-left text-[14px] font-normal text-fg placeholder:text-fg-muted focus:outline-0"
+          className="h-full w-full min-w-0 rounded-lg bg-transparent px-4 text-left text-sm font-normal text-fg placeholder:text-fg-muted focus:outline-0"
           placeholder="RiotName#TAG"
           value={draft.handle}
           onChange={(event) => onHandleChange(slotIndex, event.target.value)}
@@ -827,7 +827,7 @@ const ComparePlayerPicker = ({
           />
           <button
             type="submit"
-            className="grid h-[36px] w-[36px] place-items-center rounded-md text-fg-muted transition-colors hover:cursor-pointer hover:bg-surface-hover hover:text-fg disabled:cursor-not-allowed"
+            className="grid h-9 w-9 place-items-center rounded-md text-fg-muted transition-colors hover:cursor-pointer hover:bg-surface-hover hover:text-fg disabled:cursor-not-allowed"
             disabled={isLoading}
             aria-label={`Load ${label}`}
           >
@@ -841,7 +841,7 @@ const ComparePlayerPicker = ({
       </div>
 
       {(target || error || isLoading) && (
-        <div className="min-h-[18px] text-[12px]">
+        <div className="min-h-4 text-xs">
           {error ? (
             <p className="text-danger">{error}</p>
           ) : isLoading ? (
@@ -865,9 +865,9 @@ const CompareMetricPanel = ({
   comparisons,
 }: CompareMetricPanelProps) => {
   const gridStyle = {
-    gridTemplateColumns: `minmax(96px, 0.75fr) repeat(${comparisons.length}, minmax(92px, 1fr))`,
+    gridTemplateColumns: `minmax(6rem, 0.75fr) repeat(${comparisons.length}, minmax(5.75rem, 1fr))`,
   };
-  const desktopMinWidth = Math.max(640, 132 + comparisons.length * 180);
+  const desktopMinWidth = Math.max(40, 8.25 + comparisons.length * 11.25);
 
   return (
     <>
@@ -878,9 +878,9 @@ const CompareMetricPanel = ({
       </section>
 
       <section className="hidden overflow-x-auto rounded-lg border border-border bg-surface md:block">
-        <div style={{ minWidth: `${desktopMinWidth}px` }}>
+        <div style={{ minWidth: `${desktopMinWidth}rem` }}>
           <div
-            className="grid gap-2 border-b border-border px-3 py-2 text-[11px] font-semibold uppercase text-fg-muted"
+            className="grid gap-2 border-b border-border px-3 py-2 text-xs font-semibold uppercase text-fg-muted"
             style={gridStyle}
           >
             <span>Metric</span>
@@ -923,10 +923,10 @@ const MobileMetricCard = ({ metric }: { metric: CompareMetric }) => {
   return (
     <article className="rounded-lg border border-border bg-surface p-3">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="min-w-0 truncate text-[13px] font-semibold text-fg">
+        <h3 className="min-w-0 truncate text-sm font-semibold text-fg">
           {metric.label}
         </h3>
-        <span className="shrink-0 rounded border border-border px-2 py-1 text-[10px] font-semibold uppercase text-fg-subtle">
+        <span className="shrink-0 rounded-sm border border-border px-2 py-1 text-xs font-semibold uppercase text-fg-subtle">
           {rowIsTie ? "Tie" : "Leader"}
         </span>
       </div>
@@ -935,10 +935,10 @@ const MobileMetricCard = ({ metric }: { metric: CompareMetric }) => {
         {metric.values.map((entry) => (
           <div key={targetKey(entry.target)} className="grid gap-2 py-2 first:pt-0 last:pb-0">
             <div className="flex min-w-0 items-center justify-between gap-2">
-              <p className="min-w-0 truncate text-[12px] font-medium text-fg">
+              <p className="min-w-0 truncate text-xs font-medium text-fg">
                 {handleFor(entry.target)}
               </p>
-              <span className="shrink-0 rounded border border-border px-1.5 py-0.5 text-[10px] uppercase text-fg-muted">
+              <span className="shrink-0 rounded-sm border border-border px-1.5 py-0.5 text-xs uppercase text-fg-muted">
                 {entry.target.region}
               </span>
             </div>
@@ -970,7 +970,7 @@ const CompareMetricRow = ({
       style={gridStyle}
     >
       <div className="min-w-0">
-        <p className="truncate text-[12px] font-semibold text-fg">
+        <p className="truncate text-xs font-semibold text-fg">
           {metric.label}
         </p>
       </div>
@@ -1011,8 +1011,8 @@ const MetricValueGroup = ({
     return (
       <p
         className={`truncate ${
-          mobile ? "text-left text-[20px]" : "text-right text-[18px]"
-        } font-extrabold tabular-nums ${
+          mobile ? "text-left text-lg" : "text-right text-lg"
+        } font-semibold tabular-nums ${
           isLeading ? "text-success" : "text-fg-muted"
         }`}
       >
@@ -1024,7 +1024,7 @@ const MetricValueGroup = ({
   return (
     <div
       className={`grid gap-1 ${
-        mobile ? "w-full text-left" : "min-w-[168px] text-right"
+        mobile ? "w-full text-left" : "min-w-40 text-right"
       }`}
       style={{
         gridTemplateColumns: `repeat(${metric.parts.length}, minmax(0, 1fr))`,
@@ -1037,11 +1037,11 @@ const MetricValueGroup = ({
 
         return (
           <div key={part.key} className="min-w-0">
-            <p className="truncate text-[10px] font-semibold uppercase text-fg-subtle">
+            <p className="truncate text-xs font-semibold uppercase text-fg-subtle">
               {part.label}
             </p>
             <p
-              className={`truncate text-[14px] font-extrabold tabular-nums ${
+              className={`truncate text-sm font-semibold tabular-nums ${
                 isLeading ? "text-success" : "text-fg-muted"
               }`}
             >
@@ -1071,17 +1071,17 @@ const CompareStatsSlot = ({
   emptyLabel,
   visibleSlotCount,
 }: CompareStatsSlotProps) => {
-  const gapPx = 16;
+  const gapRem = 1;
   const basis = `calc((100% - ${
-    (visibleSlotCount - 1) * gapPx
-  }px) / ${visibleSlotCount})`;
+    (visibleSlotCount - 1) * gapRem
+  }rem) / ${visibleSlotCount})`;
 
   return (
     <div
       className="shrink-0"
       style={{
         flex: `1 0 ${basis}`,
-        minWidth: "min(380px, calc(100vw - 48px))",
+        minWidth: "min(23.75rem, calc(100vw - 3rem))",
       }}
     >
       {isLoading && target ? (
@@ -1101,7 +1101,7 @@ const CompareStatsSlot = ({
 };
 
 const EmptyCompareSlot = ({ label }: { label: string }) => (
-  <div className="flex min-h-[260px] items-center justify-center rounded-lg border border-dashed border-border bg-surface/45 p-4 text-center text-sm font-semibold text-fg-muted">
+  <div className="flex min-h-64 items-center justify-center rounded-lg border border-dashed border-border bg-surface/45 p-4 text-center text-sm font-semibold text-fg-muted">
     {label}
   </div>
 );

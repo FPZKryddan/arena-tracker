@@ -26,7 +26,7 @@ const RecordMatchButton = ({ matchId, label }: RecordMatchButtonProps) => {
           setOpen(true);
         }}
       >
-        <HiMiniArrowTopRightOnSquare className="text-[12px]" />
+        <HiMiniArrowTopRightOnSquare className="text-xs" />
       </button>
       <MatchDetailModal
         matchId={matchId}

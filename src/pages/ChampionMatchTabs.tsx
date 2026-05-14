@@ -19,11 +19,11 @@ const ChampionMatchTabs = () => {
   }, []);
 
   return (
-    <div className="flex flex-col w-full gap-[8px]">
+    <div className="flex flex-col w-full gap-2">
       <div
         role="tablist"
         aria-label="Profile content"
-        className="flex flex-row gap-[4px] self-start rounded-md border border-border bg-surface p-[4px]"
+        className="flex flex-row gap-1 self-start rounded-md border border-border bg-surface p-1"
       >
         <TabButton
           id="champions-tab"
@@ -80,7 +80,7 @@ const TabButton = ({
     aria-controls={controls}
     aria-selected={active}
     onClick={onClick}
-    className={`rounded px-[12px] py-[4px] text-[12px] font-bold transition-colors ${
+    className={`rounded-sm px-3 py-1 text-xs font-semibold transition-colors ${
       active
         ? "bg-accent text-accent-fg"
         : "text-fg-muted hover:text-fg hover:bg-surface-hover"

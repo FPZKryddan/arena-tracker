@@ -49,9 +49,9 @@ const TeammatesBody = ({ teammateStats, region }: TeammatesBodyProps) => {
   if (teammates.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-[8px]">
-      <p className="text-[14px] font-bold">Frequent Teammates</p>
-      <ul className="flex flex-col gap-[4px]">
+    <div className="flex flex-col gap-2">
+      <p className="text-sm font-semibold">Frequent Teammates</p>
+      <ul className="flex flex-col gap-1">
         {teammates.map((teammate) => (
           <TeammateRow
             key={teammate.puuid}
@@ -117,13 +117,13 @@ const TeammateRow = ({
 
   return (
     <li
-      className="flex flex-row items-center gap-[8px] rounded-md p-[6px] transition-colors hover:cursor-pointer hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      className="flex flex-row items-center gap-2 rounded-md p-1.5 transition-colors hover:cursor-pointer hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       role="button"
       tabIndex={0}
       onClick={onSelect}
       onKeyDown={handleKeyDown}
     >
-      <div className="h-[36px] w-[36px] aspect-square rounded-full overflow-hidden bg-surface-elevated text-fg flex items-center justify-center text-[14px] font-bold shrink-0">
+      <div className="h-9 w-9 aspect-square rounded-full overflow-hidden bg-surface-elevated text-fg flex items-center justify-center text-sm font-semibold shrink-0">
         {profile ? (
           <img
             src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${profile.profileIconId}.png`}
@@ -138,23 +138,23 @@ const TeammateRow = ({
         <Link
           to={profilePath}
           aria-label={`Open ${displayGameName}#${displayTagLine} profile`}
-          className="block truncate text-[12px] font-medium transition-colors hover:text-accent"
+          className="block truncate text-xs font-medium transition-colors hover:text-accent"
           onClick={(event) => event.stopPropagation()}
         >
           {displayGameName}
           <span className="opacity-60">#{displayTagLine}</span>
         </Link>
-        <p className="text-[10px] opacity-70">
+        <p className="text-xs opacity-70">
           {profile ? `Lv. ${profile.summonerLevel} / ` : ""}
           {teammate.gamesPlayed} games
         </p>
       </div>
       <div className="flex shrink-0 flex-col items-end leading-tight">
-        <span className="text-[9px] font-semibold uppercase text-fg-muted">
+        <span className="text-xs font-semibold uppercase text-fg-muted">
           Avg
         </span>
         <p
-          className={`text-[14px] font-bold tabular-nums ${getAvgColor(
+          className={`text-sm font-semibold tabular-nums ${getAvgColor(
             teammate.placementAvg
           )}`}
         >

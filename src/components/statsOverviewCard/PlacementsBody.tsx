@@ -118,19 +118,19 @@ const PlacementsBody = ({
   };
 
   return (
-    <div className="flex flex-col gap-[8px]">
-      <div className="flex flex-row flex-wrap items-center justify-between gap-[8px]">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-2">
         <div
-          className={`flex min-w-[112px] flex-col rounded-md px-[10px] py-[8px] ${averagePlacementTone}`}
+          className={`flex min-w-28 flex-col rounded-md px-2.5 py-2 ${averagePlacementTone}`}
         >
-          <p className="text-[10px] font-bold uppercase leading-none opacity-80">
+          <p className="text-xs font-semibold uppercase leading-none opacity-80">
             Avg Place
           </p>
-          <p className="mt-[4px] text-[28px] font-extrabold leading-none tabular-nums">
+          <p className="mt-1 text-2xl font-semibold leading-none tabular-nums">
             {averagePlacement.toFixed(2)}
           </p>
         </div>
-        <div className="flex flex-1 flex-row flex-wrap justify-start gap-x-[10px] gap-y-[4px] text-[12px] font-medium text-fg-muted sm:justify-end">
+        <div className="flex flex-1 flex-row flex-wrap justify-start gap-x-2.5 gap-y-1 text-xs font-medium text-fg-muted sm:justify-end">
           <p>Played: {getTotalMatches(placements)}</p>
           <p>
             <span className="text-success">{getWins(placements)}</span> /
@@ -139,7 +139,7 @@ const PlacementsBody = ({
           </p>
         </div>
       </div>
-      <div className="h-[200px]">
+      <div className="h-48">
         <Bar key={`placements-${theme}`} data={data} options={options} />
       </div>
     </div>

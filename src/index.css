@@ -2,6 +2,14 @@
 
 @custom-variant light (&:where(:root.light, :root.light *));
 
+/* Arena Tracker -- Strict Utility Scale (editorial)
+   Type:    text-xs | text-sm | text-base | text-lg | text-2xl | text-display
+   Weight:  font-normal | font-medium | font-semibold  (no bold / extrabold)
+   Spacing: 0 0.5 1 1.5 2 2.5 3 4 5 6 7 8 10 12 16 20 24 -- no [Npx]
+   Radius:  rounded-sm | rounded-md | rounded-lg | rounded-full
+   Shadow:  shadow-resting (cards) | shadow-raised (floating)
+*/
+
 :root {
   color-scheme: dark;
 
@@ -128,15 +136,34 @@ html {
 
 body {
   margin: 0;
-  min-width: 320px;
+  min-width: 20rem;
   min-height: 100dvh;
   background: var(--color-bg);
   color: var(--color-fg);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 @theme inline {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-display: 3.75rem;
+  --text-display--line-height: 4rem;
+
+  --shadow-resting: 0 0.0625rem 0.125rem var(--color-shadow), 0 0.5rem 1.75rem rgb(0 0 0 / 0.08);
+  --shadow-raised: 0 1.125rem 3rem rgb(0 0 0 / 0.24);
+
   --color-bg: var(--color-bg);
   --color-surface: var(--color-surface);
   --color-surface-elevated: var(--color-surface-elevated);

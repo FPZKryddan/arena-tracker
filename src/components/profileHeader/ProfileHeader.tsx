@@ -16,9 +16,9 @@ const ProfileHeader = () => {
   };
 
   return (
-    <div className="flex flex-row gap-[8px] mt-[24px] max-w-[350px]">
+    <div className="flex flex-row gap-2 mt-6 max-w-sm">
       <img
-        className="bg-surface h-[55px] md:h-[65px] w-auto aspect-square rounded-[25px] self-center"
+        className="bg-surface h-14 md:h-16 w-auto aspect-square rounded-full self-center"
         src={
           playerStats && playerStats.profileIconId
             ? `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${playerStats.profileIconId}.png`
@@ -26,17 +26,12 @@ const ProfileHeader = () => {
         }
       ></img>
       <div className="flex flex-col items-start justify-center">
-        <h1
-          style={{fontSize: 'clamp(16px, 4vw, 24px)', lineHeight: 'clamp(24px, 3vw, 36px)'}}
-          className="text-fg-muted text-nowrap font-medium text-left"
-        >
+        <h1 className="text-left text-base font-medium text-fg-muted text-nowrap md:text-2xl">
           {playerStats && playerStats.gameName !== ""
             ? playerStats.gameName + "#" + playerStats.tagLine
             : "RiotName#TAG"}
         </h1>
-        <p
-        style={{fontSize: 'clamp(10px, 3vw, 18px)'}}
-        className="text-success text-left self-start">
+        <p className="self-start text-left text-xs font-medium text-success md:text-lg">
           {champProgressToPercent()}% to{" "}
           <span className="text-accent">Arena Mastery</span>
         </p>
