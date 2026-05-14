@@ -204,6 +204,7 @@ export interface ProfileLookupDto {
   profileIconId: number;
   summonerLevel: number;
   tracked: boolean;
+  nonProcessedMatchesCount?: number;
 };
 
 export interface championStatsDto {

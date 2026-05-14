@@ -117,24 +117,26 @@ const StatsOverviewCard = ({
             />
           </div>
           <div className="relative flex flex-col w-full gap-[24px]">
-            <DamageStatsBody
-              dealtStats={stats.infographics.damageStats}
-              takenStats={stats.infographics.damageTakenStats}
-              healingStats={stats.infographics.healingStats}
-              shieldingStats={stats.infographics.shieldingStats}
-              skillShotsStats={stats.infographics.skillShotsStats}
-            />
-            <div className="border-t border-border/70 pt-[16px]">
+            <div className="order-2 md:order-none">
+              <DamageStatsBody
+                dealtStats={stats.infographics.damageStats}
+                takenStats={stats.infographics.damageTakenStats}
+                healingStats={stats.infographics.healingStats}
+                shieldingStats={stats.infographics.shieldingStats}
+                skillShotsStats={stats.infographics.skillShotsStats}
+              />
+            </div>
+            <div className="order-3 border-t border-border/70 pt-[16px] md:order-none">
               <FavoriteAugmentsBody augments={stats.augmentStats} />
             </div>
-            <div className="border-t border-border/70 pt-[16px]">
+            <div className="order-4 border-t border-border/70 pt-[16px] md:order-none">
               <PlacementsBody
                 placements={stats.placements}
                 placementAvg={stats.placementAvg}
               />
             </div>
             {"teammateStats" in stats && stats.teammateStats && (
-              <div className="border-t border-border/70 pt-[16px]">
+              <div className="order-1 border-t border-border/70 pt-[16px] md:order-none">
                 <TeammatesBody
                   teammateStats={stats.teammateStats}
                   region={effectiveProfileRegion}

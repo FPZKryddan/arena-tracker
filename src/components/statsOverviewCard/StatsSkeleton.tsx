@@ -20,18 +20,20 @@ const StatsSkeleton = ({
     >
       <StatsHeaderSkeleton />
 
-      <DamageStatsSkeleton />
+      <div className="order-2 md:order-none">
+        <DamageStatsSkeleton />
+      </div>
 
-      <div className="border-t border-border/70 pt-[16px]">
+      <div className="order-3 border-t border-border/70 pt-[16px] md:order-none">
         <FavoriteAugmentsSkeleton />
       </div>
 
-      <div className="border-t border-border/70 pt-[16px]">
+      <div className="order-4 border-t border-border/70 pt-[16px] md:order-none">
         <PlacementsSkeleton />
       </div>
 
       {showTeammates && (
-        <div className="border-t border-border/70 pt-[16px]">
+        <div className="order-1 border-t border-border/70 pt-[16px] md:order-none">
           <TeammatesSkeleton />
         </div>
       )}
