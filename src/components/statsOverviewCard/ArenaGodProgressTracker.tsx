@@ -23,7 +23,7 @@ const ArenaGodProgressTracker = ({
       <div
         className="grid h-6 w-6 shrink-0 place-items-center rounded"
         style={{
-          background: `conic-gradient(var(--color-success) 0 ${progressPercent}%, var(--color-border) ${progressPercent}% 100%)`,
+          background: `conic-gradient(var(${hasArenaGod ? '--color-placement-first' : '--color-success'}) 0 ${progressPercent}%, var(--color-border) ${progressPercent}% 100%)`,
         }}
         aria-label={`${Math.round(progressPercent)}% complete`}
       >

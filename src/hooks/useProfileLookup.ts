@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ProfileLookupDto, Regions } from "../types";
 import { getApiBase, getStoredRegion } from "./useApiBase";
 
@@ -36,13 +36,18 @@ const seedProfileCache = (
 export const fetchProfile = async (
   gameName: string,
   tagLine: string,
-  region: Exclude<Regions, null> = getStoredRegion()
+  region: Exclude<Regions, null> = getStoredRegion(),
+  options?: { force?: boolean }
 ): Promise<CacheEntry> => {
   if (!gameName || !tagLine) return null;
   const key = profileByNameCacheKey(region, gameName, tagLine);
-  if (cache.has(key)) return cache.get(key) ?? null;
-  const existing = inFlight.get(key);
-  if (existing) return existing;
+  if (!options?.force) {
+    if (cache.has(key)) return cache.get(key) ?? null;
+    const existing = inFlight.get(key);
+    if (existing) return existing;
+  } else {
+    cache.delete(key);
+  }
 
   const apiBase = getApiBase();
   const promise = fetch(
@@ -151,7 +156,18 @@ function useProfileLookup(
     };
   }, [gameName, tagLine, effectiveRegion]);
 
-  return { profile, loading };
+  const refetch = useCallback(async () => {
+    if (!gameName || !tagLine) return null;
+    setLoading(true);
+    const p = await fetchProfile(gameName, tagLine, effectiveRegion, {
+      force: true,
+    });
+    setProfile(p);
+    setLoading(false);
+    return p;
+  }, [gameName, tagLine, effectiveRegion]);
+
+  return { profile, loading, refetch };
 }
 
 export function useProfileLookupByPuuid(

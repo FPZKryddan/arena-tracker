@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   PlayerStatsContext,
   type LoadedProfile,
@@ -17,6 +17,7 @@ interface HydrationParams {
 interface HydrationState {
   isFetching: boolean;
   jobState: JobState | null;
+  refreshProfile: () => Promise<void>;
 }
 
 const sameProfile = (
@@ -130,7 +131,12 @@ function usePlayerHydration({
     tagLine,
   ]);
 
-  return { isFetching, jobState };
+  const refreshProfile = useCallback(async () => {
+    if (!region || !gameName || !tagLine || isFetching) return;
+    await retrievePlayerData(`${gameName}#${tagLine}`);
+  }, [gameName, isFetching, region, retrievePlayerData, tagLine]);
+
+  return { isFetching, jobState, refreshProfile };
 }
 
 export default usePlayerHydration;

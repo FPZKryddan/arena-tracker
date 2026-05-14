@@ -8,6 +8,7 @@ import { useAugmentsQuery, useChampionListQuery } from "../hooks/queries";
 import type { augmentsData, championData } from "../types";
 
 const CDRAGON_BASE = "https://raw.communitydragon.org/latest/game/";
+const ARENA_HERO_IMAGE = "/arena-promo.jpg";
 const ddragonChampionIcon = (version: string, id: string) =>
   `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${id}.png`;
 const ddragonProfileIcon = (version: string, id: number) =>
@@ -31,39 +32,40 @@ const LandingPage = () => {
 };
 
 const Hero = () => (
-  <section className="mx-auto grid min-h-[78dvh] max-w-[1120px] grid-cols-1 items-center gap-10 px-4 pb-12 pt-8 lg:grid-cols-[minmax(0,560px)_minmax(320px,1fr)]">
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4">
-        
+  <section className="relative isolate overflow-hidden border-b border-border bg-black">
+    <div className="absolute inset-y-0 left-1/2 h-full w-full max-w-[1680px] -translate-x-1/2 overflow-hidden">
+      <img
+        src={ARENA_HERO_IMAGE}
+        alt=""
+        className="h-full w-full object-cover object-center"
+        decoding="async"
+        fetchPriority="high"
+      />
+      <div className="absolute inset-y-0 left-0 w-[18vw] min-w-[120px] max-w-[320px] bg-gradient-to-r from-black to-transparent" />
+      <div className="absolute inset-y-0 right-0 w-[18vw] min-w-[120px] max-w-[320px] bg-gradient-to-l from-black to-transparent" />
+    </div>
+    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/62 to-black/10" />
+    <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-black/35" />
+
+    <div className="relative mx-auto flex min-h-[calc(100dvh-156px)] max-w-[1120px] flex-col justify-center px-4 py-12 md:min-h-[600px] md:py-16 lg:min-h-[640px]">
+      <div className="flex max-w-[620px] flex-col gap-6 text-on-media">
         <div className="flex flex-col gap-3">
           <h1 className="text-4xl font-extrabold leading-tight md:text-6xl">
             Arena Tracker
           </h1>
-          <p className="max-w-[520px] text-base leading-7 text-fg-muted md:text-lg">
+          <p className="max-w-[560px] text-base leading-7 text-white/80 md:text-lg">
             Look up a Riot ID, review Arena matches, and compare champion,
             augment, and teammate stats without the noise.
           </p>
         </div>
-      </div>
 
-      <div className="flex max-w-[560px] flex-col gap-4">
-        <SummonerInput />
-        <FavoritesList />
+        <div className="flex max-w-[560px] flex-col gap-4">
+          <SummonerInput />
+          <FavoritesList />
+        </div>
       </div>
     </div>
-
-    <SnapshotPanel />
   </section>
-);
-
-const SnapshotPanel = () => (
-  <div className="grid gap-3">
-    <ChampionsMock />
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-      <AugmentsMock />
-      <TeammatesMock />
-    </div>
-  </div>
 );
 
 const Overview = () => (
