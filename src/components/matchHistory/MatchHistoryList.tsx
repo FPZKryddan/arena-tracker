@@ -89,16 +89,16 @@ const MatchHistoryList = () => {
   }, [matches, playerStats]);
 
   return (
-    <div className="flex flex-col gap-[8px] w-full">
-      <h2 className="text-[12px] font-bold text-fg">
+    <div className="flex flex-col gap-2 w-full">
+      <h2 className="text-xs font-semibold text-fg">
         MATCH HISTORY
       </h2>
       {loading && matches.length === 0 && <MatchHistorySkeleton />}
       {!loading && matches.length === 0 && (
-        <p className="text-fg-muted text-[12px]">No recent matches.</p>
+        <p className="text-fg-muted text-xs">No recent matches.</p>
       )}
       {matchRows.length > 0 && (
-        <ul className="flex flex-col gap-[6px]">
+        <ul className="flex flex-col gap-1.5">
           {matchRows.map(({ match, me }) => (
             <MatchHistoryRow
               key={match.metadata.matchId}
@@ -165,11 +165,11 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
   return (
     <li
       onClick={onClick}
-      className={`flex flex-row items-center gap-[8px] rounded-md border-l-4 p-[8px] text-[10px] text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover ${placementColor(
+      className={`flex flex-row items-center gap-2 rounded-md border-l-4 p-2 text-xs text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover ${placementColor(
         me.placement
       )}`}
     >
-      <div className="h-[40px] aspect-square rounded-full overflow-hidden shrink-0">
+      <div className="h-10 aspect-square rounded-full overflow-hidden shrink-0">
         <img
           className="h-full w-auto aspect-square scale-110"
           src={getChampionIconUrl(version, me.championName)}
@@ -179,7 +179,7 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
         />
       </div>
       <div className="flex flex-col flex-1 min-w-0">
-        <p className="font-bold">#{me.placement}</p>
+        <p className="font-semibold">#{me.placement}</p>
         <p className="truncate">{me.championName}</p>
         {teammate && <TeammatePreview teammate={teammate} version={version} />}
       </div>
@@ -211,7 +211,7 @@ const MatchHistoryLoadout = ({
   items: number[];
   version: string;
 }) => (
-  <div className="grid w-[178px] shrink-0 grid-cols-6 gap-[2px]">
+  <div className="grid w-44 shrink-0 grid-cols-6 gap-0.5">
     {Array.from({ length: 6 }).map((_, slot) => {
       const id = augmentIds[slot];
       const augment = id ? augments.get(id) : undefined;
@@ -219,7 +219,7 @@ const MatchHistoryLoadout = ({
       return (
         <div
           key={`a-slot-${slot}-${id ?? "empty"}`}
-          className="h-[28px] w-[28px] overflow-hidden rounded-sm border border-border bg-surface-elevated"
+          className="h-7 w-7 overflow-hidden rounded-sm border border-border bg-surface-elevated"
           title={augment?.name}
         >
           {augment && (
@@ -240,7 +240,7 @@ const MatchHistoryLoadout = ({
       return (
         <div
           key={`i-slot-${slot}-${id ?? "empty"}`}
-          className="h-[28px] w-[28px] overflow-hidden rounded-sm border border-border bg-surface-elevated"
+          className="h-7 w-7 overflow-hidden rounded-sm border border-border bg-surface-elevated"
         >
           {id ? (
             <img
@@ -266,15 +266,15 @@ const TeammatePreview = ({ teammate, version }: TeammatePreviewProps) => {
   const teammateName = teammate.riotIdGameName || teammate.summonerName;
 
   return (
-    <div className="flex flex-row items-center gap-[4px] min-w-0 text-fg-muted">
-      <div className="relative h-[22px] w-[38px] shrink-0">
+    <div className="flex flex-row items-center gap-1 min-w-0 text-fg-muted">
+      <div className="relative h-5 w-9 shrink-0">
         <img
           src={getProfileIconUrl(version, teammate.profileIcon)}
           alt={`${teammateName} profile icon`}
           title={`${teammateName} profile icon`}
           loading="lazy"
           decoding="async"
-          className="absolute left-0 top-[1px] h-[20px] w-[20px] rounded-full object-cover bg-surface-elevated"
+          className="absolute left-0 top-0 h-5 w-5 rounded-full object-cover bg-surface-elevated"
         />
         <img
           src={getChampionIconUrl(version, teammate.championName)}
@@ -282,7 +282,7 @@ const TeammatePreview = ({ teammate, version }: TeammatePreviewProps) => {
           title={teammate.championName}
           loading="lazy"
           decoding="async"
-          className="absolute left-[16px] top-0 h-[22px] w-[22px] rounded-full object-cover bg-surface-elevated ring-2 ring-surface"
+          className="absolute left-4 top-0 h-5 w-5 rounded-full object-cover bg-surface-elevated ring-2 ring-surface"
         />
       </div>
       <p className="truncate">
@@ -301,36 +301,36 @@ const MatchHistorySkeleton = () => {
   ];
 
   return (
-    <ul className="flex flex-col gap-[6px] animate-pulse" aria-label="Loading match history">
+    <ul className="flex flex-col gap-1.5 animate-pulse" aria-label="Loading match history">
       {Array.from({ length: RECENT_LIMIT }).map((_, i) => (
         <li
           key={`match-skeleton-${i}`}
-          className={`flex flex-row items-center gap-[8px] rounded-md border-l-4 p-[8px] ${rowTones[i % rowTones.length]}`}
+          className={`flex flex-row items-center gap-2 rounded-md border-l-4 p-2 ${rowTones[i % rowTones.length]}`}
         >
-          <div className="h-[40px] aspect-square shrink-0 rounded-full bg-border" />
-          <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-            <div className="h-[11px] w-[24px] rounded bg-border" />
-            <div className="h-[10px] w-[76px] max-w-full rounded bg-border/80" />
-            <div className="flex min-w-0 flex-row items-center gap-[4px]">
-              <div className="relative h-[22px] w-[38px] shrink-0">
-                <div className="absolute left-0 top-[1px] h-[20px] w-[20px] rounded-full bg-border/70" />
-                <div className="absolute left-[16px] top-0 h-[22px] w-[22px] rounded-full bg-border ring-2 ring-surface" />
+          <div className="h-10 aspect-square shrink-0 rounded-full bg-border" />
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <div className="h-2.5 w-6 rounded-sm bg-border" />
+            <div className="h-2.5 w-20 max-w-full rounded-sm bg-border/80" />
+            <div className="flex min-w-0 flex-row items-center gap-1">
+              <div className="relative h-5 w-9 shrink-0">
+                <div className="absolute left-0 top-0 h-5 w-5 rounded-full bg-border/70" />
+                <div className="absolute left-4 top-0 h-5 w-5 rounded-full bg-border ring-2 ring-surface" />
               </div>
-              <div className="h-[9px] w-[112px] max-w-[70%] rounded bg-border/70" />
+              <div className="h-2 w-28 max-w-[70%] rounded-sm bg-border/70" />
             </div>
           </div>
-          <div className="grid w-[178px] shrink-0 grid-cols-6 gap-[2px]">
+          <div className="grid w-44 shrink-0 grid-cols-6 gap-0.5">
             {Array.from({ length: 12 }).map((_, slot) => (
               <div
                 key={`match-loadout-skeleton-${i}-${slot}`}
-                className="h-[28px] w-[28px] rounded-sm bg-border"
+                className="h-7 w-7 rounded-sm bg-border"
               />
             ))}
           </div>
-          <div className="flex w-[42px] shrink-0 flex-col items-end gap-[4px]">
-            <div className="h-[10px] w-[34px] rounded bg-border" />
-            <div className="h-[9px] w-[28px] rounded bg-border/75" />
-            <div className="h-[8px] w-[36px] rounded bg-border/60" />
+          <div className="flex w-10 shrink-0 flex-col items-end gap-1">
+            <div className="h-2.5 w-8 rounded-sm bg-border" />
+            <div className="h-2 w-7 rounded-sm bg-border/75" />
+            <div className="h-2 w-9 rounded-sm bg-border/60" />
           </div>
         </li>
       ))}

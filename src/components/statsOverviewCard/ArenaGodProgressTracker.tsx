@@ -21,19 +21,19 @@ const ArenaGodProgressTracker = ({
   return (
     <div className="inline-flex w-fit items-center gap-2 rounded-md border border-border bg-surface-elevated/55 px-2 py-1 text-fg">
       <div
-        className="grid h-6 w-6 shrink-0 place-items-center rounded"
+        className="grid h-6 w-6 shrink-0 place-items-center rounded-full"
         style={{
           background: `conic-gradient(var(${hasArenaGod ? '--color-placement-first' : '--color-success'}) 0 ${progressPercent}%, var(--color-border) ${progressPercent}% 100%)`,
         }}
         aria-label={`${Math.round(progressPercent)}% complete`}
       >
-        <div className="h-4 w-4 rounded-sm bg-surface" />
+        <div className="h-4 w-4 rounded-full bg-surface" />
       </div>
       <div className="flex min-w-0 items-baseline gap-1.5">
-        <span className="truncate text-[11px] font-semibold text-fg-muted">
+        <span className="truncate text-xs font-semibold text-fg-muted">
           {title}
         </span>
-        <span className="shrink-0 text-[11px] font-bold text-success">
+        <span className="shrink-0 text-xs font-semibold text-success">
           {cappedCompleted}/{target}
         </span>
       </div>

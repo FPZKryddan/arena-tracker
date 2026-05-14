@@ -25,7 +25,7 @@ const DamageStatsBody = ({
   skillShotsStats,
 }: DamageStatsBodyProps) => {
   return (
-    <div className="flex flex-col w-full gap-[8px] box-border">
+    <div className="flex flex-col w-full gap-2 box-border">
       {dealtStats && (
         <DamageStat
           type={"dealt"}
@@ -45,7 +45,7 @@ const DamageStatsBody = ({
         />
       )}
       <DamageLegend />
-      <div className="flex flex-row flex-wrap gap-x-[16px] gap-y-[4px]">
+      <div className="flex flex-row flex-wrap gap-x-4 gap-y-1">
         {healingStats && (
           <SimpleStat
             icon={<GiHealthNormal className="text-success" />}
@@ -90,11 +90,11 @@ const DAMAGE_LEGEND = [
 ] as const;
 
 const DamageLegend = () => (
-  <div className="flex flex-row flex-wrap gap-x-[10px] gap-y-[4px] text-[10px] font-medium text-fg-muted">
+  <div className="flex flex-row flex-wrap gap-x-2.5 gap-y-1 text-xs font-medium text-fg-muted">
     {DAMAGE_LEGEND.map((item) => (
-      <div key={item.label} className="flex items-center gap-[4px]">
+      <div key={item.label} className="flex items-center gap-1">
         <span
-          className="h-[7px] w-[7px] rounded-full"
+          className="h-1.5 w-1.5 rounded-full"
           style={{ backgroundColor: item.color }}
         />
         {item.label}

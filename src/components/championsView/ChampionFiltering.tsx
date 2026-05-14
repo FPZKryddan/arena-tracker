@@ -77,10 +77,10 @@ const ChampionFiltering = ({
           <HiOutlineAdjustmentsHorizontal className=" text-lg" />
         </button>
         <div
-          className={`absolute left-1/2 top-full z-20 mt-[8px] w-[280px] -translate-x-1/2 rounded-lg border border-border bg-surface p-4 text-fg
+          className={`absolute left-1/2 top-full z-20 mt-2 w-72 -translate-x-1/2 rounded-lg border border-border bg-surface p-4 text-fg
         ${isOpen ? "flex" : "hidden"}`}
         >
-          <ul className="text-[12px] flex flex-col gap-3 w-full">
+          <ul className="text-xs flex flex-col gap-3 w-full">
             <ChampionFilteringCheckbox
               label="Show completed champions?"
               value={filters.showCompleted}
@@ -189,7 +189,7 @@ const ChampionFilteringCheckbox = ({
           name="checkbox"
           type="checkbox"
           checked={value}
-          className="h-[18px] w-[18px] accent-accent"
+          className="h-4 w-4 accent-accent"
           onChange={(e) => updateValueCallback(e.target.checked)}
         />
       </label>
@@ -226,7 +226,7 @@ const ChampionFilteringNumber = ({
           min="0"
           step={step}
           value={value}
-          className="w-16 rounded border border-border bg-surface-elevated px-1.5 py-1 text-right outline-none focus:border-accent"
+          className="w-16 rounded-sm border border-border bg-surface-elevated px-1.5 py-1 text-right outline-none focus:border-accent"
           onFocus={handleOnFocus}
           onChange={(e) => updateValueCallback(toFilterNumber(e.target.value))}
         />

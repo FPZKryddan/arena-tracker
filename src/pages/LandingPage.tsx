@@ -17,7 +17,7 @@ const ddragonProfileIcon = (version: string, id: number) =>
 const LandingPage = () => {
   return (
     <div className="min-h-dvh w-full bg-bg text-fg">
-      <div className="mx-auto max-w-[1120px] px-4 pt-3">
+      <div className="mx-auto max-w-6xl px-4 pt-3">
         <AppHeader />
       </div>
 
@@ -33,7 +33,7 @@ const LandingPage = () => {
 
 const Hero = () => (
   <section className="relative isolate overflow-hidden border-b border-border bg-black">
-    <div className="absolute inset-y-0 left-1/2 h-full w-full max-w-[1680px] -translate-x-1/2 overflow-hidden">
+    <div className="absolute inset-y-0 left-1/2 h-full w-full max-w-screen-2xl -translate-x-1/2 overflow-hidden">
       <img
         src={ARENA_HERO_IMAGE}
         alt=""
@@ -41,25 +41,25 @@ const Hero = () => (
         decoding="async"
         fetchPriority="high"
       />
-      <div className="absolute inset-y-0 left-0 w-[18vw] min-w-[120px] max-w-[320px] bg-gradient-to-r from-black to-transparent" />
-      <div className="absolute inset-y-0 right-0 w-[18vw] min-w-[120px] max-w-[320px] bg-gradient-to-l from-black to-transparent" />
+      <div className="absolute inset-y-0 left-0 w-[18vw] min-w-28 max-w-xs bg-gradient-to-r from-black to-transparent" />
+      <div className="absolute inset-y-0 right-0 w-[18vw] min-w-28 max-w-xs bg-gradient-to-l from-black to-transparent" />
     </div>
     <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/62 to-black/10" />
     <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-black/35" />
 
-    <div className="relative mx-auto flex min-h-[calc(100dvh-156px)] max-w-[1120px] flex-col justify-center px-4 py-12 md:min-h-[600px] md:py-16 lg:min-h-[640px]">
-      <div className="flex max-w-[620px] flex-col gap-6 text-on-media">
+    <div className="relative mx-auto flex min-h-[calc(100dvh-10rem)] max-w-6xl flex-col justify-center px-4 py-12 md:min-h-96 md:py-16 lg:min-h-96">
+      <div className="flex max-w-2xl flex-col gap-6 text-on-media">
         <div className="flex flex-col gap-3">
-          <h1 className="text-4xl font-extrabold leading-tight md:text-6xl">
+          <h1 className="text-2xl font-semibold leading-tight md:text-display">
             Arena Tracker
           </h1>
-          <p className="max-w-[560px] text-base leading-7 text-white/80 md:text-lg">
+          <p className="max-w-xl text-base leading-7 text-white/80 md:text-lg">
             Look up a Riot ID, review Arena matches, and compare champion,
             augment, and teammate stats without the noise.
           </p>
         </div>
 
-        <div className="flex max-w-[560px] flex-col gap-4">
+        <div className="flex max-w-xl flex-col gap-4">
           <SummonerInput />
           <FavoritesList />
         </div>
@@ -70,7 +70,7 @@ const Hero = () => (
 
 const Overview = () => (
   <section className="border-y border-border bg-surface/35">
-    <div className="mx-auto grid max-w-[1120px] grid-cols-1 gap-8 px-4 py-10 md:grid-cols-3">
+    <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 py-10 md:grid-cols-3">
       <FeatureItem
         icon={<IoStatsChart className="h-5 w-5" />}
         title="Match stats"
@@ -109,7 +109,7 @@ const FeatureItem = ({ icon, title, body }: FeatureItemProps) => (
 );
 
 const UseCases = () => (
-  <section className="mx-auto flex max-w-[1120px] flex-col gap-16 px-4 py-16 md:py-20">
+  <section className="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-16 md:py-20">
     <UseCaseRow
       eyebrow="Champion lineup"
       title="Find your most reliable picks."
@@ -158,8 +158,8 @@ const UseCaseRow = ({
       <span className="text-xs font-semibold uppercase text-fg-subtle">
         {eyebrow}
       </span>
-      <h3 className="text-2xl font-bold leading-tight md:text-3xl">{title}</h3>
-      <p className="max-w-[520px] leading-7 text-fg-muted">{body}</p>
+      <h3 className="text-2xl font-semibold leading-tight">{title}</h3>
+      <p className="max-w-lg leading-7 text-fg-muted">{body}</p>
     </div>
     <div>{preview}</div>
   </div>
@@ -248,7 +248,7 @@ const AugmentsMock = () => {
       <div className="px-1 pb-2 text-xs font-medium text-fg-muted">
         Most picked augments
       </div>
-      <ul className="grid min-h-[128px] grid-cols-2 gap-2">
+      <ul className="grid min-h-32 grid-cols-2 gap-2">
         {featured.map((a, i) => (
           <li
             key={a.id}
@@ -265,7 +265,7 @@ const AugmentsMock = () => {
             </div>
             <div className="min-w-0">
               <div className="truncate text-xs font-semibold">{a.name}</div>
-              <div className="text-[10px] text-fg-muted">
+              <div className="text-xs text-fg-muted">
                 {FALLBACK_AUGMENT_PICKS[i] ?? 8} picks
               </div>
             </div>
@@ -312,7 +312,7 @@ const TeammatesMock = () => {
               <div className="text-xs text-fg-muted">{m.games} games</div>
             </div>
             <div className="text-right">
-              <div className="text-[10px] uppercase text-fg-subtle">avg</div>
+              <div className="text-xs uppercase text-fg-subtle">avg</div>
               <div className="text-sm font-semibold tabular-nums">{m.avg}</div>
             </div>
           </li>

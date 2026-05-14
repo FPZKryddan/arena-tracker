@@ -56,8 +56,8 @@ const DamageStat = ({
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-row flex-wrap items-center justify-between gap-x-[8px] gap-y-[2px]">
-        <div className="flex flex-row gap-[4px] items-center">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-x-2 gap-y-0.5">
+        <div className="flex flex-row gap-1 items-center">
           <Tooltip
             text={type === "dealt" ? "Total damage dealt" : "Total damage taken"}
             extra={
@@ -68,7 +68,7 @@ const DamageStat = ({
           >
             {iconSwitch()}
           </Tooltip>
-          <p className="text-[12px] font-semibold">{label}</p>
+          <p className="text-xs font-semibold">{label}</p>
           <RecordMatchButton
             matchId={total.records[0]?.matchId}
             label={
@@ -78,12 +78,12 @@ const DamageStat = ({
             }
           />
         </div>
-        <p className="text-[12px] font-medium tabular-nums">
+        <p className="text-xs font-medium tabular-nums">
           {formatNumber(total.value)}
         </p>
       </div>
       <div
-        className="flex h-[10px] w-full flex-row overflow-hidden rounded bg-border/60"
+        className="flex h-2.5 w-full flex-row overflow-hidden rounded-sm bg-border/60"
       >
         <div
           className="h-full"
@@ -94,7 +94,7 @@ const DamageStat = ({
             extra={"Highest physical damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(phyiscal.records[0]?.value)}
           >
             <div
-              className="h-[10px] w-full hover:z-2 hover:outline-1 outline-border-strong"
+              className="h-2.5 w-full hover:z-2 hover:outline-1 outline-border-strong"
               style={{ backgroundColor: getColor("physical") }}
             ></div>
           </Tooltip>
@@ -105,7 +105,7 @@ const DamageStat = ({
             extra={"Highest magic damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(magic.records[0]?.value)}
           >
             <div
-              className="h-[10px] w-full hover:outline-1 outline-border-strong hover:z-2"
+              className="h-2.5 w-full hover:outline-1 outline-border-strong hover:z-2"
               style={{ backgroundColor: getColor("magic") }}
             ></div>
           </Tooltip>
@@ -119,7 +119,7 @@ const DamageStat = ({
             extra={"Highest true damage " + (type === "dealt" ? 'dealt: ' : 'taken: ') + formatNumber(trueDmg.records[0]?.value)}
           >
             <div
-              className="h-[10px] w-full hover:z-2 hover:outline-1 outline-border-strong"
+              className="h-2.5 w-full hover:z-2 hover:outline-1 outline-border-strong"
               style={{ backgroundColor: getColor("true") }}
             ></div>
           </Tooltip>

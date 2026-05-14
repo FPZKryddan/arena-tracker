@@ -15,12 +15,12 @@ const MatchPage = () => {
   if (!matchId) return <Navigate to="/" replace />;
 
   return (
-    <div className="box-border flex h-dvh w-full flex-col gap-[20px] overflow-auto bg-bg p-[12px] text-fg md:gap-[28px] md:p-[24px]">
+    <div className="box-border flex h-dvh w-full flex-col gap-5 overflow-auto bg-bg p-3 text-fg md:gap-7 md:p-6">
       <AppHeader />
-      <main className="flex min-h-[280px] flex-1 items-center justify-center">
-        <div className="w-full max-w-[520px] rounded-lg border border-border bg-surface p-[18px] text-center">
-          <p className="text-[14px] font-bold">Arena Match</p>
-          <p className="mt-[4px] break-all text-[11px] text-fg-muted">
+      <main className="flex min-h-72 flex-1 items-center justify-center">
+        <div className="w-full max-w-lg rounded-lg border border-border bg-surface p-4 text-center">
+          <p className="text-sm font-semibold">Arena Match</p>
+          <p className="mt-1 break-all text-xs text-fg-muted">
             {matchId}
           </p>
         </div>

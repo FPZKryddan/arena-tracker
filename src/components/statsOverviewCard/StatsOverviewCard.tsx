@@ -62,16 +62,16 @@ const StatsOverviewCard = ({
   }
 
   return (
-    <div className={`${standalone ? 'border border-border bg-surface p-[8px] md:p-[24px]' : 'bg-transparent'}
-     relative flex h-fit w-full grow-0 flex-col gap-[24px] rounded-lg text-fg`}>
+    <div className={`${standalone ? 'border border-border bg-surface p-2 md:p-6' : 'bg-transparent'}
+     relative flex h-fit w-full grow-0 flex-col gap-6 rounded-lg text-fg`}>
       {stats && hasStats ? (
-        <div className="relative flex flex-col gap-[24px]">
+        <div className="relative flex flex-col gap-6">
           {bannerImgUrl && (
             <div
-              className={`pointer-events-none absolute h-[340px] overflow-hidden ${
+              className={`pointer-events-none absolute h-80 overflow-hidden ${
                 standalone
-                  ? "-left-2 -right-2 -top-2 md:-left-6 md:-right-6 md:-top-6 md:rounded-t-lg"
-                  : "-left-2 -right-2 -top-2 rounded-t-lg"
+                  ? "-left-2 -right-2 -top-2 md:-left-6 md:-right-6 md:-top-6 md:rounded-lg"
+                  : "-left-2 -right-2 -top-2 rounded-lg"
               }`}
               style={{
                 WebkitMaskImage:
@@ -89,7 +89,7 @@ const StatsOverviewCard = ({
               <div className="absolute inset-0 bg-gradient-to-b from-media-scrim/10 via-media-scrim/30 to-transparent" />
             </div>
           )}
-          <div className={bannerImgUrl ? "relative pt-[150px]" : "relative"}>
+          <div className={bannerImgUrl ? "relative pt-24" : "relative"}>
             <StatsOverviewHeader
               kills={stats.infographics.killsDeathsAssists.kills}
               deaths={stats.infographics.killsDeathsAssists.deaths}
@@ -116,7 +116,7 @@ const StatsOverviewCard = ({
               }
             />
           </div>
-          <div className="relative flex flex-col w-full gap-[24px]">
+          <div className="relative flex flex-col w-full gap-6">
             <div className="order-2 md:order-none">
               <DamageStatsBody
                 dealtStats={stats.infographics.damageStats}
@@ -126,17 +126,17 @@ const StatsOverviewCard = ({
                 skillShotsStats={stats.infographics.skillShotsStats}
               />
             </div>
-            <div className="order-3 border-t border-border/70 pt-[16px] md:order-none">
+            <div className="order-3 border-t border-border/70 pt-4 md:order-none">
               <FavoriteAugmentsBody augments={stats.augmentStats} />
             </div>
-            <div className="order-4 border-t border-border/70 pt-[16px] md:order-none">
+            <div className="order-4 border-t border-border/70 pt-4 md:order-none">
               <PlacementsBody
                 placements={stats.placements}
                 placementAvg={stats.placementAvg}
               />
             </div>
             {"teammateStats" in stats && stats.teammateStats && (
-              <div className="order-1 border-t border-border/70 pt-[16px] md:order-none">
+              <div className="order-1 border-t border-border/70 pt-4 md:order-none">
                 <TeammatesBody
                   teammateStats={stats.teammateStats}
                   region={effectiveProfileRegion}
@@ -162,7 +162,7 @@ const NoStatsState = ({
   name: string;
   imageUrl: string;
 }) => (
-  <div className="relative min-h-[220px] w-full overflow-hidden rounded-lg border border-border bg-surface-elevated">
+  <div className="relative min-h-56 w-full overflow-hidden rounded-lg border border-border bg-surface-elevated">
     <img
       src={imageUrl}
       alt={name}
@@ -174,7 +174,7 @@ const NoStatsState = ({
         <IoStatsChart className="h-5 w-5 text-success" />
         <p className="text-sm font-semibold">No recorded stats</p>
       </div>
-      <h2 className="text-2xl font-extrabold leading-tight">{name}</h2>
+      <h2 className="text-2xl font-semibold leading-tight">{name}</h2>
     </div>
   </div>
 );

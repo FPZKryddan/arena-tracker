@@ -12,7 +12,7 @@ const Progress = ({ total, played, top4, won }: ProgressProps) => {
 
   return (
     <div className="flex flex-col w-full col-span-2 items-center gap-2">
-      <div className="flex h-[20px] w-full shrink-0 flex-row overflow-hidden rounded bg-border">
+      <div className="flex h-5 w-full shrink-0 flex-row overflow-hidden rounded-sm bg-border">
         <ProgressTracker
           current={played}
           total={total}

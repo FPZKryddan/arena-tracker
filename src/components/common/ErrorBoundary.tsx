@@ -28,14 +28,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (!this.state.hasError) return this.props.children;
     if (this.props.fallback) return this.props.fallback;
     return (
-      <div className="flex flex-col items-center justify-center h-dvh w-full gap-[12px] p-[24px] text-fg">
-        <h1 className="text-[16px] font-bold">Something went wrong.</h1>
-        <p className="text-[12px] text-fg-muted">
+      <div className="flex flex-col items-center justify-center h-dvh w-full gap-3 p-6 text-fg">
+        <h1 className="text-base font-semibold">Something went wrong.</h1>
+        <p className="text-xs text-fg-muted">
           An unexpected error occurred. Reloading usually helps.
         </p>
         <button
           onClick={this.handleRetry}
-          className="rounded-md bg-surface-elevated px-[12px] py-[6px] text-[12px] hover:brightness-110"
+          className="rounded-md bg-surface-elevated px-3 py-1.5 text-xs hover:brightness-110"
         >
           Try again
         </button>

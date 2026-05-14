@@ -14,8 +14,8 @@ interface SimpleStatProps {
 const SimpleStat = ({ icon, label, recordLabel, stat }: SimpleStatProps) => {
   const { formatNumber } = useFormatter();
   return (
-    <div className="flex flex-row gap-[4px] items-center">
-      <p className="text-[12px] font-normal">{formatNumber(stat.value)}</p>
+    <div className="flex flex-row gap-1 items-center">
+      <p className="text-xs font-normal">{formatNumber(stat.value)}</p>
       <Tooltip
         text={label}
         extra={`Highest ${recordLabel}: ` + formatNumber(stat.records[0]?.value)}

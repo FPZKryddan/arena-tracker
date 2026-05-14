@@ -47,19 +47,19 @@ type RankStyle = {
 
 const RANK_STYLES: Record<1 | 2 | 3, RankStyle> = {
   1: {
-    height: "h-[260px] sm:h-[300px]",
+    height: "h-64 sm:h-72",
     border: "border-placement-first",
     badge: "bg-placement-first text-placement-first-fg",
     label: "1st",
   },
   2: {
-    height: "h-[220px] sm:h-[250px]",
+    height: "h-56 sm:h-64",
     border: "border-rank-second",
     badge: "bg-rank-second text-rank-second-fg",
     label: "2nd",
   },
   3: {
-    height: "h-[200px] sm:h-[225px]",
+    height: "h-48 sm:h-56",
     border: "border-rank-third",
     badge: "bg-rank-third text-rank-third-fg",
     label: "3rd",
@@ -98,18 +98,18 @@ const PodiumSlot = memo(
         />
         <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/65 to-transparent" />
         <div
-          className={`absolute left-2 top-2 rounded ${style.badge} px-2 py-0.5 text-[10px] font-bold`}
+          className={`absolute left-2 top-2 rounded-sm ${style.badge} px-2 py-0.5 text-xs font-semibold`}
         >
           {style.label}
         </div>
         {isComplete && (
-          <div className="absolute right-2 top-2 h-6 w-6 rounded bg-media-scrim/55 p-0.5">
+          <div className="absolute right-2 top-2 h-6 w-6 rounded-sm bg-media-scrim/55 p-0.5">
             <ChampionStageProgress stage={champion.stage} />
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col gap-1.5 text-on-media text-left">
-          <p className="font-bold text-sm truncate">{champion.name}</p>
-          <div className="grid grid-cols-3 gap-1 text-[10px]">
+          <p className="font-semibold text-sm truncate">{champion.name}</p>
+          <div className="grid grid-cols-3 gap-1 text-xs">
             <PodiumStat label="Played" value={String(played)} />
             <PodiumStat label="Avg" value={String(avg)} />
             <PodiumStat label="WR" value={wr} />
@@ -122,7 +122,7 @@ const PodiumSlot = memo(
 
 const PodiumStat = ({ label, value }: { label: string; value: string }) => (
   <div className="flex flex-col leading-tight">
-    <span className="text-[8px] uppercase opacity-70">
+    <span className="text-xs uppercase opacity-70">
       {label}
     </span>
     <span className="font-semibold">{value}</span>

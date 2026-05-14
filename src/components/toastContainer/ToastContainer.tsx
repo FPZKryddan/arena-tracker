@@ -8,7 +8,7 @@ interface ToastContainerProps {
 const ToastContainer = ({ toasts }: ToastContainerProps) => {
 
     return (
-        <div className="pointer-events-none fixed left-1/2 top-4 z-100 flex w-[calc(100%-24px)] max-w-[520px] -translate-x-1/2 flex-col gap-2">
+        <div className="pointer-events-none fixed left-1/2 top-4 z-100 flex w-[calc(100%-1.5rem)] max-w-lg -translate-x-1/2 flex-col gap-2">
             <AnimatePresence>
                 {toasts.map((toast) => (
                     <motion.div 

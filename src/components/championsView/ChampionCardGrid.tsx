@@ -61,17 +61,17 @@ const ChampionCard = memo(
           className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/55 to-transparent" />
-        <div className="absolute left-1 top-1 rounded bg-media-scrim/45 px-1.5 py-0.5 text-xs font-bold text-on-media/90">
+        <div className="absolute left-1 top-1 rounded-sm bg-media-scrim/45 px-1.5 py-0.5 text-xs font-semibold text-on-media/90">
           #{rank}
         </div>
         {isComplete && (
-          <div className="absolute right-1 top-1 h-5 w-5 rounded bg-media-scrim/55 p-0.5">
+          <div className="absolute right-1 top-1 h-5 w-5 rounded-sm bg-media-scrim/55 p-0.5">
             <ChampionStageProgress stage={champion.stage} />
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 p-1.5 flex flex-col gap-1 text-on-media text-left">
-          <p className="font-bold text-base truncate">{champion.name}</p>
-          <div className="flex flex-wrap gap-1 text-[11px]">
+          <p className="font-semibold text-base truncate">{champion.name}</p>
+          <div className="flex flex-wrap gap-1 text-xs">
             <CardStat label="P" value={String(played)} />
             <CardStat label="A" value={String(avg)} />
             <CardStat label="WR" value={wr} />
@@ -83,7 +83,7 @@ const ChampionCard = memo(
 );
 
 const CardStat = ({ label, value }: { label: string; value: string }) => (
-  <span className="rounded bg-media-scrim/45 px-1 py-[1px]">
+  <span className="rounded-sm bg-media-scrim/45 px-1 py-0">
     <span className="opacity-70">{label} </span>
     <span className="font-semibold">{value}</span>
   </span>

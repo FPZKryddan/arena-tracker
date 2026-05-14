@@ -91,10 +91,10 @@ const HeaderLink = ({ to, label, active, Icon }: HeaderLinkProps) => (
   <Link
     to={to}
     aria-current={active ? "page" : undefined}
-    className={`flex h-9 min-w-0 items-center justify-center gap-1.5 rounded-md border px-2 text-[12px] font-semibold transition-colors sm:px-3 ${
+    className={`flex h-9 min-w-0 items-center box-content border-b-4 justify-center gap-1.5 px-2 text-xs font-semibold transition-colors sm:px-3 ${
       active
-        ? "border-accent bg-accent text-accent-fg"
-        : "border-border bg-surface text-fg-muted hover:border-border-strong hover:bg-surface-hover hover:text-fg"
+        ? "text-fg border-accent"
+        : "text-fg border-transparent hover:border-border-strong"
     }`}
   >
     <Icon className="hidden h-4 w-4 shrink-0 md:block" />

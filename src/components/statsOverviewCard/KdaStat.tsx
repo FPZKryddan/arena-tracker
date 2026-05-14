@@ -25,9 +25,9 @@ const KdaStat = ({ type, value }: KdaStatProps) => {
   };
 
   return (
-    <div className="flex flex-row gap-[4px]">
+    <div className="flex flex-row gap-1">
       {iconSwitch()}
-      <p className="text-[12px] font-normal">
+      <p className="text-xs font-normal">
         {type === "kda" ? "KDA: " : ""}
         {typeof value === "number" ? formatNumber(value) : value}
       </p>

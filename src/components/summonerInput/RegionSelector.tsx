@@ -44,13 +44,13 @@ const RegionSelector = ({ updateRegionCallback, initialRegion }: RegionSelectorP
     <div className="relative flex h-full items-center">
       <button
         type="button"
-        className="rounded-md border border-border bg-surface-elevated px-2 py-1.5 text-[13px] font-medium text-fg transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover"
+        className="rounded-md border border-border bg-surface-elevated px-2 py-1.5 text-sm font-medium text-fg transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover"
         onClick={regionSelectorClicked}
       >
         {regionSelected}
       </button>
       <div
-        className={`absolute left-1/2 top-full z-30 mt-[6px] w-[104px] -translate-x-1/2 overflow-hidden rounded-md border border-border bg-surface p-1 text-fg ${
+        className={`absolute left-1/2 top-full z-30 mt-1.5 w-24 -translate-x-1/2 overflow-hidden rounded-md border border-border bg-surface p-1 text-fg ${
           isSelectorOpen ? "block" : "hidden"
         }`}
       >

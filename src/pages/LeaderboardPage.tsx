@@ -81,37 +81,37 @@ const LEADERBOARD_COLUMNS: LeaderboardColumn[] = [
   {
     label: "Damage",
     sortBy: "damageDealt",
-    headerClassName: "min-w-[112px]",
+    headerClassName: "min-w-28",
     render: (player) => formatCompact(player.totalDamageDealt),
   },
   {
     label: "Tanked",
     sortBy: "damageTanked",
-    headerClassName: "min-w-[112px]",
+    headerClassName: "min-w-28",
     render: (player) => formatCompact(player.totalDamageTanked),
   },
   {
     label: "Healing",
     sortBy: "healing",
-    headerClassName: "min-w-[104px]",
+    headerClassName: "min-w-24",
     render: (player) => formatCompact(player.healing),
   },
   {
     label: "Shielding",
     sortBy: "shielding",
-    headerClassName: "min-w-[104px]",
+    headerClassName: "min-w-24",
     render: (player) => formatCompact(player.shielding),
   },
   {
     label: "Hit",
     sortBy: "skillshotsHit",
-    headerClassName: "min-w-[96px]",
+    headerClassName: "min-w-24",
     render: (player) => formatInteger(player.skillshotsHit),
   },
   {
     label: "Dodged",
     sortBy: "skillshotsDodged",
-    headerClassName: "min-w-[104px]",
+    headerClassName: "min-w-24",
     render: (player) => formatInteger(player.skillshotsDodged),
   },
 ];
@@ -176,16 +176,16 @@ const LeaderboardPage = () => {
   );
 
   return (
-    <div className="box-border flex min-h-dvh w-full flex-col gap-[20px] overflow-auto bg-bg p-[12px] text-fg md:gap-[28px] md:p-[24px]">
+    <div className="box-border flex min-h-dvh w-full flex-col gap-5 overflow-auto bg-bg p-3 text-fg md:gap-7 md:p-6">
       <AppHeader />
 
-      <main className="mx-auto flex w-full max-w-[1480px] flex-col gap-[16px]">
+      <main className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4">
         <section className="flex flex-col gap-3 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase text-fg-subtle">
+            <p className="text-xs font-semibold uppercase text-fg-subtle">
               {region} standings
             </p>
-            <h1 className="mt-1 truncate text-[24px] font-extrabold leading-tight md:text-[30px]">
+            <h1 className="mt-1 truncate text-2xl font-semibold leading-tight md:text-2xl">
               Leaderboard
             </h1>
             <p className="mt-1 text-sm text-fg-muted">
@@ -194,8 +194,8 @@ const LeaderboardPage = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex h-[38px] items-center gap-2 rounded-md border border-border bg-bg px-3">
-              <span className="text-[11px] font-semibold uppercase text-fg-subtle">
+            <div className="flex h-9 items-center gap-2 rounded-md border border-border bg-bg px-3">
+              <span className="text-xs font-semibold uppercase text-fg-subtle">
                 Region
               </span>
               <RegionSelector
@@ -204,7 +204,7 @@ const LeaderboardPage = () => {
               />
             </div>
             {isFetching && !isLoading && (
-              <div className="flex h-[38px] items-center gap-2 rounded-md border border-border bg-bg px-3 text-xs font-semibold text-info">
+              <div className="flex h-9 items-center gap-2 rounded-md border border-border bg-bg px-3 text-xs font-semibold text-info">
                 <ClipLoader size={14} color="var(--color-info)" />
                 Updating
               </div>
@@ -288,19 +288,19 @@ type RankStyle = {
 
 const RANK_STYLES: Record<1 | 2 | 3, RankStyle> = {
   1: {
-    height: "h-[230px] sm:h-[280px]",
+    height: "h-56 sm:h-72",
     border: "border-placement-first",
     badge: "bg-placement-first text-placement-first-fg",
     label: "1st",
   },
   2: {
-    height: "h-[205px] sm:h-[245px]",
+    height: "h-52 sm:h-60",
     border: "border-rank-second",
     badge: "bg-rank-second text-rank-second-fg",
     label: "2nd",
   },
   3: {
-    height: "h-[190px] sm:h-[225px]",
+    height: "h-48 sm:h-56",
     border: "border-rank-third",
     badge: "bg-rank-third text-rank-third-fg",
     label: "3rd",
@@ -329,39 +329,39 @@ const PodiumSlot = ({ player, rank, placement }: PodiumSlotProps) => {
           alt=""
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 h-full w-full scale-125 object-cover opacity-20 blur-[2px] transition-transform duration-300 group-hover:scale-[1.32]"
+          className="absolute inset-0 h-full w-full scale-125 object-cover opacity-20 blur-sm transition-transform duration-300 group-hover:scale-125"
         />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/75 to-media-scrim/20" />
       <div
-        className={`absolute left-2 top-2 rounded ${style.badge} px-2 py-0.5 text-[10px] font-bold`}
+        className={`absolute left-2 top-2 rounded-sm ${style.badge} px-2 py-0.5 text-xs font-semibold`}
       >
         {style.label}
       </div>
-      <span className="absolute right-2 top-2 rounded bg-media-scrim/55 px-2 py-0.5 text-[10px] font-bold text-on-media">
+      <span className="absolute right-2 top-2 rounded-sm bg-media-scrim/55 px-2 py-0.5 text-xs font-semibold text-on-media">
         #{rank}
       </span>
 
-      <div className="absolute inset-x-0 top-[38px] flex justify-center px-2">
+      <div className="absolute inset-x-0 top-10 flex justify-center px-2">
         <img
           src={getProfileIconUrl(version, player.profileIconId)}
           alt={`${player.name} profile icon`}
           loading="lazy"
           decoding="async"
-          className="h-16 w-16 rounded-md border border-border-strong bg-surface-elevated object-cover shadow-lg sm:h-20 sm:w-20"
+          className="h-16 w-16 rounded-md border border-border-strong bg-surface-elevated object-cover shadow-raised sm:h-20 sm:w-20"
         />
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 flex flex-col gap-2 p-2 text-left text-on-media sm:p-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-extrabold sm:text-base">
+          <p className="truncate text-sm font-semibold sm:text-base">
             {player.name}
           </p>
-          <p className="truncate text-[11px] font-semibold uppercase opacity-75">
+          <p className="truncate text-xs font-semibold uppercase opacity-75">
             #{player.tag}
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-1 text-[10px]">
+        <div className="grid grid-cols-3 gap-1 text-xs">
           <PodiumStat label="1sts" value={formatInteger(player.firstPlaces)} />
           <PodiumStat label="Top 4" value={formatInteger(player.top4)} />
           <PodiumStat label="Avg" value={formatPlacement(player.placementAvg)} />
@@ -373,7 +373,7 @@ const PodiumSlot = ({ player, rank, placement }: PodiumSlotProps) => {
 
 const PodiumStat = ({ label, value }: { label: string; value: string }) => (
   <div className="flex min-w-0 flex-col leading-tight">
-    <span className="truncate text-[8px] uppercase opacity-70">{label}</span>
+    <span className="truncate text-xs uppercase opacity-70">{label}</span>
     <span className="truncate font-semibold tabular-nums">{value}</span>
   </div>
 );
@@ -396,16 +396,16 @@ const LeaderboardTable = ({
   onSortClick,
 }: LeaderboardTableProps) => (
   <section className="overflow-x-auto rounded-lg border border-border bg-surface">
-    <table className="w-full min-w-[1080px] border-collapse text-left">
-      <thead className="border-b border-border text-[11px] font-bold uppercase text-fg-subtle">
+    <table className="w-full min-w-96 border-collapse text-left">
+      <thead className="border-b border-border text-xs font-semibold uppercase text-fg-subtle">
         <tr>
-          <th className="w-[72px] px-3 py-3">Rank</th>
-          <th className="min-w-[360px] px-3 py-3">Player</th>
+          <th className="w-16 px-3 py-3">Rank</th>
+          <th className="min-w-96 px-3 py-3">Player</th>
           {LEADERBOARD_COLUMNS.map((column) => (
             <th
               key={column.sortBy}
               className={`px-3 py-3 text-right ${
-                column.headerClassName ?? "min-w-[88px]"
+                column.headerClassName ?? "min-w-20"
               }`}
               aria-sort={
                 sortBy === column.sortBy
@@ -464,7 +464,7 @@ const LeaderboardRow = ({
 
   return (
     <tr className="transition-colors hover:bg-surface-hover/55">
-      <td className="px-3 py-3 text-sm font-extrabold tabular-nums text-fg-muted">
+      <td className="px-3 py-3 text-sm font-semibold tabular-nums text-fg-muted">
         #{rank}
       </td>
       <td className="px-3 py-3">
@@ -481,11 +481,11 @@ const LeaderboardRow = ({
           />
           <div className="flex min-w-0 flex-col gap-2">
             <div className="min-w-0">
-              <p className="truncate text-sm font-bold">
+              <p className="truncate text-sm font-semibold">
                 {player.name}
                 <span className="font-semibold text-fg-muted">#{player.tag}</span>
               </p>
-              <p className="mt-1 text-[11px] font-semibold text-fg-subtle">
+              <p className="mt-1 text-xs font-semibold text-fg-subtle">
                 Level <span className="tabular-nums">{player.level}</span>
               </p>
             </div>
@@ -616,7 +616,7 @@ const AugmentPickIcon = ({
           />
         </div>
       ) : (
-        <div className="grid h-7 min-w-7 place-items-center rounded-md border border-border bg-surface-elevated px-1 text-[10px] font-bold text-fg-muted">
+        <div className="grid h-7 min-w-7 place-items-center rounded-md border border-border bg-surface-elevated px-1 text-xs font-semibold text-fg-muted">
           {augment.id}
         </div>
       )}
@@ -631,9 +631,9 @@ const PickTooltip = ({
   title: string;
   details: string;
 }) => (
-  <div className="max-w-[220px] whitespace-normal px-2.5 py-2">
-    <p className="text-[13px] font-bold leading-4">{title}</p>
-    <p className="mt-1 text-[11px] font-semibold leading-4 text-fg-muted">
+  <div className="max-w-xs whitespace-normal px-2.5 py-2">
+    <p className="text-sm font-semibold leading-4">{title}</p>
+    <p className="mt-1 text-xs font-semibold leading-4 text-fg-muted">
       {details}
     </p>
   </div>
@@ -708,7 +708,7 @@ const LeaderboardPagination = ({
           onSubmit={handleSubmit}
           className="flex h-9 items-center rounded-md border border-border bg-bg text-sm font-semibold text-fg-muted focus-within:border-accent"
         >
-          <label htmlFor="leaderboard-page" className="px-3 text-[12px]">
+          <label htmlFor="leaderboard-page" className="px-3 text-xs">
             Go to
           </label>
           <input
@@ -718,11 +718,11 @@ const LeaderboardPagination = ({
             max={safeTotalPages}
             value={draftPage}
             onChange={(event) => setDraftPage(event.target.value)}
-            className="h-full w-16 border-x border-border bg-transparent px-2 text-center text-sm font-bold tabular-nums text-fg focus:outline-none"
+            className="h-full w-16 border-x border-border bg-transparent px-2 text-center text-sm font-semibold tabular-nums text-fg focus:outline-none"
           />
           <button
             type="submit"
-            className="h-full px-3 text-[12px] font-bold transition-colors hover:bg-surface-hover hover:text-fg"
+            className="h-full px-3 text-xs font-semibold transition-colors hover:bg-surface-hover hover:text-fg"
           >
             Go
           </button>
@@ -780,13 +780,13 @@ interface LeaderboardStateProps {
 }
 
 const LeaderboardState = ({ icon, title, body }: LeaderboardStateProps) => (
-  <section className="flex min-h-[280px] flex-col items-center justify-center gap-3 rounded-lg border border-border bg-surface p-6 text-center">
+  <section className="flex min-h-72 flex-col items-center justify-center gap-3 rounded-lg border border-border bg-surface p-6 text-center">
     <div className="grid h-11 w-11 place-items-center rounded-md border border-border bg-bg text-accent">
       {icon}
     </div>
     <div>
-      <h2 className="text-base font-bold">{title}</h2>
-      <p className="mt-1 max-w-[420px] text-sm leading-6 text-fg-muted">
+      <h2 className="text-base font-semibold">{title}</h2>
+      <p className="mt-1 max-w-md text-sm leading-6 text-fg-muted">
         {body}
       </p>
     </div>
@@ -796,16 +796,16 @@ const LeaderboardState = ({ icon, title, body }: LeaderboardStateProps) => (
 const LeaderboardSkeleton = () => (
   <div className="flex animate-pulse flex-col gap-3">
     <div className="flex flex-row items-end justify-center gap-2 sm:gap-3">
-      <div className="h-[205px] flex-1 rounded-md border border-border bg-surface-elevated sm:h-[245px]" />
-      <div className="h-[230px] flex-1 rounded-md border border-border bg-surface-elevated sm:h-[280px]" />
-      <div className="h-[190px] flex-1 rounded-md border border-border bg-surface-elevated sm:h-[225px]" />
+      <div className="h-52 flex-1 rounded-md border border-border bg-surface-elevated sm:h-60" />
+      <div className="h-56 flex-1 rounded-md border border-border bg-surface-elevated sm:h-72" />
+      <div className="h-48 flex-1 rounded-md border border-border bg-surface-elevated sm:h-56" />
     </div>
     <div className="rounded-lg border border-border bg-surface p-3">
-      <div className="mb-3 grid grid-cols-[72px_minmax(220px,1fr)_repeat(5,minmax(80px,1fr))] gap-3">
+      <div className="mb-3 grid grid-cols-[4.5rem_minmax(14rem,1fr)_repeat(5,minmax(5rem,1fr))] gap-3">
         {Array.from({ length: 7 }).map((_, index) => (
           <div
             key={`leaderboard-header-skeleton-${index}`}
-            className="h-4 rounded bg-border"
+            className="h-4 rounded-sm bg-border"
           />
         ))}
       </div>
@@ -813,7 +813,7 @@ const LeaderboardSkeleton = () => (
         {Array.from({ length: 8 }).map((_, index) => (
           <div
             key={`leaderboard-row-skeleton-${index}`}
-            className="h-12 rounded bg-surface-elevated"
+            className="h-12 rounded-sm bg-surface-elevated"
           />
         ))}
       </div>
