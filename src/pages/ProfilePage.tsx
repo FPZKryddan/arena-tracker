@@ -12,11 +12,13 @@ import { PlayerStatsContext } from "../contexts/PlayerStatsContext";
 import useContextIfDefined from "../hooks/useContextIfDefined";
 import usePlayerHydration from "../hooks/usePlayerHydration";
 import useProfileLookup from "../hooks/useProfileLookup";
-import type { ArenaModeSelection, Regions } from "../types";
+import type { ArenaModeSelection, PlayerStats, Regions } from "../types";
 import {
   DEFAULT_ARENA_MODE,
   parseArenaMode,
 } from "../utils/arenaModes";
+
+type RouteProgress = ReturnType<typeof usePlayerHydration>;
 
 const ProfilePage = () => {
   const { playerStats } = useContextIfDefined(PlayerStatsContext);
@@ -67,91 +69,214 @@ const ProfilePage = () => {
   );
 
   return (
-    <div
-      className="box-border flex min-h-dvh w-full flex-col gap-5 bg-bg p-3 text-fg md:gap-7 md:p-6"
-    >
-      <div className="flex w-full flex-col gap-2 self-center md:max-w-sm lg:max-w-2xl">
-        <div className="flex w-full flex-row items-start gap-3">
-          <div className="flex-1 min-w-0">
-            <SummonerInput
+    <main className="box-border flex min-h-dvh w-full flex-col gap-5 bg-bg p-3 text-fg md:gap-7 md:p-6">
+      <h1 className="sr-only">Arena profile</h1>
+
+      <header className="block lg:hidden">
+        <ProfileSearchControls
+          routeProgress={routeProgress}
+          arenaMode={arenaMode}
+          pendingMatchesCount={pendingMatchesCount}
+          pendingMatchesLabel={pendingMatchesLabel}
+          canUpdateProfile={canUpdateProfile}
+          onUpdateProfile={handleUpdateProfile}
+          onArenaModeChange={handleArenaModeChange}
+        />
+      </header>
+
+      <section
+        aria-label="Profile dashboard"
+        className="flex flex-col gap-4 md:flex-row"
+      >
+        <aside
+          aria-label="Match history"
+          className="order-1 hidden h-full xl:flex xl:w-1/4"
+        >
+          <ProfileMatchHistory arenaMode={arenaMode} />
+        </aside>
+        <section
+          aria-label="Champions and matches"
+          className="order-2 h-full w-full md:order-1 md:w-1/2 xl:order-2 xl:w-2/4"
+        >
+          <div className="hidden lg:flex flex-col gap-3">
+            <ProfileSearchControls
               routeProgress={routeProgress}
               arenaMode={arenaMode}
-            />
+              pendingMatchesCount={pendingMatchesCount}
+              pendingMatchesLabel={pendingMatchesLabel}
+              canUpdateProfile={canUpdateProfile}
+              onUpdateProfile={handleUpdateProfile}
+              onArenaModeChange={handleArenaModeChange}
+              />
           </div>
-          <button
-            type="button"
-            onClick={handleUpdateProfile}
-            disabled={!canUpdateProfile}
-            aria-label={
-              pendingMatchesCount > 0
-                ? `Update profile, ${pendingMatchesLabel}`
-                : "Fetch new games played"
-            }
-            title={
-              pendingMatchesCount > 0
-                ? `Update profile, ${pendingMatchesLabel}`
-                : "Fetch new games played"
-            }
-            className="relative flex h-11 shrink-0 items-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <IoRefresh
-              className={`h-4 w-4 ${routeProgress.isFetching ? "animate-spin" : ""}`}
-              aria-hidden
-            />
-            <span>Update</span>
-            {pendingMatchesCount > 0 && (
-              <span className="min-w-5 rounded-full bg-accent px-1.5 py-0.5 text-center text-xs font-semibold leading-none text-bg tabular-nums">
-                {pendingMatchesCount}
-              </span>
-            )}
-          </button>
-        </div>
-        <ArenaModeSelector
-          value={arenaMode}
-          onChange={handleArenaModeChange}
-        />
-        {pendingMatchesCount > 0 && !routeProgress.isFetching && (
-          <p className="self-end pr-1 text-xs font-medium text-fg-muted">
-            <span className="text-accent tabular-nums">
-              {pendingMatchesCount}
-            </span>{" "}
-            {pendingMatchesCount === 1 ? "game" : "games"} waiting to process
-          </p>
-        )}
-      </div>
+          <ProfileChampionMatches arenaMode={arenaMode} />
+        </section>
+        <section
+          aria-label="Stats overview"
+          className="order-1 h-full w-full md:hidden"
+        >
+          <ProfileStatsOverview
+            playerStats={playerStats}
+            arenaMode={arenaMode}
+          />
+        </section>
+        <aside
+          aria-label="Stats overview"
+          className="hidden h-full md:order-2 md:flex md:w-1/2 xl:order-3 xl:w-1/4"
+        >
+          <ProfileStatsOverview
+            playerStats={playerStats}
+            standalone
+            arenaMode={arenaMode}
+          />
+        </aside>
+      </section>
+    </main>
+  );
+};
 
-      <div className="flex flex-col gap-4 md:flex-row">
-        <div className="hidden xl:flex xl:w-1/4 h-full order-1">
-          <MatchHistoryList arenaMode={arenaMode} />
-        </div>
-        <div className="w-full md:w-1/2 xl:w-2/4 h-full order-2 md:order-1 xl:order-2">
-          <div className="hidden xl:block">
-            <ChampionList />
-          </div>
-          <div className="block xl:hidden">
-            <ChampionMatchTabs arenaMode={arenaMode} />
-          </div>
-        </div>
-        <div className="w-full md:hidden h-full order-1">
-          {playerStats !== null ? (
-            <StatsOverviewCard stats={playerStats} arenaMode={arenaMode} />
-          ) : (
-            <StatsSkeleton />
-          )}
-        </div>
-        <div className="hidden md:flex md:w-1/2 xl:w-1/4 h-full md:order-2 xl:order-3">
-          {playerStats !== null ? (
-            <StatsOverviewCard
-              stats={playerStats}
-              standalone
-              arenaMode={arenaMode}
-            />
-          ) : (
-            <StatsSkeleton standalone />
-          )}
-        </div>
+interface ProfileSearchControlsProps {
+  routeProgress: RouteProgress;
+  arenaMode: ArenaModeSelection;
+  pendingMatchesCount: number;
+  pendingMatchesLabel: string;
+  canUpdateProfile: boolean;
+  onUpdateProfile: () => void | Promise<void>;
+  onArenaModeChange: (nextMode: ArenaModeSelection) => void;
+}
+
+const ProfileSearchControls = ({
+  routeProgress,
+  arenaMode,
+  pendingMatchesCount,
+  pendingMatchesLabel,
+  canUpdateProfile,
+  onUpdateProfile,
+  onArenaModeChange,
+}: ProfileSearchControlsProps) => (
+  <section className="flex flex-col gap-3">
+    <div className="flex w-full flex-col lg:flex-row items-start gap-3">
+      <div className="min-w-0 flex-1 w-full">
+        <SummonerInput routeProgress={routeProgress} arenaMode={arenaMode} />
       </div>
+      <ProfileUpdateButton
+        isFetching={routeProgress.isFetching}
+        canUpdateProfile={canUpdateProfile}
+        pendingMatchesCount={pendingMatchesCount}
+        pendingMatchesLabel={pendingMatchesLabel}
+        onUpdateProfile={onUpdateProfile}
+      />
     </div>
+    <ArenaModeSelector value={arenaMode} onChange={onArenaModeChange} />
+    <PendingMatchesNotice
+      pendingMatchesCount={pendingMatchesCount}
+      isFetching={routeProgress.isFetching}
+    />
+  </section>
+);
+
+interface ProfileUpdateButtonProps {
+  isFetching: boolean;
+  canUpdateProfile: boolean;
+  pendingMatchesCount: number;
+  pendingMatchesLabel: string;
+  onUpdateProfile: () => void | Promise<void>;
+}
+
+const ProfileUpdateButton = ({
+  isFetching,
+  canUpdateProfile,
+  pendingMatchesCount,
+  pendingMatchesLabel,
+  onUpdateProfile,
+}: ProfileUpdateButtonProps) => {
+  const updateLabel =
+    pendingMatchesCount > 0
+      ? `Update profile, ${pendingMatchesLabel}`
+      : "Fetch new games played";
+
+  return (
+    <button
+      type="button"
+      onClick={onUpdateProfile}
+      disabled={!canUpdateProfile}
+      aria-label={updateLabel}
+      title={updateLabel}
+      className="relative flex h-11 w-full text-center lg:w-fit shrink-0 items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      Update
+      <IoRefresh
+        className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+        aria-hidden
+      />
+      {pendingMatchesCount > 0 && (
+        <span className="min-w-5 rounded-full bg-accent px-1.5 py-0.5 text-center text-xs font-semibold leading-none text-bg tabular-nums">
+          {pendingMatchesCount}
+        </span>
+      )}
+    </button>
+  );
+};
+
+interface PendingMatchesNoticeProps {
+  pendingMatchesCount: number;
+  isFetching: boolean;
+}
+
+const PendingMatchesNotice = ({
+  pendingMatchesCount,
+  isFetching,
+}: PendingMatchesNoticeProps) => {
+  if (pendingMatchesCount === 0 || isFetching) return null;
+
+  return (
+    <p className="self-end pr-1 text-xs font-medium text-fg-muted">
+      <span className="text-accent tabular-nums">{pendingMatchesCount}</span>{" "}
+      {pendingMatchesCount === 1 ? "game" : "games"} waiting to process
+    </p>
+  );
+};
+
+const ProfileMatchHistory = ({
+  arenaMode,
+}: {
+  arenaMode: ArenaModeSelection;
+}) => <MatchHistoryList arenaMode={arenaMode} />;
+
+const ProfileChampionMatches = ({
+  arenaMode,
+}: {
+  arenaMode: ArenaModeSelection;
+}) => (
+  <div className="mt-3">
+    <div className="hidden xl:block">
+      <ChampionList />
+    </div>
+    <div className="block xl:hidden">
+      <ChampionMatchTabs arenaMode={arenaMode} />
+    </div>
+  </div>
+);
+
+interface ProfileStatsOverviewProps {
+  playerStats: PlayerStats | null;
+  arenaMode: ArenaModeSelection;
+  standalone?: boolean;
+}
+
+const ProfileStatsOverview = ({
+  playerStats,
+  arenaMode,
+  standalone = false,
+}: ProfileStatsOverviewProps) => {
+  if (playerStats === null) return <StatsSkeleton standalone={standalone} />;
+
+  return (
+    <StatsOverviewCard
+      stats={playerStats}
+      standalone={standalone}
+      arenaMode={arenaMode}
+    />
   );
 };
 

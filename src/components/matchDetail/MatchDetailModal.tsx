@@ -120,15 +120,15 @@ const MatchDetailModal = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.15, ease: easeOut }}
+            transition={{ duration: 0.125, ease: easeOut }}
             className="fixed inset-0 z-[110] bg-overlay"
             onClick={onClose}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: easeOut }}
+            transition={{ duration: 0.125, ease: easeOut }}
             className="fixed inset-0 z-[120] flex items-center justify-center p-3 md:p-6 pointer-events-none"
           >
             <div className="pointer-events-auto relative max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-lg border border-border bg-surface p-4 text-fg md:p-6">

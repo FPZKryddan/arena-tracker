@@ -2,6 +2,7 @@ import { useMemo, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 import type {
   ArenaModeSelection,
+  ProfileLookupDto,
   Regions,
   teammateStatDto,
   teammateStatsDto,
@@ -16,6 +17,9 @@ interface TeammatesBodyProps {
   teammateStats: teammateStatsDto;
   region: Exclude<Regions, null>;
   arenaMode?: ArenaModeSelection;
+  interactive?: boolean;
+  profileOverrides?: Record<string, ProfileLookupDto>;
+  resolveProfiles?: boolean;
 }
 
 type TeammateEntry = {
@@ -46,10 +50,12 @@ const TeammatesBody = ({
   teammateStats,
   region,
   arenaMode,
+  interactive = true,
+  profileOverrides = {},
+  resolveProfiles = true,
 }: TeammatesBodyProps) => {
   const [selected, setSelected] = useState<TeammateEntry>();
   const [visibleTeammatesCount, setVisibleTeammatesCount] = useState<number>(FREQUENT_TEAMMATES_LIMIT);
-  const [isShowingAllTeammates, setIsShowingAllTeammates] = useState<boolean>(false);
   const [bottomSheetIsOpen, setBottomSheetIsOpen] = useState<boolean>(false);
 
   const teammates = useMemo<TeammateEntry[]>(() => {
@@ -58,10 +64,12 @@ const TeammatesBody = ({
       .filter((teammate) => teammate.stats.gamesPlayed >= MINIMUM_PLAYED_WITH_LIMIT)
       .sort((a, b) => b.stats.gamesPlayed - a.stats.gamesPlayed)
 
-      console.log("TEST: ", teammates.length, visibleTeammatesCount);
-    if (teammates.length - 1 <= visibleTeammatesCount) setIsShowingAllTeammates(true);
     return teammates.slice(0, visibleTeammatesCount);
   }, [teammateStats, visibleTeammatesCount]);
+  const isShowingAllTeammates =
+    Object.values(teammateStats).filter(
+      (stats) => stats.gamesPlayed >= MINIMUM_PLAYED_WITH_LIMIT
+    ).length <= visibleTeammatesCount;
 
   if (teammates.length === 0) return null;
 
@@ -75,15 +83,21 @@ const TeammatesBody = ({
             puuid={teammate.puuid}
             teammate={teammate.stats}
             region={region}
+            interactive={interactive}
+            profileOverride={profileOverrides[teammate.puuid]}
+            resolveProfile={resolveProfiles}
             onSelect={() => {
+              if (!interactive) return;
               setSelected(teammate);
               setBottomSheetIsOpen(true);
             }}
           />
         ))}
-        <button className="hover:text-accent hover:cursor-pointer disabled:hidden" disabled={isShowingAllTeammates} onClick={() => setVisibleTeammatesCount(visibleTeammatesCount + 3)}>show more</button>
+        {interactive && (
+          <button className="hover:text-accent hover:cursor-pointer disabled:hidden" disabled={isShowingAllTeammates} onClick={() => setVisibleTeammatesCount(visibleTeammatesCount + 3)}>show more</button>
+        )}
       </ul>
-      {createPortal(
+      {interactive && createPortal(
 
         <BottomSheet
         isOpen={bottomSheetIsOpen}
@@ -110,6 +124,9 @@ interface TeammateRowProps {
   puuid: string;
   teammate: teammateStatDto;
   region: Exclude<Regions, null>;
+  interactive: boolean;
+  profileOverride?: ProfileLookupDto;
+  resolveProfile: boolean;
   onSelect: () => void;
 }
 
@@ -117,9 +134,16 @@ const TeammateRow = ({
   puuid,
   teammate,
   region,
+  interactive,
+  profileOverride,
+  resolveProfile,
   onSelect,
 }: TeammateRowProps) => {
-  const { profile } = useProfileLookupByPuuid(puuid, region);
+  const { profile: resolvedProfile } = useProfileLookupByPuuid(
+    resolveProfile && !profileOverride ? puuid : undefined,
+    region
+  );
+  const profile = profileOverride ?? resolvedProfile;
   const version = useDdragonVersion();
   const displayGameName = profile?.gameName ?? teammate.gameName;
   const displayTagLine = profile?.tagLine ?? teammate.tagLine;
@@ -139,11 +163,15 @@ const TeammateRow = ({
 
   return (
     <li
-      className="flex flex-row items-center gap-2 rounded-md p-1.5 transition-colors hover:cursor-pointer hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-      role="button"
-      tabIndex={0}
-      onClick={onSelect}
-      onKeyDown={handleKeyDown}
+      className={`flex flex-row items-center gap-2 rounded-md p-1.5 transition-colors ${
+        interactive
+          ? "hover:cursor-pointer hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          : ""
+      }`}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onClick={interactive ? onSelect : undefined}
+      onKeyDown={interactive ? handleKeyDown : undefined}
     >
       <div className="h-9 w-9 aspect-square rounded-full overflow-hidden bg-surface-elevated text-fg flex items-center justify-center text-sm font-semibold shrink-0">
         {profile ? (
@@ -157,15 +185,22 @@ const TeammateRow = ({
         )}
       </div>
       <div className="flex flex-col grow min-w-0">
-        <Link
-          to={profilePath}
-          aria-label={`Open ${displayGameName}#${displayTagLine} profile`}
-          className="block truncate text-xs font-medium transition-colors hover:text-accent"
-          onClick={(event) => event.stopPropagation()}
-        >
-          {displayGameName}
-          <span className="opacity-60">#{displayTagLine}</span>
-        </Link>
+        {interactive ? (
+          <Link
+            to={profilePath}
+            aria-label={`Open ${displayGameName}#${displayTagLine} profile`}
+            className="block truncate text-xs font-medium transition-colors hover:text-accent"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {displayGameName}
+            <span className="opacity-60">#{displayTagLine}</span>
+          </Link>
+        ) : (
+          <p className="block truncate text-xs font-medium">
+            {displayGameName}
+            <span className="opacity-60">#{displayTagLine}</span>
+          </p>
+        )}
         <p className="text-xs opacity-70">
           {profile ? `Lv. ${profile.summonerLevel} / ` : ""}
           {teammate.gamesPlayed} games

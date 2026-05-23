@@ -7,13 +7,15 @@ import ChampionStageProgress from "./ChampionStageProgress";
 type ChampionCardGridProps = {
   champions: championStatsDto[];
   startRank: number;
-  clickCallback: (champion: championStatsDto) => void;
+  clickCallback?: (champion: championStatsDto) => void;
+  interactive?: boolean;
 };
 
 const ChampionCardGrid = ({
   champions,
   startRank,
   clickCallback,
+  interactive = true,
 }: ChampionCardGridProps) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 2xl:grid-cols-4 gap-2">
@@ -23,6 +25,7 @@ const ChampionCardGrid = ({
           rank={startRank + idx}
           champion={champion}
           clickCallback={clickCallback}
+          interactive={interactive}
         />
       ))}
     </div>
@@ -32,33 +35,32 @@ const ChampionCardGrid = ({
 type ChampionCardProps = {
   rank: number;
   champion: championStatsDto;
-  clickCallback: (champion: championStatsDto) => void;
+  clickCallback?: (champion: championStatsDto) => void;
+  interactive: boolean;
 };
 
 const ChampionCard = memo(
-  ({ rank, champion, clickCallback }: ChampionCardProps) => {
+  ({ rank, champion, clickCallback, interactive }: ChampionCardProps) => {
     const played = champion.timesPlayed;
     const avg =
       played > 0 ? Math.ceil(champion.placementAvg * 100) / 100 : "-";
     const wr = played > 0 ? getWinrate(champion.placements) + "%" : "-";
     const isComplete = champion.stage >= 3;
 
-    return (
-      <button
-        type="button"
-        onClick={() => clickCallback(champion)}
-        className={`group relative aspect-[3/4] cursor-pointer overflow-hidden rounded-md border transition-colors hover:border-accent ${
-          isComplete
-            ? "border-success/70"
-            : "border-transparent"
-        }`}
-      >
+    const className = `group relative aspect-[3/4] overflow-hidden rounded-md border transition-colors ${
+      interactive ? "cursor-pointer hover:border-accent" : "cursor-default"
+    } ${isComplete ? "border-success/70" : "border-transparent"}`;
+    const imageClassName = `absolute inset-0 h-full w-full object-cover object-top ${
+      interactive ? "transition-transform duration-300 group-hover:scale-[1.03]" : ""
+    }`;
+    const content = (
+      <>
         <img
           src={getChampionLoadingArtUrl(champion.id)}
           alt={champion.name}
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
+          className={imageClassName}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/55 to-transparent" />
         <div className="absolute left-1 top-1 rounded-sm bg-media-scrim/45 px-1.5 py-0.5 text-xs font-semibold text-on-media/90">
@@ -77,6 +79,20 @@ const ChampionCard = memo(
             <CardStat label="WR" value={wr} />
           </div>
         </div>
+      </>
+    );
+
+    if (!interactive) {
+      return <div className={className}>{content}</div>;
+    }
+
+    return (
+      <button
+        type="button"
+        onClick={() => clickCallback?.(champion)}
+        className={className}
+      >
+        {content}
       </button>
     );
   }

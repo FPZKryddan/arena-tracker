@@ -1,17 +1,26 @@
 import { useMemo, type ReactNode } from "react";
+
 import { IoPeople, IoStatsChart, IoTrophy } from "react-icons/io5";
+import ArenaGodProgressTracker from "../components/statsOverviewCard/ArenaGodProgressTracker";
+import ChampionCardGrid from "../components/championsView/ChampionCardGrid";
+import ChampionPodium from "../components/championsView/ChampionPodium";
+import FavoriteAugmentsBody from "../components/statsOverviewCard/FavoriteAugmentsBody";
+import TeammatesBody from "../components/statsOverviewCard/TeammatesBody";
 import SummonerInput from "../components/summonerInput";
 import FavoritesList from "../components/favoritesList/FavoritesList";
-import useDdragonVersion from "../hooks/useDdragonVersion";
-import { useAugmentsQuery, useChampionListQuery } from "../hooks/queries";
-import type { augmentsData, championData } from "../types";
+import { useAugmentsQuery } from "../hooks/queries";
+import {
+  createLandingAugmentStats,
+  LANDING_ARENA_GOD_COMPLETED,
+  LANDING_ARENA_GOD_TOTAL_CHAMPIONS,
+  LANDING_GRID_CHAMPIONS,
+  LANDING_PODIUM_CHAMPIONS,
+  LANDING_TEAMMATE_PROFILE_OVERRIDES,
+  LANDING_TEAMMATE_REGION,
+  LANDING_TEAMMATE_STATS,
+} from "../mock/landingMockData";
 
-const CDRAGON_BASE = "https://raw.communitydragon.org/latest/game/";
 const ARENA_HERO_IMAGE = "/arena-promo.jpg";
-const ddragonChampionIcon = (version: string, id: string) =>
-  `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${id}.png`;
-const ddragonProfileIcon = (version: string, id: number) =>
-  `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${id}.png`;
 
 const LandingPage = () => {
   return (
@@ -39,45 +48,56 @@ const Hero = () => (
       <div className="absolute inset-y-0 left-0 w-[18vw] min-w-28 max-w-xs bg-gradient-to-r from-black to-transparent" />
       <div className="absolute inset-y-0 right-0 w-[18vw] min-w-28 max-w-xs bg-gradient-to-l from-black to-transparent" />
     </div>
-    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/62 to-black/10" />
+    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/25 to-black/10" />
     <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-black/35" />
 
-    <div className="relative mx-auto flex min-h-[calc(100dvh-10rem)] max-w-6xl flex-col justify-center px-4 py-12 md:min-h-96 md:py-16 lg:min-h-96">
-      <div className="flex max-w-2xl flex-col gap-6 text-on-media">
+    <div className="relative mx-auto grid min-h-[28rem] max-w-6xl grid-cols-1 items-center gap-8 px-4 py-10 md:min-h-[30rem] md:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] md:py-12">
+      <div className="flex max-w-2xl flex-col gap-5 text-on-media">
         <div className="flex flex-col gap-3">
+          <span className="text-xs font-semibold uppercase text-white/70">
+            League Arena stats
+          </span>
           <h1 className="text-2xl font-semibold leading-tight md:text-display">
-            Arena Tracker
+            Track Arena God wins.
           </h1>
           <p className="max-w-xl text-base leading-7 text-white/80 md:text-lg">
-            Look up a Riot ID, review Arena matches, and compare champion,
-            augment, and teammate stats without the noise.
+            Search a Riot ID for progress, picks, and duo history.
           </p>
         </div>
 
-        <div className="flex max-w-xl flex-col gap-4">
-          <SummonerInput />
+        <div className="flex max-w-xl flex-col gap-3 rounded-lg border border-white/15 bg-black/50 p-3 shadow-raised backdrop-blur md:p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-sm font-semibold text-white">
+              Search Riot ID
+            </span>
+            <span className="text-xs text-white/60">Name#TAG</span>
+          </div>
+          <SummonerInput variant="hero" submitLabel="Search Riot ID" />
           <FavoritesList />
         </div>
       </div>
+
     </div>
   </section>
 );
 
+
+
 const Overview = () => (
   <section className="border-y border-border bg-surface/35">
-    <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 py-10 md:grid-cols-3">
+    <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 px-4 py-8 md:grid-cols-3 md:gap-6">
       <FeatureItem
-        icon={<IoStatsChart className="h-5 w-5" />}
+        icon={<IoStatsChart className="h-6 w-6" />}
         title="Match stats"
         body="KDA, damage, healing, shielding, and skillshots grouped by match and champion."
       />
       <FeatureItem
-        icon={<IoTrophy className="h-5 w-5" />}
+        icon={<IoTrophy className="h-6 w-6" />}
         title="Champion progress"
         body="Sort the roster by games played, average placement, win rate, or name."
       />
       <FeatureItem
-        icon={<IoPeople className="h-5 w-5" />}
+        icon={<IoPeople className="h-6 w-6" />}
         title="Duo records"
         body="Track frequent teammates, shared games, average placement, and last played."
       />
@@ -92,23 +112,23 @@ interface FeatureItemProps {
 }
 
 const FeatureItem = ({ icon, title, body }: FeatureItemProps) => (
-  <div className="flex gap-4">
-    <div className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent">
+  <div className="flex h-full gap-4 rounded-lg border border-border-strong bg-surface p-5 shadow-resting">
+    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent">
       {icon}
     </div>
-    <div className="flex flex-col gap-1">
-      <h2 className="text-sm font-semibold">{title}</h2>
+    <div className="flex flex-col gap-2">
+      <h2 className="text-base font-semibold">{title}</h2>
       <p className="text-sm leading-6 text-fg-muted">{body}</p>
     </div>
   </div>
 );
 
 const UseCases = () => (
-  <section className="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-16 md:py-20">
+  <section className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-10 md:gap-12 md:py-12">
     <UseCaseRow
-      eyebrow="Champion lineup"
-      title="Find your most reliable picks."
-      body="Compare games played, average placement, win rate, and Arena God progress across the full champion list."
+      eyebrow="Arena God progress"
+      title="Know exactly who still needs a victory."
+      body="Keep completed champions, unfinished picks, games played, and next targets in one roster view after every Arena session."
       preview={<ChampionsMock />}
     />
 
@@ -145,7 +165,7 @@ const UseCaseRow = ({
   reverse,
 }: UseCaseRowProps) => (
   <div
-    className={`grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12 ${
+    className={`grid grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-10 ${
       reverse ? "md:[&>*:first-child]:order-2" : ""
     }`}
   >
@@ -160,162 +180,70 @@ const UseCaseRow = ({
   </div>
 );
 
-const FEATURED_CHAMPIONS: Array<{
-  id: string;
-  fallbackName: string;
-  games: number;
-  avg: number;
-}> = [
-  { id: "Yasuo", fallbackName: "Yasuo", games: 42, avg: 2.4 },
-  { id: "Ahri", fallbackName: "Ahri", games: 31, avg: 3.1 },
-  { id: "Jinx", fallbackName: "Jinx", games: 28, avg: 3.6 },
-  { id: "Karthus", fallbackName: "Karthus", games: 22, avg: 4.2 },
-];
-
 const ChampionsMock = () => {
-  const version = useDdragonVersion();
-  const { data: champions = [] } = useChampionListQuery();
-
-  const championsById = useMemo(() => {
-    const map = new Map<string, championData>();
-    for (const c of champions) map.set(c.id, c);
-    return map;
-  }, [champions]);
-
   return (
-    <div className="rounded-lg border border-border bg-surface p-3">
-      <div className="flex items-center justify-between px-1 pb-2 text-xs font-medium text-fg-muted">
-        <span>Top champions</span>
-        <span>Avg</span>
+    <PreviewFrame>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="text-xs font-medium uppercase text-fg-subtle">
+              Arena God
+            </div>
+            <div className="text-2xl font-semibold tabular-nums">
+              Chase challenges
+            </div>
+          </div>
+          <ArenaGodProgressTracker
+            completedChampions={LANDING_ARENA_GOD_COMPLETED}
+            totalChampions={LANDING_ARENA_GOD_TOTAL_CHAMPIONS}
+          />
+        </div>
+
+        <ChampionPodium
+          champions={LANDING_PODIUM_CHAMPIONS}
+          interactive={false}
+        />
+        <ChampionCardGrid
+          champions={LANDING_GRID_CHAMPIONS}
+          startRank={4}
+          interactive={false}
+        />
       </div>
-      <ul className="divide-y divide-border">
-        {FEATURED_CHAMPIONS.map((r) => {
-          const data = championsById.get(r.id);
-          const displayName = data?.displayName ?? r.fallbackName;
-          return (
-            <li key={r.id} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 py-2">
-              {version ? (
-                <img
-                  src={ddragonChampionIcon(version, r.id)}
-                  alt={displayName}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-9 w-9 rounded-md bg-surface-elevated object-cover"
-                />
-              ) : (
-                <div className="h-9 w-9 rounded-md bg-surface-elevated" />
-              )}
-              <div className="min-w-0">
-                <div className="truncate text-sm font-semibold">{displayName}</div>
-                <div className="text-xs text-fg-muted">{r.games} games</div>
-              </div>
-              <div className="text-sm font-semibold tabular-nums">{r.avg}</div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    </PreviewFrame>
   );
 };
-
-const FALLBACK_AUGMENT_PICKS = [22, 17, 14, 9];
 
 const AugmentsMock = () => {
   const { data: augments = [] } = useAugmentsQuery();
-
-  const featured = useMemo(() => {
-    if (augments.length === 0) return [] as augmentsData[];
-    const byRarity: Record<number, augmentsData[]> = { 0: [], 1: [], 2: [] };
-    for (const a of augments) {
-      if (!a.iconLarge) continue;
-      if (byRarity[a.rarity]) byRarity[a.rarity].push(a);
-    }
-    const picks: augmentsData[] = [];
-    if (byRarity[2][0]) picks.push(byRarity[2][0]);
-    if (byRarity[1][0]) picks.push(byRarity[1][0]);
-    if (byRarity[1][1]) picks.push(byRarity[1][1]);
-    if (byRarity[0][0]) picks.push(byRarity[0][0]);
-    return picks;
-  }, [augments]);
+  const augmentStats = useMemo(
+    () => createLandingAugmentStats(augments),
+    [augments]
+  );
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-3">
-      <div className="px-1 pb-2 text-xs font-medium text-fg-muted">
-        Most picked augments
-      </div>
-      <ul className="grid min-h-32 grid-cols-2 gap-2">
-        {featured.map((a, i) => (
-          <li
-            key={a.id}
-            className="flex min-w-0 items-center gap-2 rounded-md border border-border bg-bg/35 p-2"
-          >
-            <div className={`h-9 w-9 shrink-0 augment-${a.rarity}`}>
-              <img
-                src={CDRAGON_BASE + a.iconLarge}
-                alt={a.name}
-                loading="lazy"
-                decoding="async"
-                className="relative h-full w-full rounded-md bg-surface-elevated"
-              />
-            </div>
-            <div className="min-w-0">
-              <div className="truncate text-xs font-semibold">{a.name}</div>
-              <div className="text-xs text-fg-muted">
-                {FALLBACK_AUGMENT_PICKS[i] ?? 8} picks
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <PreviewFrame>
+      <FavoriteAugmentsBody augments={augmentStats} />
+    </PreviewFrame>
   );
 };
 
-const TEAMMATES = [
-  { name: "Bjergsen", tag: "EUW", games: 38, avg: 2.8, profileIcon: 4923 },
-  { name: "Caps", tag: "EUW", games: 24, avg: 3.4, profileIcon: 4895 },
-  { name: "Faker", tag: "KR", games: 12, avg: 2.1, profileIcon: 6 },
-];
+const TeammatesMock = () => (
+  <PreviewFrame>
+    <TeammatesBody
+      teammateStats={LANDING_TEAMMATE_STATS}
+      region={LANDING_TEAMMATE_REGION}
+      profileOverrides={LANDING_TEAMMATE_PROFILE_OVERRIDES}
+      resolveProfiles={false}
+      interactive={false}
+    />
+  </PreviewFrame>
+);
 
-const TeammatesMock = () => {
-  const version = useDdragonVersion();
-  return (
-    <div className="rounded-lg border border-border bg-surface p-3">
-      <div className="flex items-center justify-between px-1 pb-2 text-xs font-medium text-fg-muted">
-        <span>Top duo partners</span>
-        <IoTrophy className="h-3.5 w-3.5 text-accent" />
-      </div>
-      <ul className="divide-y divide-border">
-        {TEAMMATES.map((m) => (
-          <li key={m.name} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 py-2">
-            {version ? (
-              <img
-                src={ddragonProfileIcon(version, m.profileIcon)}
-                alt={`${m.name} icon`}
-                loading="lazy"
-                decoding="async"
-                className="h-9 w-9 rounded-md bg-surface-elevated object-cover"
-              />
-            ) : (
-              <div className="h-9 w-9 rounded-md bg-surface-elevated" />
-            )}
-            <div className="min-w-0">
-              <div className="truncate text-sm font-semibold">
-                {m.name}
-                <span className="text-fg-muted">#{m.tag}</span>
-              </div>
-              <div className="text-xs text-fg-muted">{m.games} games</div>
-            </div>
-            <div className="text-right">
-              <div className="text-xs uppercase text-fg-subtle">avg</div>
-              <div className="text-sm font-semibold tabular-nums">{m.avg}</div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+const PreviewFrame = ({ children }: { children: ReactNode }) => (
+  <div className="overflow-hidden rounded-lg border border-border-strong bg-surface p-4 shadow-resting">
+    {children}
+  </div>
+);
 
 const Footer = () => (
   <footer className="border-t border-border px-4 py-8 text-center text-xs text-fg-muted">
