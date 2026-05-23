@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import ToastContainer from "./components/toastContainer";
-import { AppHeader, AppSideNav } from "./layout";
+import { AppHeader } from "./layout";
 import ComparePage from "./pages/ComparePage";
 import LandingPage from "./pages/LandingPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
