@@ -5,6 +5,7 @@ import BottomSheet from "../common/BottomSheet";
 import TeammateDetailCard from "./TeammateDetailCard";
 import { useProfileLookupByPuuid } from "../../hooks/useProfileLookup";
 import useDdragonVersion from "../../hooks/useDdragonVersion";
+import { createPortal } from "react-dom";
 
 interface TeammatesBodyProps {
   teammateStats: teammateStatsDto;
@@ -17,6 +18,7 @@ type TeammateEntry = {
 };
 
 const FREQUENT_TEAMMATES_LIMIT = 6;
+const MINIMUM_PLAYED_WITH_LIMIT = 3
 
 const getProfilePath = (
   region: Exclude<Regions, null>,
@@ -36,15 +38,20 @@ const getAvgColor = (avg: number): string => {
 
 const TeammatesBody = ({ teammateStats, region }: TeammatesBodyProps) => {
   const [selected, setSelected] = useState<TeammateEntry>();
+  const [teammatesNumber, setTeammatesNumber] = useState<number>(FREQUENT_TEAMMATES_LIMIT);
+  const [allTeammatesShown, setAllTeammatesShown] = useState<boolean>(false);
   const [bottomSheetIsOpen, setBottomSheetIsOpen] = useState<boolean>(false);
 
   const teammates = useMemo<TeammateEntry[]>(() => {
-    return Object.entries(teammateStats)
+    const teammates = Object.entries(teammateStats)
       .map(([puuid, stats]) => ({ puuid, stats }))
-      .filter((teammate) => teammate.stats.gamesPlayed >= 3)
+      .filter((teammate) => teammate.stats.gamesPlayed >= MINIMUM_PLAYED_WITH_LIMIT)
       .sort((a, b) => b.stats.gamesPlayed - a.stats.gamesPlayed)
-      .slice(0, FREQUENT_TEAMMATES_LIMIT);
-  }, [teammateStats]);
+
+      console.log("TEST: ", teammates.length, teammatesNumber);
+    if (teammates.length - 1 <= teammatesNumber) setAllTeammatesShown(true);
+    return teammates.slice(0, teammatesNumber);
+  }, [teammateStats, teammatesNumber]);
 
   if (teammates.length === 0) return null;
 
@@ -64,22 +71,26 @@ const TeammatesBody = ({ teammateStats, region }: TeammatesBodyProps) => {
             }}
           />
         ))}
+        <button className="hover:text-accent hover:cursor-pointer disabled:hidden" disabled={allTeammatesShown} onClick={() => setTeammatesNumber(teammatesNumber + 3)}>show more</button>
       </ul>
-      <BottomSheet
+      {createPortal(
+
+        <BottomSheet
         isOpen={bottomSheetIsOpen}
         closeCallback={() => setBottomSheetIsOpen(false)}
       >
         {selected ? (
           <TeammateDetailCard
-            teammate={selected.stats}
-            puuid={selected.puuid}
-            region={region}
-            onProfileClick={() => setBottomSheetIsOpen(false)}
+          teammate={selected.stats}
+          puuid={selected.puuid}
+          region={region}
+          onProfileClick={() => setBottomSheetIsOpen(false)}
           />
         ) : (
           <></>
         )}
       </BottomSheet>
+        , document.body)}
     </div>
   );
 };

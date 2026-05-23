@@ -51,6 +51,7 @@ const TeammateDetailCard = ({
       <div className="flex flex-col gap-1 pr-10">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
           <p className="min-w-0 text-lg font-semibold">
+            <span className="text-fg-muted text-sm">Stats with </span>
             {displayGameName}
             <span className="text-fg-muted">#{displayTagLine}</span>
           </p>

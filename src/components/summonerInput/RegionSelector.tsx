@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import RegionSelectorItem from "./RegionSelectorItem";
 import type { Regions } from "../../types";
 
@@ -28,7 +28,8 @@ const RegionSelector = ({ updateRegionCallback, initialRegion }: RegionSelectorP
     }
   }, [initialRegion, updateRegionCallback]);
 
-  const regionSelectorClicked = (): void => {
+  const regionSelectorClicked = (event: MouseEvent): void => {
+    event.stopPropagation();
     setIsSelectorOpen(!isSelectorOpen);
   };
 
@@ -45,7 +46,7 @@ const RegionSelector = ({ updateRegionCallback, initialRegion }: RegionSelectorP
       <button
         type="button"
         className="rounded-md border border-border bg-surface-elevated px-2 py-1.5 text-sm font-medium text-fg transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover"
-        onClick={regionSelectorClicked}
+        onClick={(e) => regionSelectorClicked(e)}
       >
         {regionSelected}
       </button>
