@@ -30,8 +30,8 @@ interface MatchHistoryListProps {
 }
 
 const placementColor = (placement: number): string => {
-  if (placement === 1) return "bg-placement-first/20 border-placement-first";
-  if (placement <= 4) return "bg-success/15 border-success";
+  if (placement === 1) return "bg-gradient-to-r bg-placement-first/25 border-placement-first";
+  if (placement <= 4) return "bg-success/20 border-success";
   return "bg-surface-elevated border-border";
 };
 
@@ -111,9 +111,9 @@ const MatchHistoryList = ({
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <h2 className="text-xs font-semibold text-fg">
+      {/* <h2 className="text-xs font-semibold text-fg">
         MATCH HISTORY
-      </h2>
+      </h2> */}
       {loading && matches.length === 0 && <MatchHistorySkeleton />}
       {!loading && matches.length === 0 && (
         <p className="text-fg-muted text-xs">No recent matches.</p>
@@ -190,7 +190,7 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
         me.placement
       )}`}
     >
-      <div className="h-10 aspect-square rounded-full overflow-hidden shrink-0">
+      <div className="h-12 aspect-square rounded-full overflow-hidden shrink-0">
         <img
           className="h-full w-auto aspect-square scale-110"
           src={getChampionIconUrl(version, me.championName)}
@@ -234,7 +234,7 @@ const MatchHistoryLoadout = ({
   items: number[];
   version: string;
 }) => (
-  <div className="grid w-44 shrink-0 grid-cols-6 gap-0.5">
+  <div className="grid w-fit shrink-0 grid-cols-6 gap-0.5">
     {Array.from({ length: 6 }).map((_, slot) => {
       const id = augmentIds[slot];
       const augment = id ? augments.get(id) : undefined;
@@ -242,7 +242,7 @@ const MatchHistoryLoadout = ({
       return (
         <div
           key={`a-slot-${slot}-${id ?? "empty"}`}
-          className="h-7 w-7 overflow-hidden rounded-sm border border-border bg-surface-elevated"
+          className="h-8 w-8 overflow-hidden rounded-sm border border-border bg-surface-elevated"
           title={augment?.name}
         >
           {augment && (
@@ -263,7 +263,7 @@ const MatchHistoryLoadout = ({
       return (
         <div
           key={`i-slot-${slot}-${id ?? "empty"}`}
-          className="h-7 w-7 overflow-hidden rounded-sm border border-border bg-surface-elevated"
+          className="h-8 w-8 overflow-hidden rounded-sm border border-border bg-surface-elevated"
         >
           {id ? (
             <img

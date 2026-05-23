@@ -194,8 +194,8 @@ const ChampionList = () => {
         <input
           type="text"
           value={championNameFilter}
-          placeholder="Search"
-          className="w-1/2 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-normal text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
+          placeholder="Search for a champion"
+          className="w-full lg:w-1/2 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-normal text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
           onChange={(e) => setChampionNameFilter(e.target.value)}
         />
       </div>

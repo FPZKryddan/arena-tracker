@@ -1,4 +1,4 @@
-const ARENA_GOD_REQUIRED_STAGE_THREE_CHAMPIONS = 60;
+export const ARENA_GOD_REQUIRED_STAGE_THREE_CHAMPIONS = 60;
 
 type ArenaGodProgressTrackerProps = {
   completedChampions: number;

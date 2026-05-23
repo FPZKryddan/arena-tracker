@@ -29,11 +29,15 @@ interface SummonerInputProps {
     jobState: JobState | null;
   };
   arenaMode?: ArenaModeSelection;
+  submitLabel?: string;
+  variant?: "default" | "hero";
 }
 
 const SummonerInput = ({
   routeProgress,
   arenaMode = DEFAULT_ARENA_MODE,
+  submitLabel,
+  variant = "default",
 }: SummonerInputProps) => {
   const params = useParams<{ region?: string; gameName?: string; tagLine?: string }>();
   const initialName =
@@ -54,6 +58,7 @@ const SummonerInput = ({
   const progressJobState = isFetching
     ? jobState
     : routeProgress?.jobState ?? jobState;
+  const isHero = variant === "hero";
 
   useEffect(() => {
     if (params.gameName && params.tagLine) {
@@ -107,11 +112,19 @@ const SummonerInput = ({
       onFocus={() => setIsFocused(true)}
       onBlur={handleBlur}
     >
-      <div className="box-border flex h-11 w-full flex-row rounded-lg border border-border bg-surface text-fg transition-colors focus-within:border-accent">
+      <div
+        className={`box-border flex w-full flex-row rounded-lg border text-fg transition-colors focus-within:border-accent ${
+          isHero
+            ? "h-14 border-border-strong bg-surface/90 shadow-raised backdrop-blur"
+            : "h-11 border-border bg-surface"
+        }`}
+      >
         <input
           type="text"
           name="playerInput"
-          className="h-full w-full rounded-lg bg-transparent px-4 text-left font-normal text-fg placeholder:text-fg-muted focus:outline-0 "
+          className={`h-full min-w-0 w-full rounded-lg bg-transparent px-4 text-left font-normal text-fg placeholder:text-fg-muted focus:outline-0 ${
+            isHero ? "text-base" : ""
+          }`}
           placeholder="RiotName#TAG"
           value={playerInputName}
           onChange={(e) => setPlayerInputName(e.target.value)}
@@ -121,18 +134,36 @@ const SummonerInput = ({
           disabled={progressIsFetching}
         ></input>
 
-        <div className="flex flex-row h-full ml-auto has-disabled:opacity-50">
+        <div
+          className={`flex h-full flex-row has-disabled:opacity-50 ${
+            isHero ? "gap-2 p-1" : "ml-auto"
+          }`}
+        >
           <RegionSelector
             updateRegionCallback={setRegion}
             initialRegion={initialRegion}
           />
           <button
+            type="button"
             onClick={handleSubmit}
-            className="rounded-lg px-2 text-fg-muted transition-colors hover:cursor-pointer hover:bg-surface-hover hover:text-fg"
+            className={
+              submitLabel
+                ? "flex items-center gap-2 rounded-lg bg-accent px-3 text-sm font-semibold text-accent-fg transition-colors hover:cursor-pointer hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60 sm:px-4"
+                : "rounded-lg px-2 text-fg-muted transition-colors hover:cursor-pointer hover:bg-surface-hover hover:text-fg"
+            }
             disabled={progressIsFetching}
-            aria-label="Search player"
+            aria-label={submitLabel ?? "Search player"}
           >
-            <IoSearch className="h-full w-auto aspect-square p-2" />
+            <IoSearch
+              className={
+                submitLabel
+                  ? "h-4 w-4 shrink-0"
+                  : "h-full w-auto aspect-square p-2"
+              }
+            />
+            {submitLabel && (
+              <span className="whitespace-nowrap">{submitLabel}</span>
+            )}
           </button>
         </div>
       </div>

@@ -159,7 +159,7 @@ const StatsOverviewCard = ({
               />
             </div>
             {"teammateStats" in stats && stats.teammateStats && (
-              <div className="order-1 border-t border-border/70 pt-4 md:order-none">
+              <div className="order-last border-t border-border/70 pt-4 md:order-none">
                 <TeammatesBody
                   teammateStats={stats.teammateStats}
                   region={effectiveProfileRegion}
