@@ -1,6 +1,5 @@
 import { useMemo, type ReactNode } from "react";
 import { IoPeople, IoStatsChart, IoTrophy } from "react-icons/io5";
-import AppHeader from "../components/appHeader";
 import SummonerInput from "../components/summonerInput";
 import FavoritesList from "../components/favoritesList/FavoritesList";
 import useDdragonVersion from "../hooks/useDdragonVersion";
@@ -17,10 +16,6 @@ const ddragonProfileIcon = (version: string, id: number) =>
 const LandingPage = () => {
   return (
     <div className="min-h-dvh w-full bg-bg text-fg">
-      <div className="mx-auto max-w-6xl px-4 pt-3">
-        <AppHeader />
-      </div>
-
       <main>
         <Hero />
         <Overview />

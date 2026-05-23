@@ -6,7 +6,7 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   IoChevronBack,
   IoChevronDown,
@@ -16,14 +16,19 @@ import {
 } from "react-icons/io5";
 import { ClipLoader } from "react-spinners";
 import { getChampionIconUrl, getProfileIconUrl } from "../championIcon";
-import AppHeader from "../components/appHeader";
+import ArenaModeSelector from "../components/arenaModeSelector";
 import RegionSelector from "../components/summonerInput/RegionSelector";
 import Tooltip from "../components/Tooltip/Tooltip";
 import { useAugmentsQuery, useLeaderboardQuery } from "../hooks/queries";
 import { getStoredRegion, normalizeRegion } from "../hooks/useApiBase";
 import useDdragonVersion from "../hooks/useDdragonVersion";
 import { ApiError, formatApiError } from "../utils/apiError";
+import {
+  DEFAULT_ARENA_MODE,
+  parseArenaMode,
+} from "../utils/arenaModes";
 import type {
+  ArenaModeSelection,
   augmentsData,
   LeaderboardAugment,
   LeaderboardChampion,
@@ -122,23 +127,32 @@ const getDefaultOrder = (nextSortBy: LeaderboardSort): LeaderboardOrder =>
 const getPlayerKey = (player: LeaderboardPlayer) =>
   `${player.region}:${player.name.toLowerCase()}#${player.tag.toLowerCase()}`;
 
-const getProfilePath = (player: LeaderboardPlayer): string =>
-  `/profile/${player.region}/${encodeURIComponent(
+const getProfilePath = (
+  player: LeaderboardPlayer,
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+): string => {
+  const path = `/profile/${player.region}/${encodeURIComponent(
     player.name
   )}/${encodeURIComponent(player.tag)}`;
+  if (arenaMode === DEFAULT_ARENA_MODE) return path;
+  return `${path}?${new URLSearchParams({ mode: arenaMode }).toString()}`;
+};
 
 const LeaderboardPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [region, setRegion] = useState<Region>(() => getStoredRegion());
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<LeaderboardSort>("firstPlaces");
   const [order, setOrder] = useState<LeaderboardOrder>("desc");
+  const arenaMode = parseArenaMode(searchParams.get("mode"));
 
   const { data, error, isFetching, isLoading } = useLeaderboardQuery(
     page,
     PAGE_SIZE,
     region,
     sortBy,
-    order
+    order,
+    arenaMode
   );
   const { data: augments = [] } = useAugmentsQuery();
   const augmentsById = useMemo(() => {
@@ -161,6 +175,21 @@ const LeaderboardPage = () => {
     setRegion(normalizeRegion(value));
     setPage(1);
   }, []);
+  const handleArenaModeChange = useCallback(
+    (nextMode: ArenaModeSelection) => {
+      setPage(1);
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current);
+        if (nextMode === DEFAULT_ARENA_MODE) {
+          next.delete("mode");
+        } else {
+          next.set("mode", nextMode);
+        }
+        return next;
+      });
+    },
+    [setSearchParams]
+  );
 
   const handleSortClick = useCallback(
     (nextSortBy: LeaderboardSort) => {
@@ -176,9 +205,7 @@ const LeaderboardPage = () => {
   );
 
   return (
-    <div className="box-border flex min-h-dvh w-full flex-col gap-5 overflow-auto bg-bg p-3 text-fg md:gap-7 md:p-6">
-      <AppHeader />
-
+    <div className="box-border flex min-h-dvh w-full flex-col gap-5 bg-bg p-3 text-fg md:gap-7 md:p-6">
       <main className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4">
         <section className="flex flex-col gap-3 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
           <div className="min-w-0">
@@ -194,6 +221,10 @@ const LeaderboardPage = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            <ArenaModeSelector
+              value={arenaMode}
+              onChange={handleArenaModeChange}
+            />
             <div className="flex h-9 items-center gap-2 rounded-md border border-border bg-bg px-3">
               <span className="text-xs font-semibold uppercase text-fg-subtle">
                 Region
@@ -229,13 +260,18 @@ const LeaderboardPage = () => {
         ) : (
           <>
             {page === 1 && (
-              <LeaderboardPodium players={podiumPlayers} startRank={startRank} />
+              <LeaderboardPodium
+                players={podiumPlayers}
+                startRank={startRank}
+                arenaMode={arenaMode}
+              />
             )}
             <LeaderboardTable
               players={players}
               startRank={startRank}
               sortBy={sortBy}
               order={order}
+              arenaMode={arenaMode}
               onSortClick={handleSortClick}
               augmentsById={augmentsById}
             />
@@ -259,9 +295,14 @@ const LeaderboardPage = () => {
 interface LeaderboardPodiumProps {
   players: LeaderboardPlayer[];
   startRank: number;
+  arenaMode: ArenaModeSelection;
 }
 
-const LeaderboardPodium = ({ players, startRank }: LeaderboardPodiumProps) => {
+const LeaderboardPodium = ({
+  players,
+  startRank,
+  arenaMode,
+}: LeaderboardPodiumProps) => {
   if (players.length === 0) return null;
 
   const [first, second, third] = players;
@@ -269,11 +310,26 @@ const LeaderboardPodium = ({ players, startRank }: LeaderboardPodiumProps) => {
   return (
     <section className="flex flex-row items-end justify-center gap-2 sm:gap-3">
       {second && (
-        <PodiumSlot player={second} rank={startRank + 1} placement={2} />
+        <PodiumSlot
+          player={second}
+          rank={startRank + 1}
+          placement={2}
+          arenaMode={arenaMode}
+        />
       )}
-      <PodiumSlot player={first} rank={startRank} placement={1} />
+      <PodiumSlot
+        player={first}
+        rank={startRank}
+        placement={1}
+        arenaMode={arenaMode}
+      />
       {third && (
-        <PodiumSlot player={third} rank={startRank + 2} placement={3} />
+        <PodiumSlot
+          player={third}
+          rank={startRank + 2}
+          placement={3}
+          arenaMode={arenaMode}
+        />
       )}
     </section>
   );
@@ -311,16 +367,22 @@ interface PodiumSlotProps {
   player: LeaderboardPlayer;
   rank: number;
   placement: 1 | 2 | 3;
+  arenaMode: ArenaModeSelection;
 }
 
-const PodiumSlot = ({ player, rank, placement }: PodiumSlotProps) => {
+const PodiumSlot = ({
+  player,
+  rank,
+  placement,
+  arenaMode,
+}: PodiumSlotProps) => {
   const version = useDdragonVersion();
   const style = RANK_STYLES[placement];
   const topChampion = player.topChampions[0];
 
   return (
     <Link
-      to={getProfilePath(player)}
+      to={getProfilePath(player, arenaMode)}
       className={`group relative min-w-0 flex-1 overflow-hidden rounded-md border ${style.height} ${style.border} bg-surface transition-colors hover:border-accent`}
     >
       {topChampion && (
@@ -383,6 +445,7 @@ interface LeaderboardTableProps {
   startRank: number;
   sortBy: LeaderboardSort;
   order: LeaderboardOrder;
+  arenaMode: ArenaModeSelection;
   augmentsById: AugmentsById;
   onSortClick: (sortBy: LeaderboardSort) => void;
 }
@@ -392,6 +455,7 @@ const LeaderboardTable = ({
   startRank,
   sortBy,
   order,
+  arenaMode,
   augmentsById,
   onSortClick,
 }: LeaderboardTableProps) => (
@@ -441,6 +505,7 @@ const LeaderboardTable = ({
             key={getPlayerKey(player)}
             player={player}
             rank={startRank + index}
+            arenaMode={arenaMode}
             augmentsById={augmentsById}
           />
         ))}
@@ -452,12 +517,14 @@ const LeaderboardTable = ({
 interface LeaderboardRowProps {
   player: LeaderboardPlayer;
   rank: number;
+  arenaMode: ArenaModeSelection;
   augmentsById: AugmentsById;
 }
 
 const LeaderboardRow = ({
   player,
   rank,
+  arenaMode,
   augmentsById,
 }: LeaderboardRowProps) => {
   const version = useDdragonVersion();
@@ -469,7 +536,7 @@ const LeaderboardRow = ({
       </td>
       <td className="px-3 py-3">
         <Link
-          to={getProfilePath(player)}
+          to={getProfilePath(player, arenaMode)}
           className="flex min-w-0 items-start gap-3 transition-colors hover:text-accent"
         >
           <img

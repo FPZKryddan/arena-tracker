@@ -1,5 +1,6 @@
 import { useQuery, useQueries } from "@tanstack/react-query";
 import type {
+  ArenaModeSelection,
   ChampionRole,
   ChampionSpellIconDto,
   augmentsData,
@@ -21,6 +22,11 @@ import {
   coerceApiErrorPayload,
   parseApiError,
 } from "../utils/apiError";
+import {
+  createArenaMatchesSearch,
+  createArenaModesSearch,
+  DEFAULT_ARENA_MODE,
+} from "../utils/arenaModes";
 
 const CHAMPION_ROLES: ChampionRole[] = [
   "Assassin",
@@ -64,21 +70,25 @@ export const queryKeys = {
   playerStats: (
     region: string,
     gameName: string,
-    tagLine: string
-  ) => ["playerStats", region, gameName, tagLine] as const,
+    tagLine: string,
+    arenaMode: ArenaModeSelection
+  ) => ["playerStats", region, gameName, tagLine, arenaMode] as const,
   recentMatchIds: (
     region: string,
     gameName: string,
     tagLine: string,
-    limit: number
-  ) => ["recentMatchIds", region, gameName, tagLine, limit] as const,
+    limit: number,
+    arenaMode: ArenaModeSelection
+  ) =>
+    ["recentMatchIds", region, gameName, tagLine, limit, arenaMode] as const,
   leaderboard: (
     page: number,
     limit: number,
     region: string,
     sortBy: LeaderboardSort,
-    order: LeaderboardOrder
-  ) => ["leaderboard", page, limit, region, sortBy, order] as const,
+    order: LeaderboardOrder,
+    arenaMode: ArenaModeSelection
+  ) => ["leaderboard", page, limit, region, sortBy, order, arenaMode] as const,
 };
 
 const fetchAugments = async (): Promise<augmentsData[]> => {
@@ -186,13 +196,15 @@ const fetchMatchTimeline = async (
 const fetchPlayerStats = async (
   region: Exclude<Regions, null>,
   gameName: string,
-  tagLine: string
+  tagLine: string,
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
 ): Promise<PlayerStats> => {
   const apiBase = getApiBase();
+  const arenaModesSearch = createArenaModesSearch(arenaMode);
   const res = await fetch(
     `${apiBase}/players/${region}/${encodeURIComponent(
       gameName
-    )}/${encodeURIComponent(tagLine)}`
+    )}/${encodeURIComponent(tagLine)}?${arenaModesSearch}`
   );
   if (!res.ok) throw new ApiError(await parseApiError(res));
   return (await res.json()) as PlayerStats;
@@ -203,7 +215,8 @@ const fetchLeaderboard = async (
   limit: number,
   region: Exclude<Regions, null>,
   sortBy: LeaderboardSort,
-  order: LeaderboardOrder
+  order: LeaderboardOrder,
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
 ): Promise<LeaderboardResponse> => {
   const apiBase = getApiBase();
   const params = new URLSearchParams({
@@ -213,6 +226,8 @@ const fetchLeaderboard = async (
     sortBy,
     order,
   });
+  const arenaModesSearch = new URLSearchParams(createArenaModesSearch(arenaMode));
+  arenaModesSearch.forEach((value, key) => params.set(key, value));
   const res = await fetch(`${apiBase}/players/leaderboard?${params}`);
   if (!res.ok) throw new ApiError(await parseApiError(res));
   return (await res.json()) as LeaderboardResponse;
@@ -245,35 +260,38 @@ const pollRefreshJob = async (jobId: string): Promise<void> => {
 const refreshPlayerStats = async (
   region: Exclude<Regions, null>,
   gameName: string,
-  tagLine: string
+  tagLine: string,
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
 ): Promise<PlayerStats> => {
   const apiBase = getApiBase();
+  const arenaModesSearch = createArenaModesSearch(arenaMode);
   const startRes = await fetch(
     `${apiBase}/players/${region}/${encodeURIComponent(
       gameName
-    )}/${encodeURIComponent(tagLine)}/refresh`,
+    )}/${encodeURIComponent(tagLine)}/refresh?${arenaModesSearch}`,
     { method: "POST" }
   );
   if (!startRes.ok) throw new ApiError(await parseApiError(startRes));
 
   const { jobId } = (await startRes.json()) as { jobId: string };
   await pollRefreshJob(jobId);
-  return fetchPlayerStats(region, gameName, tagLine);
+  return fetchPlayerStats(region, gameName, tagLine, arenaMode);
 };
 
 const fetchPlayerStatsWithRefresh = async (
   region: Exclude<Regions, null>,
   gameName: string,
-  tagLine: string
+  tagLine: string,
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
 ): Promise<PlayerStats> => {
   try {
-    return await fetchPlayerStats(region, gameName, tagLine);
+    return await fetchPlayerStats(region, gameName, tagLine, arenaMode);
   } catch (error) {
     if (
       error instanceof ApiError &&
       error.payload.code === "PLAYER_NOT_TRACKED"
     ) {
-      return refreshPlayerStats(region, gameName, tagLine);
+      return refreshPlayerStats(region, gameName, tagLine, arenaMode);
     }
     throw error;
   }
@@ -283,13 +301,15 @@ const fetchRecentMatchIds = async (
   region: Exclude<Regions, null>,
   gameName: string,
   tagLine: string,
-  limit: number
+  limit: number,
+  arenaMode: ArenaModeSelection
 ): Promise<string[]> => {
   const apiBase = getApiBase();
+  const params = createArenaMatchesSearch(limit, arenaMode);
   const res = await fetch(
     `${apiBase}/players/${region}/${encodeURIComponent(
       gameName
-    )}/${encodeURIComponent(tagLine)}/matches?limit=${limit}`
+    )}/${encodeURIComponent(tagLine)}/matches?${params}`
   );
   if (!res.ok) throw new ApiError(await parseApiError(res));
   const data = (await res.json()) as { matchIds?: string[] } | string[];
@@ -362,14 +382,16 @@ export const useMatchTimelineQuery = (
 export const usePlayerStatsQuery = (
   region: Exclude<Regions, null> | undefined,
   gameName: string | undefined,
-  tagLine: string | undefined
+  tagLine: string | undefined,
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
 ) =>
   useQuery({
     queryKey:
       region && gameName && tagLine
-        ? queryKeys.playerStats(region, gameName, tagLine)
+        ? queryKeys.playerStats(region, gameName, tagLine, arenaMode)
         : ["playerStats", "none"],
-    queryFn: () => fetchPlayerStatsWithRefresh(region!, gameName!, tagLine!),
+    queryFn: () =>
+      fetchPlayerStatsWithRefresh(region!, gameName!, tagLine!, arenaMode),
     enabled: !!region && !!gameName && !!tagLine,
     retry: false,
     staleTime: 30_000,
@@ -380,11 +402,19 @@ export const useLeaderboardQuery = (
   limit: number,
   region: Exclude<Regions, null>,
   sortBy: LeaderboardSort,
-  order: LeaderboardOrder
+  order: LeaderboardOrder,
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
 ) =>
   useQuery({
-    queryKey: queryKeys.leaderboard(page, limit, region, sortBy, order),
-    queryFn: () => fetchLeaderboard(page, limit, region, sortBy, order),
+    queryKey: queryKeys.leaderboard(
+      page,
+      limit,
+      region,
+      sortBy,
+      order,
+      arenaMode
+    ),
+    queryFn: () => fetchLeaderboard(page, limit, region, sortBy, order, arenaMode),
     staleTime: 30_000,
   });
 
@@ -404,16 +434,19 @@ export const useRecentMatchIdsQuery = (
   gameName: string | undefined,
   tagLine: string | undefined,
   limit: number,
-  region: Exclude<Regions, null> = getStoredRegion()
+  region: Exclude<Regions, null> = getStoredRegion(),
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
 ) =>
   useQuery({
     queryKey: queryKeys.recentMatchIds(
       region,
       gameName ?? "",
       tagLine ?? "",
-      limit
+      limit,
+      arenaMode
     ),
-    queryFn: () => fetchRecentMatchIds(region, gameName!, tagLine!, limit),
+    queryFn: () =>
+      fetchRecentMatchIds(region, gameName!, tagLine!, limit, arenaMode),
     enabled: !!gameName && !!tagLine,
     staleTime: 30_000,
   });

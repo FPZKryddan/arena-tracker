@@ -10,11 +10,24 @@ import {
   useRecentMatchIdsQuery,
 } from "../../hooks/queries";
 import { MATCH_QUERY_PARAM } from "../../utils/matchLinks";
-import type { augmentsData, MatchDto, ParticipantDto } from "../../types";
+import type {
+  ArenaModeSelection,
+  augmentsData,
+  MatchDto,
+  ParticipantDto,
+} from "../../types";
 import { getChampionIconUrl, getProfileIconUrl } from "../../championIcon";
+import {
+  DEFAULT_ARENA_MODE,
+  matchQueueIdBelongsToArenaMode,
+} from "../../utils/arenaModes";
 const MatchDetailModal = lazy(() => import("../matchDetail"));
 
 const RECENT_LIMIT = 10;
+
+interface MatchHistoryListProps {
+  arenaMode?: ArenaModeSelection;
+}
 
 const placementColor = (placement: number): string => {
   if (placement === 1) return "bg-placement-first/20 border-placement-first";
@@ -38,7 +51,9 @@ const formatRelative = (timestamp: number): string => {
   return `${mins}m ago`;
 };
 
-const MatchHistoryList = () => {
+const MatchHistoryList = ({
+  arenaMode = DEFAULT_ARENA_MODE,
+}: MatchHistoryListProps) => {
   const { playerStats, loadedProfile } = useContextIfDefined(PlayerStatsContext);
   const params = useParams<{ region: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -48,7 +63,8 @@ const MatchHistoryList = () => {
     playerStats?.gameName,
     playerStats?.tagLine,
     RECENT_LIMIT,
-    profileRegion
+    profileRegion,
+    arenaMode
   );
 
   const matchQueries = useMatchesQuery(matchIds, profileRegion);
@@ -56,8 +72,13 @@ const MatchHistoryList = () => {
     () =>
       matchQueries
         .map((q) => q.data)
-        .filter((m): m is MatchDto => !!m),
-    [matchQueries]
+        .filter((m): m is MatchDto => !!m)
+        .filter((match) =>
+          matchQueueIdBelongsToArenaMode(match.info.queueId, arenaMode)
+        )
+        .sort((a, b) => b.info.gameCreation - a.info.gameCreation)
+        .slice(0, RECENT_LIMIT),
+    [arenaMode, matchQueries]
   );
   const matchesLoading = matchQueries.some((q) => q.isLoading);
 
@@ -137,9 +158,9 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
     return map;
   }, [augmentList]);
 
-  const teammate = useMemo(
+  const teammates = useMemo(
     () =>
-      match.info.participants.find(
+      match.info.participants.filter(
         (p) => p.puuid !== me.puuid && p.playerSubteamId === me.playerSubteamId
       ),
     [match, me]
@@ -181,7 +202,9 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
       <div className="flex flex-col flex-1 min-w-0">
         <p className="font-semibold">#{me.placement}</p>
         <p className="truncate">{me.championName}</p>
-        {teammate && <TeammatePreview teammate={teammate} version={version} />}
+        {teammates.length > 0 && (
+          <TeammatePreview teammates={teammates} version={version} />
+        )}
       </div>
       <MatchHistoryLoadout
         augmentIds={augmentIds}
@@ -258,36 +281,48 @@ const MatchHistoryLoadout = ({
 );
 
 interface TeammatePreviewProps {
-  teammate: ParticipantDto;
+  teammates: ParticipantDto[];
   version: string;
 }
 
-const TeammatePreview = ({ teammate, version }: TeammatePreviewProps) => {
-  const teammateName = teammate.riotIdGameName || teammate.summonerName;
+const getParticipantName = (participant: ParticipantDto): string =>
+  participant.riotIdGameName || participant.summonerName;
 
+const TeammatePreview = ({ teammates, version }: TeammatePreviewProps) => {
   return (
-    <div className="flex flex-row items-center gap-1 min-w-0 text-fg-muted">
-      <div className="relative h-5 w-9 shrink-0">
-        <img
-          src={getProfileIconUrl(version, teammate.profileIcon)}
-          alt={`${teammateName} profile icon`}
-          title={`${teammateName} profile icon`}
-          loading="lazy"
-          decoding="async"
-          className="absolute left-0 top-0 h-5 w-5 rounded-full object-cover bg-surface-elevated"
-        />
-        <img
-          src={getChampionIconUrl(version, teammate.championName)}
-          alt={teammate.championName}
-          title={teammate.championName}
-          loading="lazy"
-          decoding="async"
-          className="absolute left-4 top-0 h-5 w-5 rounded-full object-cover bg-surface-elevated ring-2 ring-surface"
-        />
-      </div>
-      <p className="truncate">
-        w/ {teammateName} on {teammate.championName}
-      </p>
+    <div className="flex min-w-0 flex-col gap-0.5 text-fg-muted">
+      {teammates.map((teammate) => {
+        const teammateName = getParticipantName(teammate);
+
+        return (
+          <div
+            key={teammate.puuid}
+            className="flex min-w-0 flex-row items-center gap-1"
+          >
+            <div className="relative h-5 w-9 shrink-0">
+              <img
+                src={getProfileIconUrl(version, teammate.profileIcon)}
+                alt={`${teammateName} profile icon`}
+                title={`${teammateName} profile icon`}
+                loading="lazy"
+                decoding="async"
+                className="absolute left-0 top-0 h-5 w-5 rounded-full object-cover bg-surface-elevated"
+              />
+              <img
+                src={getChampionIconUrl(version, teammate.championName)}
+                alt={teammate.championName}
+                title={teammate.championName}
+                loading="lazy"
+                decoding="async"
+                className="absolute left-4 top-0 h-5 w-5 rounded-full object-cover bg-surface-elevated ring-2 ring-surface"
+              />
+            </div>
+            <p className="truncate">
+              w/ {teammateName} on {teammate.championName}
+            </p>
+          </div>
+        );
+      })}
     </div>
   );
 };

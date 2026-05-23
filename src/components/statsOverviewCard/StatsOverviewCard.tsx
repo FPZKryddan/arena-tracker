@@ -1,11 +1,20 @@
 import { useParams } from "react-router-dom";
 import { IoStatsChart } from "react-icons/io5";
 import { ChampionsContext } from "../../contexts/ChampionsContext";
-import type { championStatsDto, PlayerStats, Regions } from "../../types";
+import type {
+  ArenaModeSelection,
+  championStatsDto,
+  PlayerStats,
+  Regions,
+} from "../../types";
 import useContextIfDefined from "../../hooks/useContextIfDefined";
 import useDdragonVersion from "../../hooks/useDdragonVersion";
 import { getStoredRegion, normalizeRegion } from "../../hooks/useApiBase";
 import { getChampionSplashArtUrl } from "../../championIcon";
+import {
+  DEFAULT_ARENA_MODE,
+  getArenaPlacementCount,
+} from "../../utils/arenaModes";
 import ArenaGodProgressTracker from "./ArenaGodProgressTracker";
 import DamageStatsBody from "./DamageStatsBody";
 import FavoriteAugmentsBody from "./FavoriteAugmentsBody";
@@ -18,6 +27,7 @@ interface StatsOverviewCardProps {
   standalone?: boolean;
   favoriteRegion?: Exclude<Regions, null>;
   profileRegion?: Exclude<Regions, null>;
+  arenaMode?: ArenaModeSelection;
 }
 
 const StatsOverviewCard = ({
@@ -25,12 +35,17 @@ const StatsOverviewCard = ({
   standalone,
   favoriteRegion,
   profileRegion,
+  arenaMode,
 }: StatsOverviewCardProps) => {
   const version = useDdragonVersion();
   const { region: routeRegion } = useParams<{ region?: string }>();
   const { champions } = useContextIfDefined(ChampionsContext);
   const isPlayerStats = "championStats" in stats;
   const hasStats = stats.placementAvg != 0;
+  const matchCount = Math.max(
+    0,
+    "matchesPlayed" in stats ? stats.matchesPlayed : stats.timesPlayed
+  );
   const displayName =
     "gameName" in stats ? stats.gameName + "#" + stats.tagLine : stats.name;
   const bannerImgUrl =
@@ -45,10 +60,15 @@ const StatsOverviewCard = ({
     (routeRegion ? normalizeRegion(routeRegion) : getStoredRegion());
   const profilePath =
     "gameName" in stats && profileRegion
-      ? `/profile/${profileRegion}/${encodeURIComponent(
-          stats.gameName
-        )}/${encodeURIComponent(stats.tagLine)}`
+      ? (() => {
+          const path = `/profile/${profileRegion}/${encodeURIComponent(
+            stats.gameName
+          )}/${encodeURIComponent(stats.tagLine)}`;
+          if (!arenaMode || arenaMode === DEFAULT_ARENA_MODE) return path;
+          return `${path}?${new URLSearchParams({ mode: arenaMode }).toString()}`;
+        })()
       : undefined;
+  const placementCount = getArenaPlacementCount(arenaMode);
 
   const firstLetterBig = (name: string): string => {
     return name[0].toUpperCase() + name.slice(1);
@@ -94,6 +114,7 @@ const StatsOverviewCard = ({
               kills={stats.infographics.killsDeathsAssists.kills}
               deaths={stats.infographics.killsDeathsAssists.deaths}
               assists={stats.infographics.killsDeathsAssists.assists}
+              matchCount={matchCount}
               name={displayName}
               imgUrl={getImgUrl()}
               profilePath={profilePath}
@@ -124,6 +145,7 @@ const StatsOverviewCard = ({
                 healingStats={stats.infographics.healingStats}
                 shieldingStats={stats.infographics.shieldingStats}
                 skillShotsStats={stats.infographics.skillShotsStats}
+                matchCount={matchCount}
               />
             </div>
             <div className="order-3 border-t border-border/70 pt-4 md:order-none">
@@ -133,6 +155,7 @@ const StatsOverviewCard = ({
               <PlacementsBody
                 placements={stats.placements}
                 placementAvg={stats.placementAvg}
+                placementCount={placementCount}
               />
             </div>
             {"teammateStats" in stats && stats.teammateStats && (
@@ -140,6 +163,7 @@ const StatsOverviewCard = ({
                 <TeammatesBody
                   teammateStats={stats.teammateStats}
                   region={effectiveProfileRegion}
+                  arenaMode={arenaMode}
                 />
               </div>
             )}

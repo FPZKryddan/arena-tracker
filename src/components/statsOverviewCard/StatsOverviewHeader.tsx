@@ -4,11 +4,13 @@ import type { numericalStatsDto, Regions } from "../../types";
 import FavoriteButton from "../favoriteButton/FavoriteButton";
 import Tooltip from "../Tooltip/Tooltip";
 import KdaStat from "./KdaStat";
+import { getAveragePerMatchLabel } from "./statAverages";
 
 interface StatsOverviewHeaderProps {
   kills: numericalStatsDto;
   deaths: numericalStatsDto;
   assists: numericalStatsDto;
+  matchCount: number;
   name: string;
   imgUrl: string;
   profilePath?: string;
@@ -24,6 +26,7 @@ const StatsOverviewHeader = ({
   kills,
   deaths,
   assists,
+  matchCount,
   name,
   imgUrl,
   profilePath,
@@ -40,18 +43,27 @@ const StatsOverviewHeader = ({
 
   const stats = (
     <div className="flex flex-row gap-4">
-      <Tooltip text="Kills" extra={"Highest kills: " + kills.records[0]?.value}>
+      <Tooltip
+        text="Kills"
+        extra={`Highest kills: ${
+          kills.records[0]?.value
+        } | ${getAveragePerMatchLabel(kills.value, matchCount)}`}
+      >
         <KdaStat type={"kills"} value={kills.value} />
       </Tooltip>
       <Tooltip
         text="Deaths"
-        extra={"Highest deaths: " + deaths.records[0]?.value}
+        extra={`Highest deaths: ${
+          deaths.records[0]?.value
+        } | ${getAveragePerMatchLabel(deaths.value, matchCount)}`}
       >
         <KdaStat type={"deaths"} value={deaths.value} />
       </Tooltip>
       <Tooltip
         text="Assists"
-        extra={"Highest assists: " + assists.records[0]?.value}
+        extra={`Highest assists: ${
+          assists.records[0]?.value
+        } | ${getAveragePerMatchLabel(assists.value, matchCount)}`}
       >
         <KdaStat type={"assists"} value={assists.value} />
       </Tooltip>

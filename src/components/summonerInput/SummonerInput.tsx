@@ -4,20 +4,37 @@ import { IoSearch, IoStar, IoClose } from "react-icons/io5";
 import RegionSelector from "./RegionSelector";
 import useGetPlayerStats from "../../hooks/useGetPlayerStats";
 import useFavorites, { type Favorite } from "../../hooks/useFavorites";
-import { type JobState, type Regions } from "../../types";
+import {
+  type ArenaModeSelection,
+  type JobState,
+  type Regions,
+} from "../../types";
 import FetchingProgress from "../fetchingProgress";
+import { DEFAULT_ARENA_MODE } from "../../utils/arenaModes";
 
-const profilePath = (f: Favorite): string =>
-  `/profile/${f.region}/${encodeURIComponent(f.gameName)}/${encodeURIComponent(f.tagLine)}`;
+const profilePath = (
+  f: Favorite,
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+): string => {
+  const path = `/profile/${f.region}/${encodeURIComponent(
+    f.gameName
+  )}/${encodeURIComponent(f.tagLine)}`;
+  if (arenaMode === DEFAULT_ARENA_MODE) return path;
+  return `${path}?${new URLSearchParams({ mode: arenaMode }).toString()}`;
+};
 
 interface SummonerInputProps {
   routeProgress?: {
     isFetching: boolean;
     jobState: JobState | null;
   };
+  arenaMode?: ArenaModeSelection;
 }
 
-const SummonerInput = ({ routeProgress }: SummonerInputProps) => {
+const SummonerInput = ({
+  routeProgress,
+  arenaMode = DEFAULT_ARENA_MODE,
+}: SummonerInputProps) => {
   const params = useParams<{ region?: string; gameName?: string; tagLine?: string }>();
   const initialName =
     params.gameName && params.tagLine ? `${params.gameName}#${params.tagLine}` : "";
@@ -26,7 +43,10 @@ const SummonerInput = ({ routeProgress }: SummonerInputProps) => {
   const [playerInputName, setPlayerInputName] = useState<string>(initialName);
   const [region, setRegion] = useState<Regions>(initialRegion);
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const { retrievePlayerData, isFetching, jobState } = useGetPlayerStats(region);
+  const { retrievePlayerData, isFetching, jobState } = useGetPlayerStats(
+    region,
+    arenaMode
+  );
   const { favorites, remove } = useFavorites();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,16 +84,14 @@ const SummonerInput = ({ routeProgress }: SummonerInputProps) => {
       setIsFocused(false);
     }
     navigate(
-      `/profile/${effectiveRegion}/${encodeURIComponent(
-        gameName
-      )}/${encodeURIComponent(tagLine)}`
+      profilePath({ region: effectiveRegion, gameName, tagLine }, arenaMode)
     );
   };
 
   const handleSelectFavorite = (f: Favorite) => {
     setPlayerInputName(`${f.gameName}#${f.tagLine}`);
     setIsFocused(false);
-    navigate(profilePath(f));
+    navigate(profilePath(f, arenaMode));
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {

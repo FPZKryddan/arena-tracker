@@ -1,10 +1,15 @@
 import { useCallback, useState } from "react";
 import ChampionList from "../components/championsView/ChampionList";
 import MatchHistoryList from "../components/matchHistory";
+import type { ArenaModeSelection } from "../types";
 
 type Tab = "champions" | "matches";
 
-const ChampionMatchTabs = () => {
+interface ChampionMatchTabsProps {
+  arenaMode?: ArenaModeSelection;
+}
+
+const ChampionMatchTabs = ({ arenaMode }: ChampionMatchTabsProps) => {
   const [tab, setTab] = useState<Tab>("champions");
   const [mountedTabs, setMountedTabs] = useState<Record<Tab, boolean>>({
     champions: true,
@@ -54,7 +59,7 @@ const ChampionMatchTabs = () => {
         aria-labelledby="matches-tab"
         hidden={tab !== "matches"}
       >
-        {mountedTabs.matches && <MatchHistoryList />}
+        {mountedTabs.matches && <MatchHistoryList arenaMode={arenaMode} />}
       </div>
     </div>
   );
