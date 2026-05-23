@@ -1,5 +1,5 @@
 import { createContext, useState, type ReactNode } from "react";
-import type { PlayerStats, Regions } from "../types";
+import type { ArenaModeSelection, PlayerStats, Regions } from "../types";
 
 type PlayerStatsProps = {
   children: ReactNode;
@@ -9,6 +9,7 @@ export type LoadedProfile = {
   region: Exclude<Regions, null>;
   gameName: string;
   tagLine: string;
+  arenaMode: ArenaModeSelection;
 };
 
 type PlayerStatsContextValue = {

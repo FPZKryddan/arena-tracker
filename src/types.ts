@@ -37,6 +37,8 @@ export interface ItemDataDto {
 
 export type Regions = 'EUW' | 'EUNE' | 'NA' | null;
 
+export type ArenaModeSelection = 'all' | 'normal' | '3x6';
+
 export type LeaderboardSort =
   | 'gamesPlayed'
   | 'firstPlaces'

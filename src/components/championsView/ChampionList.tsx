@@ -99,7 +99,7 @@ const createEmptyChampionStats = (
 });
 
 const ChampionList = () => {
-  const { playerStats } = useContextIfDefined(PlayerStatsContext);
+  const { playerStats, loadedProfile } = useContextIfDefined(PlayerStatsContext);
   const { champions } = useContextIfDefined(ChampionsContext);
   const fuzzySearch = useFuzzy();
   const { SortByName, SortByAvgPlacement, SortByTimesPlayed, SortByWinrate } =
@@ -123,6 +123,15 @@ const ChampionList = () => {
       roles: champion.roles,
     }));
   }, [champions, playerStats]);
+
+  const maxTimesPlayed = useMemo(
+    () =>
+      playerChampionStats.reduce(
+        (max, champion) => Math.max(max, champion.timesPlayed),
+        0
+      ),
+    [playerChampionStats]
+  );
 
   const displayedChampions = useMemo((): championStatsDto[] => {
     const searched = debouncedNameFilter
@@ -177,7 +186,11 @@ const ChampionList = () => {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-row-reverse justify-end gap-2">
-        <ChampionFiltering filters={filters} onFiltersChange={setFilters} />
+        <ChampionFiltering
+          filters={filters}
+          maxTimesPlayed={maxTimesPlayed}
+          onFiltersChange={setFilters}
+        />
         <input
           type="text"
           value={championNameFilter}
@@ -225,7 +238,10 @@ const ChampionList = () => {
       >
         <Suspense fallback={<StatsSkeleton showTeammates={false} />}>
           {selectedChampion ? (
-            <StatsOverviewCard stats={selectedChampion}></StatsOverviewCard>
+            <StatsOverviewCard
+              stats={selectedChampion}
+              arenaMode={loadedProfile?.arenaMode}
+            ></StatsOverviewCard>
           ) : (
             <></>
           )}

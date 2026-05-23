@@ -15,6 +15,7 @@ interface DamageStatsBodyProps {
   healingStats?: healingShieldingStatsDto;
   shieldingStats?: Omit<healingShieldingStatsDto, 'total'>;
   skillShotsStats?: skillShotsDto;
+  matchCount: number;
 }
 
 const DamageStatsBody = ({
@@ -23,6 +24,7 @@ const DamageStatsBody = ({
   healingStats,
   shieldingStats,
   skillShotsStats,
+  matchCount,
 }: DamageStatsBodyProps) => {
   return (
     <div className="flex flex-col w-full gap-2 box-border">
@@ -33,6 +35,7 @@ const DamageStatsBody = ({
           phyiscal={dealtStats.physical.champions}
           magic={dealtStats.magic.champions}
           trueDmg={dealtStats.true.champions}
+          matchCount={matchCount}
         />
       )}
       {takenStats && (
@@ -42,6 +45,7 @@ const DamageStatsBody = ({
           phyiscal={takenStats.physical}
           magic={takenStats.magic}
           trueDmg={takenStats.true}
+          matchCount={matchCount}
         />
       )}
       <DamageLegend />
@@ -52,6 +56,7 @@ const DamageStatsBody = ({
             label="Total healing"
             recordLabel="healing"
             stat={healingStats.total}
+            matchCount={matchCount}
           />
         )}
         {shieldingStats && (
@@ -60,6 +65,7 @@ const DamageStatsBody = ({
             label="Total shielding"
             recordLabel="shielding"
             stat={shieldingStats.onTeammates}
+            matchCount={matchCount}
           />
         )}
         {skillShotsStats?.hit && (
@@ -68,6 +74,7 @@ const DamageStatsBody = ({
             label="Skillshots hit"
             recordLabel="skillshots hit"
             stat={skillShotsStats.hit}
+            matchCount={matchCount}
           />
         )}
         {skillShotsStats?.dodged && (
@@ -76,6 +83,7 @@ const DamageStatsBody = ({
             label="Skillshots dodged"
             recordLabel="skillshots dodged"
             stat={skillShotsStats.dodged}
+            matchCount={matchCount}
           />
         )}
       </div>

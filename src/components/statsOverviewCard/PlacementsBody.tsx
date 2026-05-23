@@ -11,11 +11,19 @@ import {
 import type { PlacementDto } from "../../types";
 import useStatsAggregator from "../../hooks/useStatsAggregator";
 import useTheme from "../../hooks/useTheme";
+import type { ArenaPlacementCount } from "../../utils/arenaModes";
 
 interface PlacementsBodyProps {
   placements: PlacementDto;
   placementAvg: number;
+  placementCount?: ArenaPlacementCount;
 }
+
+const getPlacementLabel = (placement: number): string => {
+  const suffix =
+    placement === 1 ? "st" : placement === 2 ? "nd" : placement === 3 ? "rd" : "th";
+  return `${placement}${suffix}`;
+};
 
 const getAveragePlacementTone = (averagePlacement: number): string => {
   if (averagePlacement <= 2) {
@@ -44,6 +52,7 @@ ChartJS.register(
 const PlacementsBody = ({
   placements,
   placementAvg,
+  placementCount = 8,
 }: PlacementsBodyProps) => {
   const { getLosses, getTotalMatches, getWinrate, getWins } =
     useStatsAggregator();
@@ -53,7 +62,7 @@ const PlacementsBody = ({
 
   const placementsToDataArray = (): number[] => {
     const newArr: number[] = [];
-    for (let i = 8; i >= 1; i--) {
+    for (let i = placementCount; i >= 1; i--) {
       const v = i in placements ? placements[i] : 0;
       newArr.push(v);
     }
@@ -68,19 +77,19 @@ const PlacementsBody = ({
     );
   };
 
-  const placementColors = [
-    cssVar("--color-danger"),
-    cssVar("--color-danger"),
-    cssVar("--color-warning"),
-    cssVar("--color-warning"),
-    cssVar("--color-info"),
-    cssVar("--color-success"),
-    cssVar("--color-success"),
-    cssVar("--color-placement-first"),
-  ];
+  const placementColors = Array.from({ length: placementCount }, (_, index) => {
+    const placement = placementCount - index;
+    if (placement === 1) return cssVar("--color-placement-first");
+    if (placement <= 3) return cssVar("--color-success");
+    if (placement === 4) return cssVar("--color-info");
+    if (placement <= 6) return cssVar("--color-warning");
+    return cssVar("--color-danger");
+  });
 
   const data = {
-    labels: ["8th", "7th", "6th", "5th", "4th", "3rd", "2nd", "1st"],
+    labels: Array.from({ length: placementCount }, (_, index) =>
+      getPlacementLabel(placementCount - index)
+    ),
     datasets: [
       {
         data: placementsToDataArray(),

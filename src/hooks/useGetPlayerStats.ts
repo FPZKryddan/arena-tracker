@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type {
   ApiErrorPayload,
+  ArenaModeSelection,
   JobState,
   PlayerStats,
   Regions,
@@ -17,6 +18,10 @@ import {
   getRetryAfterSeconds,
   parseApiError,
 } from "../utils/apiError";
+import {
+  createArenaModesSearch,
+  DEFAULT_ARENA_MODE,
+} from "../utils/arenaModes";
 
 const POLL_INTERVAL_MS = 1500;
 const RATE_LIMIT_TOAST_ID = "rate-limit";
@@ -27,9 +32,13 @@ const sameProfile = (
 ): boolean =>
   a.region === b.region &&
   a.gameName.toLowerCase() === b.gameName.toLowerCase() &&
-  a.tagLine.toLowerCase() === b.tagLine.toLowerCase();
+  a.tagLine.toLowerCase() === b.tagLine.toLowerCase() &&
+  a.arenaMode === b.arenaMode;
 
-function useGetPlayerStats(region: Regions = "EUW") {
+function useGetPlayerStats(
+  region: Regions = "EUW",
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+) {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [jobState, setJobState] = useState<JobState | null>(null);
   const { playerStats, setPlayerStats, loadedProfile, setLoadedProfile } =
@@ -132,7 +141,12 @@ function useGetPlayerStats(region: Regions = "EUW") {
       region: effectiveRegion,
       gameName,
       tagLine,
+      arenaMode,
     };
+    const playerPath = `${apiBase}/players/${effectiveRegion}/${encodeURIComponent(
+      gameName
+    )}/${encodeURIComponent(tagLine)}`;
+    const arenaModesSearch = createArenaModesSearch(arenaMode);
     nextRequestIdRef.current += 1;
     const requestId = nextRequestIdRef.current;
     activeRequestRef.current = requestId;
@@ -154,9 +168,7 @@ function useGetPlayerStats(region: Regions = "EUW") {
 
     try {
       const startRes = await fetch(
-        `${apiBase}/players/${effectiveRegion}/${encodeURIComponent(
-          gameName
-        )}/${encodeURIComponent(tagLine)}/refresh`,
+        `${playerPath}/refresh?${arenaModesSearch}`,
         { method: "POST" }
       );
       if (!isActiveRequest()) return;
@@ -208,11 +220,7 @@ function useGetPlayerStats(region: Regions = "EUW") {
             setJobState(state);
 
             if (state.status === "done") {
-              const statsRes = await fetch(
-                `${apiBase}/players/${effectiveRegion}/${encodeURIComponent(
-                  gameName
-                )}/${encodeURIComponent(tagLine)}`
-              );
+              const statsRes = await fetch(`${playerPath}?${arenaModesSearch}`);
               if (!isActiveRequest()) {
                 resolve();
                 return;
@@ -264,6 +272,7 @@ function useGetPlayerStats(region: Regions = "EUW") {
     }
   }, [
     apiBase,
+    arenaMode,
     effectiveRegion,
     handleSearchError,
     setLoadedProfile,

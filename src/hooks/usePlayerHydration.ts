@@ -5,13 +5,23 @@ import {
 } from "../contexts/PlayerStatsContext";
 import useContextIfDefined from "./useContextIfDefined";
 import useGetPlayerStats from "./useGetPlayerStats";
-import type { JobState, PlayerStats, Regions } from "../types";
+import type {
+  ArenaModeSelection,
+  JobState,
+  PlayerStats,
+  Regions,
+} from "../types";
 import { getRetryAfterSeconds, parseApiError } from "../utils/apiError";
+import {
+  createArenaModesSearch,
+  DEFAULT_ARENA_MODE,
+} from "../utils/arenaModes";
 
 interface HydrationParams {
   region: Exclude<Regions, null> | null;
   gameName: string | null;
   tagLine: string | null;
+  arenaMode?: ArenaModeSelection;
 }
 
 interface HydrationState {
@@ -26,17 +36,19 @@ const sameProfile = (
 ): boolean =>
   a.region === b.region &&
   a.gameName.toLowerCase() === b.gameName.toLowerCase() &&
-  a.tagLine.toLowerCase() === b.tagLine.toLowerCase();
+  a.tagLine.toLowerCase() === b.tagLine.toLowerCase() &&
+  a.arenaMode === b.arenaMode;
 
 function usePlayerHydration({
   region,
   gameName,
   tagLine,
+  arenaMode = DEFAULT_ARENA_MODE,
 }: HydrationParams): HydrationState {
   const { playerStats, setPlayerStats, loadedProfile, setLoadedProfile } =
     useContextIfDefined(PlayerStatsContext);
   const { isFetching, jobState, retrievePlayerData, cancelPlayerDataFetch } =
-    useGetPlayerStats(region ?? "EUW");
+    useGetPlayerStats(region ?? "EUW", arenaMode);
   const playerStatsRef = useRef(playerStats);
   const loadedProfileRef = useRef(loadedProfile);
   const routeSearchStartedRef = useRef<string | null>(null);
@@ -56,11 +68,17 @@ function usePlayerHydration({
       return;
     }
 
-    const requestedProfile: LoadedProfile = { region, gameName, tagLine };
+    const requestedProfile: LoadedProfile = {
+      region,
+      gameName,
+      tagLine,
+      arenaMode,
+    };
     const requestedKey = [
       region,
       gameName.toLowerCase(),
       tagLine.toLowerCase(),
+      arenaMode,
     ].join("|");
     const alreadyLoaded =
       !!playerStatsRef.current &&
@@ -75,10 +93,11 @@ function usePlayerHydration({
 
     let cancelled = false;
     const apiBase = import.meta.env.VITE_API_BASE;
+    const arenaModesSearch = createArenaModesSearch(arenaMode);
     fetch(
       `${apiBase}/players/${region}/${encodeURIComponent(
         gameName
-      )}/${encodeURIComponent(tagLine)}`
+      )}/${encodeURIComponent(tagLine)}?${arenaModesSearch}`
     )
       .then(async (res) => {
         if (res.ok) return (await res.json()) as PlayerStats;
@@ -122,6 +141,7 @@ function usePlayerHydration({
       cancelPlayerDataFetch();
     };
   }, [
+    arenaMode,
     cancelPlayerDataFetch,
     region,
     gameName,

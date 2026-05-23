@@ -1,5 +1,4 @@
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import AppHeader from "../components/appHeader";
 import MatchDetailModal from "../components/matchDetail/MatchDetailModal";
 import { normalizeRegion } from "../hooks/useApiBase";
 import type { Regions } from "../types";
@@ -15,8 +14,7 @@ const MatchPage = () => {
   if (!matchId) return <Navigate to="/" replace />;
 
   return (
-    <div className="box-border flex h-dvh w-full flex-col gap-5 overflow-auto bg-bg p-3 text-fg md:gap-7 md:p-6">
-      <AppHeader />
+    <div className="box-border flex min-h-dvh w-full flex-col gap-5 bg-bg p-3 text-fg md:gap-7 md:p-6">
       <main className="flex min-h-72 flex-1 items-center justify-center">
         <div className="w-full max-w-lg rounded-lg border border-border bg-surface p-4 text-center">
           <p className="text-sm font-semibold">Arena Match</p>

@@ -1,14 +1,21 @@
 import { useMemo, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
-import type { Regions, teammateStatDto, teammateStatsDto } from "../../types";
+import type {
+  ArenaModeSelection,
+  Regions,
+  teammateStatDto,
+  teammateStatsDto,
+} from "../../types";
 import BottomSheet from "../common/BottomSheet";
 import TeammateDetailCard from "./TeammateDetailCard";
 import { useProfileLookupByPuuid } from "../../hooks/useProfileLookup";
 import useDdragonVersion from "../../hooks/useDdragonVersion";
+import { createPortal } from "react-dom";
 
 interface TeammatesBodyProps {
   teammateStats: teammateStatsDto;
   region: Exclude<Regions, null>;
+  arenaMode?: ArenaModeSelection;
 }
 
 type TeammateEntry = {
@@ -17,6 +24,7 @@ type TeammateEntry = {
 };
 
 const FREQUENT_TEAMMATES_LIMIT = 6;
+const MINIMUM_PLAYED_WITH_LIMIT = 3
 
 const getProfilePath = (
   region: Exclude<Regions, null>,
@@ -34,17 +42,26 @@ const getAvgColor = (avg: number): string => {
   return "text-warning";
 };
 
-const TeammatesBody = ({ teammateStats, region }: TeammatesBodyProps) => {
+const TeammatesBody = ({
+  teammateStats,
+  region,
+  arenaMode,
+}: TeammatesBodyProps) => {
   const [selected, setSelected] = useState<TeammateEntry>();
+  const [visibleTeammatesCount, setVisibleTeammatesCount] = useState<number>(FREQUENT_TEAMMATES_LIMIT);
+  const [isShowingAllTeammates, setIsShowingAllTeammates] = useState<boolean>(false);
   const [bottomSheetIsOpen, setBottomSheetIsOpen] = useState<boolean>(false);
 
   const teammates = useMemo<TeammateEntry[]>(() => {
-    return Object.entries(teammateStats)
+    const teammates = Object.entries(teammateStats)
       .map(([puuid, stats]) => ({ puuid, stats }))
-      .filter((teammate) => teammate.stats.gamesPlayed >= 3)
+      .filter((teammate) => teammate.stats.gamesPlayed >= MINIMUM_PLAYED_WITH_LIMIT)
       .sort((a, b) => b.stats.gamesPlayed - a.stats.gamesPlayed)
-      .slice(0, FREQUENT_TEAMMATES_LIMIT);
-  }, [teammateStats]);
+
+      console.log("TEST: ", teammates.length, visibleTeammatesCount);
+    if (teammates.length - 1 <= visibleTeammatesCount) setIsShowingAllTeammates(true);
+    return teammates.slice(0, visibleTeammatesCount);
+  }, [teammateStats, visibleTeammatesCount]);
 
   if (teammates.length === 0) return null;
 
@@ -64,22 +81,27 @@ const TeammatesBody = ({ teammateStats, region }: TeammatesBodyProps) => {
             }}
           />
         ))}
+        <button className="hover:text-accent hover:cursor-pointer disabled:hidden" disabled={isShowingAllTeammates} onClick={() => setVisibleTeammatesCount(visibleTeammatesCount + 3)}>show more</button>
       </ul>
-      <BottomSheet
+      {createPortal(
+
+        <BottomSheet
         isOpen={bottomSheetIsOpen}
         closeCallback={() => setBottomSheetIsOpen(false)}
       >
         {selected ? (
           <TeammateDetailCard
-            teammate={selected.stats}
-            puuid={selected.puuid}
-            region={region}
-            onProfileClick={() => setBottomSheetIsOpen(false)}
+          teammate={selected.stats}
+          puuid={selected.puuid}
+          region={region}
+          arenaMode={arenaMode}
+          onProfileClick={() => setBottomSheetIsOpen(false)}
           />
         ) : (
           <></>
         )}
       </BottomSheet>
+        , document.body)}
     </div>
   );
 };

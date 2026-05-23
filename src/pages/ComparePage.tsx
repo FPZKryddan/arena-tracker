@@ -14,7 +14,7 @@ import {
   IoSwapHorizontal,
 } from "react-icons/io5";
 import { ClipLoader } from "react-spinners";
-import AppHeader from "../components/appHeader";
+import ArenaModeSelector from "../components/arenaModeSelector";
 import StatsOverviewCard from "../components/statsOverviewCard";
 import StatsSkeleton from "../components/statsOverviewCard/StatsSkeleton";
 import RegionSelector from "../components/summonerInput/RegionSelector";
@@ -23,7 +23,16 @@ import { getStoredRegion, normalizeRegion } from "../hooks/useApiBase";
 import { getWinrate } from "../hooks/useStatsAggregator";
 import useFavorites, { type Favorite } from "../hooks/useFavorites";
 import { ApiError, formatApiError } from "../utils/apiError";
-import type { numericalStatsDto, PlayerStats, Regions } from "../types";
+import {
+  DEFAULT_ARENA_MODE,
+  parseArenaMode,
+} from "../utils/arenaModes";
+import type {
+  ArenaModeSelection,
+  numericalStatsDto,
+  PlayerStats,
+  Regions,
+} from "../types";
 
 type Region = Exclude<Regions, null>;
 
@@ -148,7 +157,8 @@ const getTargetsFromSearchParams = (
   );
 
 const createCompareSearchParams = (
-  targets: Array<CompareTarget | null>
+  targets: Array<CompareTarget | null>,
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
 ): URLSearchParams => {
   const params = new URLSearchParams();
   uniqueTargets(
@@ -156,6 +166,7 @@ const createCompareSearchParams = (
   ).forEach((target) => {
     params.append(PLAYER_PARAM, encodeCompareTarget(target));
   });
+  if (arenaMode !== DEFAULT_ARENA_MODE) params.set("mode", arenaMode);
   return params;
 };
 
@@ -318,10 +329,11 @@ const ComparePage = () => {
     gameName?: string;
     tagLine?: string;
   }>();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const storedRegion = getStoredRegion();
   const { favorites } = useFavorites();
+  const arenaMode = parseArenaMode(searchParams.get("mode"));
 
   const routeTarget = useMemo<CompareTarget | null>(() => {
     if (!isRegion(params.region) || !params.gameName || !params.tagLine) {
@@ -373,7 +385,7 @@ const ComparePage = () => {
 
   const navigateToTargets = useCallback(
     (nextTargets: Array<CompareTarget | null>, replace = false) => {
-      const params = createCompareSearchParams(nextTargets);
+      const params = createCompareSearchParams(nextTargets, arenaMode);
       const search = params.toString();
       navigate(
         {
@@ -383,7 +395,21 @@ const ComparePage = () => {
         { replace }
       );
     },
-    [navigate]
+    [arenaMode, navigate]
+  );
+  const handleArenaModeChange = useCallback(
+    (nextMode: ArenaModeSelection) => {
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current);
+        if (nextMode === DEFAULT_ARENA_MODE) {
+          next.delete("mode");
+        } else {
+          next.set("mode", nextMode);
+        }
+        return next;
+      });
+    },
+    [setSearchParams]
   );
 
   useEffect(() => {
@@ -401,22 +427,26 @@ const ComparePage = () => {
   const query0 = usePlayerStatsQuery(
     slotTargets[0]?.region,
     slotTargets[0]?.gameName,
-    slotTargets[0]?.tagLine
+    slotTargets[0]?.tagLine,
+    arenaMode
   );
   const query1 = usePlayerStatsQuery(
     slotTargets[1]?.region,
     slotTargets[1]?.gameName,
-    slotTargets[1]?.tagLine
+    slotTargets[1]?.tagLine,
+    arenaMode
   );
   const query2 = usePlayerStatsQuery(
     slotTargets[2]?.region,
     slotTargets[2]?.gameName,
-    slotTargets[2]?.tagLine
+    slotTargets[2]?.tagLine,
+    arenaMode
   );
   const query3 = usePlayerStatsQuery(
     slotTargets[3]?.region,
     slotTargets[3]?.gameName,
-    slotTargets[3]?.tagLine
+    slotTargets[3]?.tagLine,
+    arenaMode
   );
   const playerQueries = useMemo(
     () => [query0, query1, query2, query3],
@@ -589,9 +619,7 @@ const ComparePage = () => {
   );
 
   return (
-    <div className="box-border flex min-h-dvh w-full flex-col gap-5 overflow-auto bg-bg p-3 text-fg md:gap-7 md:p-6">
-      <AppHeader />
-
+    <div className="box-border flex min-h-dvh w-full flex-col gap-5 bg-bg p-3 text-fg md:gap-7 md:p-6">
       <main className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4">
         <div className="flex flex-row flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
@@ -600,6 +628,10 @@ const ComparePage = () => {
               Compare Players
             </h1>
           </div>
+          <ArenaModeSelector
+            value={arenaMode}
+            onChange={handleArenaModeChange}
+          />
         </div>
 
         <section className="flex flex-col gap-3">
@@ -660,6 +692,7 @@ const ComparePage = () => {
                 region={target?.region}
                 emptyLabel={`Choose Player ${index + 1}`}
                 visibleSlotCount={visibleSlotCount}
+                arenaMode={arenaMode}
                 />
               );
             })}
@@ -918,7 +951,6 @@ const getMetricLeaders = (metric: CompareMetric) =>
 
 const MobileMetricCard = ({ metric }: { metric: CompareMetric }) => {
   const leaders = getMetricLeaders(metric);
-  const rowIsTie = leaders.every((leader) => leader.allTie);
 
   return (
     <article className="rounded-lg border border-border bg-surface p-3">
@@ -926,9 +958,6 @@ const MobileMetricCard = ({ metric }: { metric: CompareMetric }) => {
         <h3 className="min-w-0 truncate text-sm font-semibold text-fg">
           {metric.label}
         </h3>
-        <span className="shrink-0 rounded-sm border border-border px-2 py-1 text-xs font-semibold uppercase text-fg-subtle">
-          {rowIsTie ? "Tie" : "Leader"}
-        </span>
       </div>
 
       <div className="mt-2 flex flex-col divide-y divide-border">
@@ -1061,6 +1090,7 @@ interface CompareStatsSlotProps {
   region?: Region;
   emptyLabel: string;
   visibleSlotCount: number;
+  arenaMode: ArenaModeSelection;
 }
 
 const CompareStatsSlot = ({
@@ -1070,6 +1100,7 @@ const CompareStatsSlot = ({
   region,
   emptyLabel,
   visibleSlotCount,
+  arenaMode,
 }: CompareStatsSlotProps) => {
   const gapRem = 1;
   const basis = `calc((100% - ${
@@ -1092,6 +1123,7 @@ const CompareStatsSlot = ({
           standalone
           favoriteRegion={region}
           profileRegion={region}
+          arenaMode={arenaMode}
         />
       ) : (
         <EmptyCompareSlot label={emptyLabel} />

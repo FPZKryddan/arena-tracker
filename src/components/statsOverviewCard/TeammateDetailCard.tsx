@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
-import type { Regions, teammateStatDto } from "../../types";
+import type { ArenaModeSelection, Regions, teammateStatDto } from "../../types";
 import { useProfileLookupByPuuid } from "../../hooks/useProfileLookup";
 import PlacementsBody from "./PlacementsBody";
+import { getArenaPlacementCount } from "../../utils/arenaModes";
 
 interface TeammateDetailCardProps {
   teammate: teammateStatDto;
   puuid: string;
   region: Exclude<Regions, null>;
+  arenaMode?: ArenaModeSelection;
   onProfileClick?: () => void;
 }
 
@@ -35,6 +37,7 @@ const TeammateDetailCard = ({
   teammate,
   puuid,
   region,
+  arenaMode,
   onProfileClick,
 }: TeammateDetailCardProps) => {
   const { profile } = useProfileLookupByPuuid(puuid, region);
@@ -51,6 +54,7 @@ const TeammateDetailCard = ({
       <div className="flex flex-col gap-1 pr-10">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
           <p className="min-w-0 text-lg font-semibold">
+            <span className="text-fg-muted text-sm">Stats with </span>
             {displayGameName}
             <span className="text-fg-muted">#{displayTagLine}</span>
           </p>
@@ -69,6 +73,7 @@ const TeammateDetailCard = ({
       <PlacementsBody
         placements={teammate.placements}
         placementAvg={teammate.placementAvg}
+        placementCount={getArenaPlacementCount(arenaMode)}
       />
     </div>
   );
