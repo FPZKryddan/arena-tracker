@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import type { IconType } from "react-icons";
-import { IoPeople, IoStatsChart, IoTrophy } from "react-icons/io5";
+import { IoBook, IoPeople, IoStatsChart, IoTrophy } from "react-icons/io5";
 
-export type ActivePage = "profiles" | "leaderboard" | "compare";
+export type ActivePage = "profiles" | "codex" | "leaderboard" | "compare";
 
 export interface AppNavigationProps {
   children?: ReactNode;
@@ -18,6 +18,7 @@ export interface AppNavigationItem {
 }
 
 export const getActivePage = (pathname: string): ActivePage => {
+  if (pathname.startsWith("/codex")) return "codex";
   if (pathname.startsWith("/leaderboard")) return "leaderboard";
   if (pathname.startsWith("/compare")) return "compare";
   return "profiles";
@@ -41,6 +42,12 @@ export const NAV_ITEMS: AppNavigationItem[] = [
     label: "Compare",
     defaultTo: "/compare",
     icon: IoPeople,
+  },
+  {
+    key: "codex",
+    label: "Codex",
+    defaultTo: "/codex",
+    icon: IoBook,
   },
 ];
 

@@ -17,6 +17,7 @@ import {
 import { ClipLoader } from "react-spinners";
 import { getChampionIconUrl, getProfileIconUrl } from "../championIcon";
 import ArenaModeSelector from "../components/arenaModeSelector";
+import PageHeader from "../components/common/PageHeader";
 import RegionSelector from "../components/summonerInput/RegionSelector";
 import Tooltip from "../components/Tooltip/Tooltip";
 import { useAugmentsQuery, useLeaderboardQuery } from "../hooks/queries";
@@ -208,17 +209,11 @@ const LeaderboardPage = () => {
     <div className="box-border flex min-h-dvh w-full flex-col gap-5 bg-bg p-3 text-fg md:gap-7 md:p-6">
       <main className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4">
         <section className="flex flex-col gap-3 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase text-fg-subtle">
-              {region} standings
-            </p>
-            <h1 className="mt-1 truncate text-2xl font-semibold leading-tight md:text-2xl">
-              Leaderboard
-            </h1>
-            <p className="mt-1 text-sm text-fg-muted">
-              Tracked Arena players ranked by the selected stat.
-            </p>
-          </div>
+          <PageHeader
+            eyebrow={`${region} standings`}
+            title="Leaderboard"
+            description="Tracked Arena players ranked by the selected stat."
+          />
 
           <div className="flex flex-wrap items-center gap-2">
             <ArenaModeSelector
@@ -672,7 +667,7 @@ const AugmentPickIcon = ({
     >
       {augmentData ? (
         <div
-          className={`h-7 w-7 overflow-hidden rounded-md bg-surface-elevated augment-${augmentData.rarity}`}
+          className={`h-7 w-7 overflow-hidden rounded-md bg-surface-elevated`}
         >
           <img
             src={CDRAGON_BASE + augmentData.iconLarge}

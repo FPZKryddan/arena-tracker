@@ -33,6 +33,10 @@ import {
 } from "../../hooks/queries";
 import useFormatter from "../../hooks/useFormatter";
 import { getChampionIconUrl } from "../../championIcon";
+import {
+  FALLBACK_GAME_STAT_ICON_URL,
+  getGameStatIconUrl,
+} from "../../utils/gameStatIcons";
 import { buildMatchShareUrl } from "../../utils/matchLinks";
 import type {
   ChampionSpellIconDto,
@@ -584,16 +588,10 @@ const MatchSummaryHeader = ({
   </section>
 );
 
-const CDRAGON_GAME_BASE = "https://raw.communitydragon.org/latest/game/";
-const STATMOD_ICON_BASE = `${CDRAGON_GAME_BASE}assets/perks/statmods/`;
-const STRAWBERRY_STAT_ICON_BASE = `${CDRAGON_GAME_BASE}assets/ux/strawberry/detailview/statsicons/`;
 const END_GAME_PRIMARY_STAT_COUNT = 9;
 const MISSING_STAT_VALUE = "\u2014";
 
-const statIcon = (file: string): string => `${STATMOD_ICON_BASE}${file}`;
-const strawberryStatIcon = (file: string): string =>
-  `${STRAWBERRY_STAT_ICON_BASE}${file}`;
-const FALLBACK_STAT_ICON = statIcon("statmodsadaptiveforceicon.png");
+const FALLBACK_STAT_ICON = FALLBACK_GAME_STAT_ICON_URL;
 
 type EndGameStatRow = {
   label: string;
@@ -865,17 +863,17 @@ const buildArmorPenRows = ({
     {
       label: "Armor penetration",
       value: isFiniteNumber(flat) ? formatNumber(flat) : MISSING_STAT_VALUE,
-      icon: statIcon("statmodsattackdamageicon.png"),
+      icon: getGameStatIconUrl("armor-penetration"),
     },
     {
       label: "Armor penetration percent",
       value: formatTrustedPercentValue(percent),
-      icon: statIcon("statmodsattackdamageicon.png"),
+      icon: getGameStatIconUrl("armor-penetration"),
     },
     {
       label: "Bonus armor penetration",
       value: formatTrustedPercentValue(bonusPercent),
-      icon: statIcon("statmodsattackdamageicon.png"),
+      icon: getGameStatIconUrl("armor-penetration"),
     },
   ];
 };
@@ -958,44 +956,44 @@ const buildEndGameStatSections = ({
     {
       label: "Level",
       value: formatNumberValue(finalFrame.level, formatNumber),
-      icon: strawberryStatIcon("exp.png"),
+      icon: getGameStatIconUrl("level"),
     },
     championRow(
       "Attack damage",
       "attackDamage",
-      statIcon("statmodsattackdamageicon.png")
+      getGameStatIconUrl("attack-damage")
     ),
     championRow(
       "Ability power",
       "abilityPower",
-      statIcon("statmodsabilitypowericon.png")
+      getGameStatIconUrl("ability-power")
     ),
-    championRow("Armor", "armor", statIcon("statmodsarmoricon.png")),
+    championRow("Armor", "armor", getGameStatIconUrl("armor")),
     championRow(
       "Magic resist",
       "magicResist",
-      statIcon("statmodsmagicresicon.png")
+      getGameStatIconUrl("magic-resist")
     ),
     championRow(
       "Attack speed",
       "attackSpeed",
-      statIcon("statmodsattackspeedicon.png"),
+      getGameStatIconUrl("attack-speed"),
       formatDecimalValue
     ),
     championRow(
       "Ability haste",
       "abilityHaste",
-      statIcon("statmodscdrscalingicon.png")
+      getGameStatIconUrl("ability-haste")
     ),
     championRow(
       "Max health",
       "healthMax",
-      statIcon("statmodshealthplusicon.png")
+      getGameStatIconUrl("health")
     ),
     championRow(
       "Movement speed",
       "movementSpeed",
-      statIcon("statmodsmovementspeedicon.png")
+      getGameStatIconUrl("move-speed")
     ),
   ];
 
@@ -1007,14 +1005,14 @@ const buildEndGameStatSections = ({
           availability.critChance,
           "Critical strike chance",
           "critChance",
-          strawberryStatIcon("criticalstrikechance.png"),
+          getGameStatIconUrl("critical-strike-chance"),
           formatPercentValue
         ),
         optionalChampionRow(
           availability.critDamage,
           "Critical strike damage",
           "critDamage",
-          strawberryStatIcon("criticalstrikechance.png"),
+          getGameStatIconUrl("critical-strike-damage"),
           formatCritDamageValue
         ),
       ].filter((row): row is EndGameStatRow => row !== null),
@@ -1026,21 +1024,21 @@ const buildEndGameStatSections = ({
           availability.lifesteal,
           "Life steal",
           "lifesteal",
-          statIcon("statmodsattackdamageicon.png"),
+          getGameStatIconUrl("life-steal"),
           formatPercentValue
         ),
         optionalChampionRow(
           availability.omnivamp,
           "Omnivamp",
           "omnivamp",
-          FALLBACK_STAT_ICON,
+          getGameStatIconUrl("omnivamp"),
           formatPercentValue
         ),
         optionalChampionRow(
           availability.spellVamp,
           "Spell vamp",
           "spellVamp",
-          statIcon("statmodsabilitypowericon.png"),
+          getGameStatIconUrl("spell-vamp"),
           formatPercentValue
         ),
       ].filter((row): row is EndGameStatRow => row !== null),
@@ -1052,14 +1050,14 @@ const buildEndGameStatSections = ({
           availability.ccReduction,
           "Tenacity",
           "ccReduction",
-          statIcon("statmodstenacityicon.png"),
+          getGameStatIconUrl("tenacity"),
           formatPercentValue
         ),
         optionalChampionRow(
           availability.healthRegen,
           "Health regen",
           "healthRegen",
-          statIcon("statmodshealthplusicon.png")
+          getGameStatIconUrl("health-regen")
         ),
       ].filter((row): row is EndGameStatRow => row !== null),
     },
@@ -1074,20 +1072,20 @@ const buildEndGameStatSections = ({
           availability.magicPen,
           "Magic penetration",
           "magicPen",
-          statIcon("statmodsabilitypowericon.png")
+          getGameStatIconUrl("magic-penetration")
         ),
         optionalChampionRow(
           availability.magicPenPercent,
           "Magic penetration percent",
           "magicPenPercent",
-          statIcon("statmodsabilitypowericon.png"),
+          getGameStatIconUrl("magic-penetration"),
           formatPercentValue
         ),
         optionalChampionRow(
           availability.bonusMagicPenPercent,
           "Bonus magic penetration",
           "bonusMagicPenPercent",
-          statIcon("statmodsabilitypowericon.png"),
+          getGameStatIconUrl("magic-penetration"),
           formatPercentValue
         ),
       ].filter((row): row is EndGameStatRow => row !== null),
@@ -1098,14 +1096,18 @@ const buildEndGameStatSections = ({
         damageRow(
           "Magic",
           "magicDamageDoneToChampions",
-          statIcon("statmodsabilitypowericon.png")
+          getGameStatIconUrl("magic-damage")
         ),
         damageRow(
           "Physical",
           "physicalDamageDoneToChampions",
-          statIcon("statmodsattackdamageicon.png")
+          getGameStatIconUrl("physical-damage")
         ),
-        damageRow("True", "trueDamageDoneToChampions", FALLBACK_STAT_ICON),
+        damageRow(
+          "True",
+          "trueDamageDoneToChampions",
+          getGameStatIconUrl("true-damage")
+        ),
       ],
     },
     {
@@ -1114,14 +1116,14 @@ const buildEndGameStatSections = ({
         damageRow(
           "Magic",
           "magicDamageTaken",
-          statIcon("statmodsmagicresicon.png")
+          getGameStatIconUrl("magic-resist")
         ),
         damageRow(
           "Physical",
           "physicalDamageTaken",
-          statIcon("statmodsarmoricon.png")
+          getGameStatIconUrl("armor")
         ),
-        damageRow("True", "trueDamageTaken", FALLBACK_STAT_ICON),
+        damageRow("True", "trueDamageTaken", getGameStatIconUrl("true-damage")),
       ],
     },
   ].filter((section) => section.rows.length > 0);

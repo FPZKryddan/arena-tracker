@@ -11,10 +11,10 @@ import {
   IoClose,
   IoSearch,
   IoStar,
-  IoSwapHorizontal,
 } from "react-icons/io5";
 import { ClipLoader } from "react-spinners";
 import ArenaModeSelector from "../components/arenaModeSelector";
+import PageHeader from "../components/common/PageHeader";
 import StatsOverviewCard from "../components/statsOverviewCard";
 import StatsSkeleton from "../components/statsOverviewCard/StatsSkeleton";
 import RegionSelector from "../components/summonerInput/RegionSelector";
@@ -621,18 +621,17 @@ const ComparePage = () => {
   return (
     <div className="box-border flex min-h-dvh w-full flex-col gap-5 bg-bg p-3 text-fg md:gap-7 md:p-6">
       <main className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4">
-        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2">
-            <IoSwapHorizontal className="h-5 w-5 shrink-0 text-accent" />
-            <h1 className="truncate text-lg font-semibold md:text-2xl">
-              Compare Players
-            </h1>
-          </div>
+        <section className="flex flex-col gap-3 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
+          <PageHeader
+            eyebrow="Arena comparison"
+            title="Compare Players"
+            description="Compare tracked Arena profiles side by side."
+          />
           <ArenaModeSelector
             value={arenaMode}
             onChange={handleArenaModeChange}
           />
-        </div>
+        </section>
 
         <section className="flex flex-col gap-3">
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 2xl:grid-cols-4">

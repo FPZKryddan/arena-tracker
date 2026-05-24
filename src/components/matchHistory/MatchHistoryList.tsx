@@ -234,7 +234,7 @@ const MatchHistoryLoadout = ({
   items: number[];
   version: string;
 }) => (
-  <div className="grid w-fit shrink-0 grid-cols-6 gap-0.5">
+  <div className="grid w-32 md:w-fit shrink-0 grid-cols-6 gap-0.5">
     {Array.from({ length: 6 }).map((_, slot) => {
       const id = augmentIds[slot];
       const augment = id ? augments.get(id) : undefined;
@@ -242,7 +242,7 @@ const MatchHistoryLoadout = ({
       return (
         <div
           key={`a-slot-${slot}-${id ?? "empty"}`}
-          className="h-8 w-8 overflow-hidden rounded-sm border border-border bg-surface-elevated"
+          className="h-6 w-6 2xl:w-8 2xl:h-8 overflow-hidden rounded-sm border border-border bg-surface-elevated"
           title={augment?.name}
         >
           {augment && (
@@ -263,7 +263,7 @@ const MatchHistoryLoadout = ({
       return (
         <div
           key={`i-slot-${slot}-${id ?? "empty"}`}
-          className="h-8 w-8 overflow-hidden rounded-sm border border-border bg-surface-elevated"
+          className="h-6 w-6 2xl:w-8 2xl:h-8 overflow-hidden rounded-sm border border-border bg-surface-elevated"
         >
           {id ? (
             <img

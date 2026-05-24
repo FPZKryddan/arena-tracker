@@ -31,8 +31,15 @@ export interface augmentsData {
 export interface ItemDataDto {
   name: string;
   description: string;
+  tags?: string[];
   plaintext?: string;
   stats?: Record<string, number>;
+  maps?: Record<string, boolean>;
+  hideFromAll?: boolean;
+  gold?: {
+    purchasable: boolean;
+    total: number;
+  };
 };
 
 export type Regions = 'EUW' | 'EUNE' | 'NA' | null;
