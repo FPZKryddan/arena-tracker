@@ -35,7 +35,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingShell />} />
         <Route element={<AppShell />}>
-          <Route path="/reference" element={<ArenaReferencePage />} />
+          <Route path="/codex" element={<ArenaReferencePage />} />
           <Route
             path="/augments"
             element={<Navigate to="/reference" replace />}

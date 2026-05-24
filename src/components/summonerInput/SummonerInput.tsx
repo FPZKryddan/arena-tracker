@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { IoSearch, IoStar, IoClose } from "react-icons/io5";
 import RegionSelector from "./RegionSelector";
@@ -59,7 +59,6 @@ const SummonerInput = ({
   );
   const { favorites, remove } = useFavorites();
   const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement>(null);
   const progressIsFetching = isFetching || routeProgress?.isFetching === true;
   const progressJobState = isFetching
     ? jobState
@@ -105,22 +104,8 @@ const SummonerInput = ({
     navigate(profilePath(f, arenaMode));
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-    if (
-      containerRef.current &&
-      !containerRef.current.contains(e.relatedTarget)
-    ) {
-      setIsFocused(false);
-    }
-  };
-
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full items-center"
-      onFocus={() => setIsFocused(true)}
-      onBlur={handleBlur}
-    >
+    <div className="relative w-full items-center">
       <div
         className={`box-border flex w-full flex-row rounded-lg border text-fg transition-colors focus-within:border-accent ${
           isHero
@@ -137,9 +122,14 @@ const SummonerInput = ({
           placeholder="RiotName#TAG"
           value={playerInputName}
           onChange={(e) => setPlayerInputName(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSubmit();
           }}
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
           disabled={progressIsFetching}
         ></input>
 

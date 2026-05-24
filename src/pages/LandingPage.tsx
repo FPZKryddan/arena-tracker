@@ -4,10 +4,15 @@ import { IoPeople, IoStatsChart, IoTrophy } from "react-icons/io5";
 import ArenaGodProgressTracker from "../components/statsOverviewCard/ArenaGodProgressTracker";
 import ChampionCardGrid from "../components/championsView/ChampionCardGrid";
 import ChampionPodium from "../components/championsView/ChampionPodium";
+import DamageStatsBody from "../components/statsOverviewCard/DamageStatsBody";
 import FavoriteAugmentsBody from "../components/statsOverviewCard/FavoriteAugmentsBody";
+import PlacementsBody from "../components/statsOverviewCard/PlacementsBody";
+import StatsOverviewHeader from "../components/statsOverviewCard/StatsOverviewHeader";
 import TeammatesBody from "../components/statsOverviewCard/TeammatesBody";
 import SummonerInput from "../components/summonerInput";
 import FavoritesList from "../components/favoritesList/FavoritesList";
+import { getProfileIconUrl } from "../championIcon";
+import useDdragonVersion from "../hooks/useDdragonVersion";
 import { useAugmentsQuery } from "../hooks/queries";
 import {
   createLandingAugmentStats,
@@ -15,6 +20,7 @@ import {
   LANDING_ARENA_GOD_TOTAL_CHAMPIONS,
   LANDING_GRID_CHAMPIONS,
   LANDING_PODIUM_CHAMPIONS,
+  LANDING_PROFILE_STATS,
   LANDING_TEAMMATE_PROFILE_OVERRIDES,
   LANDING_TEAMMATE_REGION,
   LANDING_TEAMMATE_STATS,
@@ -58,7 +64,7 @@ const Hero = () => (
             League Arena stats
           </span>
           <h1 className="text-2xl font-semibold leading-tight md:text-display">
-            Track Arena God wins.
+            Track Your Arena Stats.
           </h1>
           <p className="max-w-xl text-base leading-7 text-white/80 md:text-lg">
             Search a Riot ID for progress, picks, and duo history.
@@ -123,21 +129,29 @@ const FeatureItem = ({ icon, title, body }: FeatureItemProps) => (
 const UseCases = () => (
   <section className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-10 md:gap-12 md:py-12">
     <UseCaseRow
+      eyebrow="Profile stats"
+      title="See your Arena performance at a glance."
+      body="Review KDA, damage, skillshots, and placement trends across your Arena match history."
+      preview={<ProfileStatsMock />}
+    />
+
+    <UseCaseRow
+      reverse
       eyebrow="Arena God progress"
-      title="Know exactly who still needs a victory."
+      title="Know exactly who still needs completion."
       body="Keep completed champions, unfinished picks, games played, and next targets in one roster view after every Arena session."
       preview={<ChampionsMock />}
     />
 
     <UseCaseRow
-      reverse
       eyebrow="Augment picks"
       title="Review your draft patterns."
-      body="See which augments you return to most often and how your favorites change across your match history."
+      body="See which augments you return to most often to dominate your opponents."
       preview={<AugmentsMock />}
     />
 
     <UseCaseRow
+      reverse
       eyebrow="Teammates"
       title="Keep the duo history visible."
       body="Check who you queue with most, how often you play together, and where the average placement lands."
@@ -176,6 +190,43 @@ const UseCaseRow = ({
     <div>{preview}</div>
   </div>
 );
+
+const ProfileStatsMock = () => {
+  const version = useDdragonVersion();
+  const { infographics } = LANDING_PROFILE_STATS;
+
+  return (
+    <PreviewFrame>
+      <div className="flex flex-col gap-6">
+        <StatsOverviewHeader
+          kills={infographics.killsDeathsAssists.kills}
+          deaths={infographics.killsDeathsAssists.deaths}
+          assists={infographics.killsDeathsAssists.assists}
+          matchCount={LANDING_PROFILE_STATS.matchesPlayed}
+          name={`${LANDING_PROFILE_STATS.gameName}#${LANDING_PROFILE_STATS.tagLine}`}
+          imgUrl={getProfileIconUrl(
+            version,
+            LANDING_PROFILE_STATS.profileIconId,
+          )}
+        />
+        <DamageStatsBody
+          dealtStats={infographics.damageStats}
+          takenStats={infographics.damageTakenStats}
+          healingStats={infographics.healingStats}
+          shieldingStats={infographics.shieldingStats}
+          skillShotsStats={infographics.skillShotsStats}
+          matchCount={LANDING_PROFILE_STATS.matchesPlayed}
+        />
+        <div className="border-t border-border/70 pt-4">
+          <PlacementsBody
+            placements={LANDING_PROFILE_STATS.placements}
+            placementAvg={LANDING_PROFILE_STATS.placementAvg}
+          />
+        </div>
+      </div>
+    </PreviewFrame>
+  );
+};
 
 const ChampionsMock = () => {
   return (

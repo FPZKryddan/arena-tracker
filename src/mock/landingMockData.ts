@@ -4,6 +4,7 @@ import type {
   championStatsDto,
   infographicsDto,
   numericalStatsDto,
+  PlayerStats,
   ProfileLookupDto,
   teammateStatsDto,
 } from "../types";
@@ -59,6 +60,80 @@ const createInfographics = (): infographicsDto => ({
     assists: emptyStat(),
   },
 });
+
+// Keep tooltip maxima in the preview without offering links to mock matches.
+const previewStat = (
+  value: number,
+  recordValue: number,
+): numericalStatsDto => ({
+  value,
+  records: [{ value: recordValue, matchId: "" }],
+});
+
+export const LANDING_PROFILE_STATS: PlayerStats = {
+  puuid: "landing-profile-arena-main",
+  gameName: "ArenaMain",
+  tagLine: "EUW",
+  profileIconId: 25,
+  summonerLevel: 248,
+  matchesPlayed: 36,
+  latestGamePlayed: 1715126400000,
+  placements: { 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1 },
+  placementAvg: 3.33,
+  infographics: {
+    damageStats: {
+      total: {
+        total: previewStat(1_248_930, 75_210),
+        champions: previewStat(1_248_930, 75_210),
+      },
+      physical: {
+        total: previewStat(493_100, 31_420),
+        champions: previewStat(493_100, 31_420),
+      },
+      magic: {
+        total: previewStat(611_880, 40_560),
+        champions: previewStat(611_880, 40_560),
+      },
+      true: {
+        total: previewStat(143_950, 9_870),
+        champions: previewStat(143_950, 9_870),
+      },
+      perMinute: previewStat(34_693, 2_089),
+    },
+    damageTakenStats: {
+      total: previewStat(912_420, 56_870),
+      physical: previewStat(401_700, 26_120),
+      magic: previewStat(390_320, 24_980),
+      true: previewStat(120_400, 7_940),
+      mitigated: previewStat(674_260, 39_760),
+    },
+    goldStats: {
+      earned: previewStat(512_480, 28_940),
+      spent: previewStat(498_770, 27_610),
+      perMinute: previewStat(14_236, 804),
+    },
+    skillShotsStats: {
+      hit: previewStat(1_842, 92),
+      dodged: previewStat(968, 48),
+    },
+    killsDeathsAssists: {
+      kda: previewStat(6.34, 18.5),
+      kills: previewStat(244, 18),
+      deaths: previewStat(101, 7),
+      assists: previewStat(396, 27),
+    },
+    healingStats: {
+      total: previewStat(244_190, 17_860),
+      onTeammates: previewStat(61_230, 5_180),
+    },
+    shieldingStats: {
+      onTeammates: previewStat(109_420, 9_530),
+    },
+  },
+  augmentStats: {},
+  championStats: {},
+  teammateStats: {},
+};
 
 const champion = (
   id: string,
