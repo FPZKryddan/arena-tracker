@@ -5,7 +5,7 @@ const ChampionFilterInput = () => {
 
   const handleUpdateSearchFilter = (value: string) => {
     setSearchFilter(value);
-  }
+  };
 
   return (
     <input

@@ -17,16 +17,14 @@ import {
 import { ClipLoader } from "react-spinners";
 import { getChampionIconUrl, getProfileIconUrl } from "../championIcon";
 import ArenaModeSelector from "../components/arenaModeSelector";
+import PageHeader from "../components/common/PageHeader";
 import RegionSelector from "../components/summonerInput/RegionSelector";
 import Tooltip from "../components/Tooltip/Tooltip";
 import { useAugmentsQuery, useLeaderboardQuery } from "../hooks/queries";
 import { getStoredRegion, normalizeRegion } from "../hooks/useApiBase";
 import useDdragonVersion from "../hooks/useDdragonVersion";
 import { ApiError, formatApiError } from "../utils/apiError";
-import {
-  DEFAULT_ARENA_MODE,
-  parseArenaMode,
-} from "../utils/arenaModes";
+import { DEFAULT_ARENA_MODE, parseArenaMode } from "../utils/arenaModes";
 import type {
   ArenaModeSelection,
   augmentsData,
@@ -129,10 +127,10 @@ const getPlayerKey = (player: LeaderboardPlayer) =>
 
 const getProfilePath = (
   player: LeaderboardPlayer,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): string => {
   const path = `/profile/${player.region}/${encodeURIComponent(
-    player.name
+    player.name,
   )}/${encodeURIComponent(player.tag)}`;
   if (arenaMode === DEFAULT_ARENA_MODE) return path;
   return `${path}?${new URLSearchParams({ mode: arenaMode }).toString()}`;
@@ -152,7 +150,7 @@ const LeaderboardPage = () => {
     region,
     sortBy,
     order,
-    arenaMode
+    arenaMode,
   );
   const { data: augments = [] } = useAugmentsQuery();
   const augmentsById = useMemo(() => {
@@ -188,7 +186,7 @@ const LeaderboardPage = () => {
         return next;
       });
     },
-    [setSearchParams]
+    [setSearchParams],
   );
 
   const handleSortClick = useCallback(
@@ -201,24 +199,18 @@ const LeaderboardPage = () => {
       setSortBy(nextSortBy);
       setOrder(getDefaultOrder(nextSortBy));
     },
-    [sortBy]
+    [sortBy],
   );
 
   return (
     <div className="box-border flex min-h-dvh w-full flex-col gap-5 bg-bg p-3 text-fg md:gap-7 md:p-6">
       <main className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4">
         <section className="flex flex-col gap-3 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase text-fg-subtle">
-              {region} standings
-            </p>
-            <h1 className="mt-1 truncate text-2xl font-semibold leading-tight md:text-2xl">
-              Leaderboard
-            </h1>
-            <p className="mt-1 text-sm text-fg-muted">
-              Tracked Arena players ranked by the selected stat.
-            </p>
-          </div>
+          <PageHeader
+            eyebrow={`${region} standings`}
+            title="Leaderboard"
+            description="Tracked Arena players ranked by the selected stat."
+          />
 
           <div className="flex flex-wrap items-center gap-2">
             <ArenaModeSelector
@@ -426,7 +418,10 @@ const PodiumSlot = ({
         <div className="grid grid-cols-3 gap-1 text-xs">
           <PodiumStat label="1sts" value={formatInteger(player.firstPlaces)} />
           <PodiumStat label="Top 4" value={formatInteger(player.top4)} />
-          <PodiumStat label="Avg" value={formatPlacement(player.placementAvg)} />
+          <PodiumStat
+            label="Avg"
+            value={formatPlacement(player.placementAvg)}
+          />
         </div>
       </div>
     </Link>
@@ -550,7 +545,9 @@ const LeaderboardRow = ({
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">
                 {player.name}
-                <span className="font-semibold text-fg-muted">#{player.tag}</span>
+                <span className="font-semibold text-fg-muted">
+                  #{player.tag}
+                </span>
               </p>
               <p className="mt-1 text-xs font-semibold text-fg-subtle">
                 Level <span className="tabular-nums">{player.level}</span>
@@ -637,7 +634,7 @@ const ChampionPickIcon = ({
       <PickTooltip
         title={champion.name}
         details={`${formatInteger(champion.gamesPlayed)} games / ${formatPlacement(
-          champion.placementAvg
+          champion.placementAvg,
         )} avg`}
       />
     )}
@@ -672,7 +669,7 @@ const AugmentPickIcon = ({
     >
       {augmentData ? (
         <div
-          className={`h-7 w-7 overflow-hidden rounded-md bg-surface-elevated augment-${augmentData.rarity}`}
+          className={`h-7 w-7 overflow-hidden rounded-md bg-surface-elevated`}
         >
           <img
             src={CDRAGON_BASE + augmentData.iconLarge}
@@ -753,7 +750,10 @@ const LeaderboardPagination = ({
         <span className="text-fg tabular-nums">
           {page} / {safeTotalPages}
         </span>
-        <span className="text-fg-subtle"> / {formatInteger(total)} players</span>
+        <span className="text-fg-subtle">
+          {" "}
+          / {formatInteger(total)} players
+        </span>
       </p>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -853,9 +853,7 @@ const LeaderboardState = ({ icon, title, body }: LeaderboardStateProps) => (
     </div>
     <div>
       <h2 className="text-base font-semibold">{title}</h2>
-      <p className="mt-1 max-w-md text-sm leading-6 text-fg-muted">
-        {body}
-      </p>
+      <p className="mt-1 max-w-md text-sm leading-6 text-fg-muted">{body}</p>
     </div>
   </section>
 );
@@ -888,10 +886,7 @@ const LeaderboardSkeleton = () => (
   </div>
 );
 
-const getLeaderboardError = (
-  error: unknown,
-  region: Region
-): string | null => {
+const getLeaderboardError = (error: unknown, region: Region): string | null => {
   if (!error) return null;
   if (error instanceof ApiError) {
     return formatApiError(error.payload, { region });

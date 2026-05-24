@@ -28,15 +28,15 @@ type TeammateEntry = {
 };
 
 const FREQUENT_TEAMMATES_LIMIT = 6;
-const MINIMUM_PLAYED_WITH_LIMIT = 3
+const MINIMUM_PLAYED_WITH_LIMIT = 3;
 
 const getProfilePath = (
   region: Exclude<Regions, null>,
   gameName: string,
-  tagLine: string
+  tagLine: string,
 ): string =>
   `/profile/${region}/${encodeURIComponent(gameName)}/${encodeURIComponent(
-    tagLine
+    tagLine,
   )}`;
 
 const getAvgColor = (avg: number): string => {
@@ -55,20 +55,24 @@ const TeammatesBody = ({
   resolveProfiles = true,
 }: TeammatesBodyProps) => {
   const [selected, setSelected] = useState<TeammateEntry>();
-  const [visibleTeammatesCount, setVisibleTeammatesCount] = useState<number>(FREQUENT_TEAMMATES_LIMIT);
+  const [visibleTeammatesCount, setVisibleTeammatesCount] = useState<number>(
+    FREQUENT_TEAMMATES_LIMIT,
+  );
   const [bottomSheetIsOpen, setBottomSheetIsOpen] = useState<boolean>(false);
 
   const teammates = useMemo<TeammateEntry[]>(() => {
     const teammates = Object.entries(teammateStats)
       .map(([puuid, stats]) => ({ puuid, stats }))
-      .filter((teammate) => teammate.stats.gamesPlayed >= MINIMUM_PLAYED_WITH_LIMIT)
-      .sort((a, b) => b.stats.gamesPlayed - a.stats.gamesPlayed)
+      .filter(
+        (teammate) => teammate.stats.gamesPlayed >= MINIMUM_PLAYED_WITH_LIMIT,
+      )
+      .sort((a, b) => b.stats.gamesPlayed - a.stats.gamesPlayed);
 
     return teammates.slice(0, visibleTeammatesCount);
   }, [teammateStats, visibleTeammatesCount]);
   const isShowingAllTeammates =
     Object.values(teammateStats).filter(
-      (stats) => stats.gamesPlayed >= MINIMUM_PLAYED_WITH_LIMIT
+      (stats) => stats.gamesPlayed >= MINIMUM_PLAYED_WITH_LIMIT,
     ).length <= visibleTeammatesCount;
 
   if (teammates.length === 0) return null;
@@ -94,28 +98,35 @@ const TeammatesBody = ({
           />
         ))}
         {interactive && (
-          <button className="hover:text-accent hover:cursor-pointer disabled:hidden" disabled={isShowingAllTeammates} onClick={() => setVisibleTeammatesCount(visibleTeammatesCount + 3)}>show more</button>
+          <button
+            className="hover:text-accent hover:cursor-pointer disabled:hidden"
+            disabled={isShowingAllTeammates}
+            onClick={() => setVisibleTeammatesCount(visibleTeammatesCount + 3)}
+          >
+            show more
+          </button>
         )}
       </ul>
-      {interactive && createPortal(
-
-        <BottomSheet
-        isOpen={bottomSheetIsOpen}
-        closeCallback={() => setBottomSheetIsOpen(false)}
-      >
-        {selected ? (
-          <TeammateDetailCard
-          teammate={selected.stats}
-          puuid={selected.puuid}
-          region={region}
-          arenaMode={arenaMode}
-          onProfileClick={() => setBottomSheetIsOpen(false)}
-          />
-        ) : (
-          <></>
+      {interactive &&
+        createPortal(
+          <BottomSheet
+            isOpen={bottomSheetIsOpen}
+            closeCallback={() => setBottomSheetIsOpen(false)}
+          >
+            {selected ? (
+              <TeammateDetailCard
+                teammate={selected.stats}
+                puuid={selected.puuid}
+                region={region}
+                arenaMode={arenaMode}
+                onProfileClick={() => setBottomSheetIsOpen(false)}
+              />
+            ) : (
+              <></>
+            )}
+          </BottomSheet>,
+          document.body,
         )}
-      </BottomSheet>
-        , document.body)}
     </div>
   );
 };
@@ -141,7 +152,7 @@ const TeammateRow = ({
 }: TeammateRowProps) => {
   const { profile: resolvedProfile } = useProfileLookupByPuuid(
     resolveProfile && !profileOverride ? puuid : undefined,
-    region
+    region,
   );
   const profile = profileOverride ?? resolvedProfile;
   const version = useDdragonVersion();
@@ -150,7 +161,7 @@ const TeammateRow = ({
   const profilePath = getProfilePath(
     profile?.region ?? region,
     displayGameName,
-    displayTagLine
+    displayTagLine,
   );
   const initial = displayGameName.trim().charAt(0).toUpperCase() || "?";
   const handleKeyDown = (event: KeyboardEvent<HTMLLIElement>) => {
@@ -212,7 +223,7 @@ const TeammateRow = ({
         </span>
         <p
           className={`text-sm font-semibold tabular-nums ${getAvgColor(
-            teammate.placementAvg
+            teammate.placementAvg,
           )}`}
         >
           {(Math.ceil(teammate.placementAvg * 100) / 100).toFixed(2)}

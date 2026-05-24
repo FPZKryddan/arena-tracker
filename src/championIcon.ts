@@ -7,13 +7,13 @@ const toDdragonId = (championName: string): string =>
 
 export const getChampionIconUrl = (
   version: string,
-  championName: string
+  championName: string,
 ): string =>
   `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${toDdragonId(championName)}.png`;
 
 export const getChampionDataUrl = (
   version: string,
-  championName: string
+  championName: string,
 ): string =>
   `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion/${toDdragonId(championName)}.json`;
 
@@ -22,7 +22,7 @@ export const getSpellIconUrl = (version: string, spellImage: string): string =>
 
 export const getProfileIconUrl = (
   version: string,
-  profileIconId: number
+  profileIconId: number,
 ): string =>
   `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${profileIconId}.png`;
 

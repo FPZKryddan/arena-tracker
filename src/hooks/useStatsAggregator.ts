@@ -43,7 +43,7 @@ export type ProgressStatus = {
 
 export const computeProgressStatusOfChampions = (
   champions: championData[],
-  stats: PlayerStats
+  stats: PlayerStats,
 ): ProgressStatus => {
   let played = 0;
   let top4 = 0;
@@ -70,8 +70,9 @@ function useStatsAggregator() {
   const { champions } = useContextIfDefined(ChampionsContext);
 
   const getProgressStatusOfChampions = useMemo(
-    () => (stats: PlayerStats) => computeProgressStatusOfChampions(champions, stats),
-    [champions]
+    () => (stats: PlayerStats) =>
+      computeProgressStatusOfChampions(champions, stats),
+    [champions],
   );
 
   return {

@@ -2,25 +2,24 @@ import type { championStatsDto, Orders } from "../types";
 import { getWinrate } from "./useStatsAggregator";
 
 function useChampionSorter() {
-
   const SortByName = (
     data: championStatsDto[],
-    order: Orders
+    order: Orders,
   ): championStatsDto[] => {
     if (order === "ASC") {
       return [...data].sort((a, b) =>
-        a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase())
+        a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()),
       );
     }
 
     return [...data].sort((a, b) =>
-      b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase())
+      b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase()),
     );
   };
 
   const SortByProgress = (
     data: championStatsDto[],
-    order: Orders
+    order: Orders,
   ): championStatsDto[] => {
     if (order === "ASC") {
       return [...data].sort((a, b) => b.stage - a.stage);
@@ -31,7 +30,7 @@ function useChampionSorter() {
 
   const SortByTimesPlayed = (
     data: championStatsDto[],
-    order: Orders
+    order: Orders,
   ): championStatsDto[] => {
     if (order === "ASC") {
       return [...data].sort((a, b) => a.timesPlayed - b.timesPlayed);
@@ -42,7 +41,7 @@ function useChampionSorter() {
 
   const SortByAvgPlacement = (
     data: championStatsDto[],
-    order: Orders
+    order: Orders,
   ): championStatsDto[] => {
     if (order === "ASC") {
       return [...data].sort((a, b) => b.placementAvg - a.placementAvg);
@@ -53,16 +52,16 @@ function useChampionSorter() {
 
   const SortByWinrate = (
     data: championStatsDto[],
-    order: Orders
+    order: Orders,
   ): championStatsDto[] => {
     if (order === "ASC") {
       return [...data].sort(
-        (a, b) => getWinrate(b.placements) - getWinrate(a.placements)
+        (a, b) => getWinrate(b.placements) - getWinrate(a.placements),
       );
     }
 
     return [...data].sort(
-      (a, b) => getWinrate(a.placements) - getWinrate(b.placements)
+      (a, b) => getWinrate(a.placements) - getWinrate(b.placements),
     );
   };
 

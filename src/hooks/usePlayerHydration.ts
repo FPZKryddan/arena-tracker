@@ -30,10 +30,7 @@ interface HydrationState {
   refreshProfile: () => Promise<void>;
 }
 
-const sameProfile = (
-  a: LoadedProfile,
-  b: LoadedProfile
-): boolean =>
+const sameProfile = (a: LoadedProfile, b: LoadedProfile): boolean =>
   a.region === b.region &&
   a.gameName.toLowerCase() === b.gameName.toLowerCase() &&
   a.tagLine.toLowerCase() === b.tagLine.toLowerCase() &&
@@ -96,15 +93,15 @@ function usePlayerHydration({
     const arenaModesSearch = createArenaModesSearch(arenaMode);
     fetch(
       `${apiBase}/players/${region}/${encodeURIComponent(
-        gameName
-      )}/${encodeURIComponent(tagLine)}?${arenaModesSearch}`
+        gameName,
+      )}/${encodeURIComponent(tagLine)}?${arenaModesSearch}`,
     )
       .then(async (res) => {
         if (res.ok) return (await res.json()) as PlayerStats;
         const err = await parseApiError(res);
         if (err.code === "UPSTREAM_RATE_LIMITED") {
           console.warn(
-            `[hydrate] rate limited, retry-after ${getRetryAfterSeconds(err)}s`
+            `[hydrate] rate limited, retry-after ${getRetryAfterSeconds(err)}s`,
           );
         } else if (err.code !== "PLAYER_NOT_TRACKED") {
           console.warn("[hydrate]", err.code, err.message);

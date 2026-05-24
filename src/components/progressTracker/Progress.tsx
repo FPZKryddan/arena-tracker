@@ -8,7 +8,7 @@ interface ProgressProps {
 }
 
 const Progress = ({ total, played, top4, won }: ProgressProps) => {
-    // const percent: number = Math.floor((played+top4*2+won*3) / (total*3) * 100);
+  // const percent: number = Math.floor((played+top4*2+won*3) / (total*3) * 100);
 
   return (
     <div className="flex flex-col w-full col-span-2 items-center gap-2">
@@ -32,7 +32,7 @@ const Progress = ({ total, played, top4, won }: ProgressProps) => {
           tracking={"victory"}
         ></ProgressTracker>
         <ProgressTracker
-          current={total-(played+top4+won)}
+          current={total - (played + top4 + won)}
           total={total}
           totalWidth={350}
           tracking={"none"}

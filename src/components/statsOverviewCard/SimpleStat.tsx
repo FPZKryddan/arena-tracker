@@ -26,7 +26,7 @@ const SimpleStat = ({
 }: SimpleStatProps) => {
   const { formatNumber } = useFormatter();
   const average = formatAveragePerMatch(
-    getAveragePerMatch(stat.value, matchCount)
+    getAveragePerMatch(stat.value, matchCount),
   );
 
   return (
@@ -40,7 +40,7 @@ const SimpleStat = ({
       <Tooltip
         text={label}
         extra={`Highest ${recordLabel}: ${formatNumber(
-          stat.records[0]?.value
+          stat.records[0]?.value,
         )} | ${getAveragePerMatchLabel(stat.value, matchCount)}`}
       >
         {icon}

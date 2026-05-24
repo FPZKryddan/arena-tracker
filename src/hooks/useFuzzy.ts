@@ -20,14 +20,10 @@ function useFuzzy() {
   }, []);
 
   const search = useCallback(
-    <T,>(
-      arr: T[],
-      query: string,
-      accessor: (item: T) => string
-    ): T[] => {
+    <T>(arr: T[], query: string, accessor: (item: T) => string): T[] => {
       return arr.filter((item) => fuzzySearch(accessor(item), query));
     },
-    [fuzzySearch]
+    [fuzzySearch],
   );
 
   return search;

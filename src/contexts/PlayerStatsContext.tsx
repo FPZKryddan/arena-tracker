@@ -20,12 +20,14 @@ type PlayerStatsContextValue = {
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const PlayerStatsContext = createContext<PlayerStatsContextValue | undefined>(undefined);
+export const PlayerStatsContext = createContext<
+  PlayerStatsContextValue | undefined
+>(undefined);
 
 const PlayerStatsProvider = ({ children }: PlayerStatsProps) => {
   const [playerStats, setPlayerStats] = useState<PlayerStats | null>(null);
   const [loadedProfile, setLoadedProfile] = useState<LoadedProfile | null>(
-    null
+    null,
   );
 
   return (

@@ -11,7 +11,8 @@ interface RecordMatchButtonProps {
 
 const RecordMatchButton = ({ matchId, label }: RecordMatchButtonProps) => {
   const [open, setOpen] = useState(false);
-  const { playerStats, loadedProfile } = useContextIfDefined(PlayerStatsContext);
+  const { playerStats, loadedProfile } =
+    useContextIfDefined(PlayerStatsContext);
 
   if (!matchId) return null;
 

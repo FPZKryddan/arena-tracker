@@ -4,8 +4,8 @@ function useFormatter() {
   };
 
   return {
-    formatNumber
-  }
-};
+    formatNumber,
+  };
+}
 
 export default useFormatter;

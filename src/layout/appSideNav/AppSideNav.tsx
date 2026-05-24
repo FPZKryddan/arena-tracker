@@ -17,7 +17,7 @@ const AppSideNav = ({
   comparePath,
 }: AppNavigationProps) => {
   const { pathname, search } = useLocation();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const activePage = getActivePage(pathname);
   const resolvedComparePath =
     comparePath ?? getComparePathFromLocation(pathname, search);
@@ -44,13 +44,19 @@ const AppSideNav = ({
     >
       <aside
         id="app-side-navigation"
-        className={`box-border flex h-full shrink-0 flex-col border-r border-border bg-bg p-2 transition-[width] duration-200 ${
+        className={`box-border flex shrink-0 flex-col border-border p-2 transition-[width] duration-200 ${
           isExpanded
-            ? "fixed inset-0 z-50 h-dvh w-full border-r-0 md:static md:z-auto md:h-full md:w-60 md:border-r"
-            : "relative w-16"
+            ? "fixed inset-0 z-50 h-dvh w-full border-r-0 bg-bg md:static md:z-auto md:h-full md:w-60 md:border-r"
+            : "fixed left-0 top-0 z-40 h-auto w-fit border-r-0 bg-transparent md:relative md:z-auto md:h-full md:w-16 md:border-r md:bg-bg"
         }`}
       >
-        <div className="grid h-10 min-w-0 grid-cols-[2.5rem_minmax(0,1fr)] items-center gap-2">
+        <div
+          className={`h-10 min-w-0 items-center ${
+            isExpanded
+              ? "grid grid-cols-[2.5rem_minmax(0,1fr)] gap-2"
+              : "flex md:grid md:grid-cols-[2.5rem_minmax(0,1fr)] md:gap-2"
+          }`}
+        >
           <button
             type="button"
             onClick={() => setIsExpanded((expanded) => !expanded)}
@@ -77,7 +83,7 @@ const AppSideNav = ({
             className={`group flex min-w-0 items-center gap-2 overflow-hidden rounded-md text-fg transition-[color,max-width,opacity] duration-200 hover:text-accent ${
               isExpanded
                 ? "max-w-44 opacity-100"
-                : "pointer-events-none max-w-0 opacity-0"
+                : "pointer-events-none hidden max-w-0 opacity-0 md:flex"
             }`}
             aria-label="Arena Tracker home"
           >
@@ -90,7 +96,9 @@ const AppSideNav = ({
 
         <nav
           aria-label="Primary navigation"
-          className="mt-6 flex flex-1 flex-col gap-1"
+          className={`mt-6 flex-1 flex-col gap-1 ${
+            isExpanded ? "flex" : "hidden md:flex"
+          }`}
         >
           {NAV_ITEMS.map((item) => (
             <SideNavLink
@@ -105,7 +113,11 @@ const AppSideNav = ({
           ))}
         </nav>
 
-        <div className="border-t border-border pt-3">
+        <div
+          className={`border-t border-border pt-3 ${
+            isExpanded ? "block" : "hidden md:block"
+          }`}
+        >
           <div className="grid h-10 min-w-0 grid-cols-[2.5rem_minmax(0,1fr)] items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center">
               <ThemeToggle />
@@ -114,7 +126,9 @@ const AppSideNav = ({
         </div>
       </aside>
 
-      <main className="min-h-0 min-w-0 flex-1 overflow-auto">{children}</main>
+      <main className="min-h-0 min-w-0 flex-1 overflow-auto pt-14 md:pt-0">
+        {children}
+      </main>
     </div>
   );
 };
@@ -142,7 +156,9 @@ const SideNavLink = ({
     aria-current={active ? "page" : undefined}
     aria-label={label}
     title={expanded ? undefined : label}
-    className={`grid h-10 min-w-0 grid-cols-[2.5rem_minmax(0,1fr)] items-center gap-2 rounded-md text-sm font-semibold transition-colors ${
+    className={`grid h-10 grid-cols-[2.5rem_minmax(0,1fr)] items-center gap-2 overflow-hidden rounded-md text-sm font-semibold transition-[width,background-color,color] duration-200 ${
+      expanded ? "w-full" : "w-10"
+    } ${
       active
         ? "bg-surface text-fg"
         : "text-fg-muted hover:bg-surface hover:text-fg"

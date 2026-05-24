@@ -1,7 +1,7 @@
 export type championData = {
-  displayName: string,
-  id: string,
-  roles: ChampionRole[],
+  displayName: string;
+  id: string;
+  roles: ChampionRole[];
 };
 
 export type ChampionRole =
@@ -16,7 +16,7 @@ export interface ChampionSpellIconDto {
   id: string;
   name: string;
   icon: string;
-};
+}
 
 export interface augmentsData {
   apiName: string;
@@ -26,32 +26,39 @@ export interface augmentsData {
   iconLarge: string;
   iconSmall: string;
   rarity: number;
-};
+}
 
 export interface ItemDataDto {
   name: string;
   description: string;
+  tags?: string[];
   plaintext?: string;
   stats?: Record<string, number>;
-};
+  maps?: Record<string, boolean>;
+  hideFromAll?: boolean;
+  gold?: {
+    purchasable: boolean;
+    total: number;
+  };
+}
 
-export type Regions = 'EUW' | 'EUNE' | 'NA' | null;
+export type Regions = "EUW" | "EUNE" | "NA" | null;
 
-export type ArenaModeSelection = 'all' | 'normal' | '3x6';
+export type ArenaModeSelection = "all" | "normal" | "3x6";
 
 export type LeaderboardSort =
-  | 'gamesPlayed'
-  | 'firstPlaces'
-  | 'top4'
-  | 'placementAvg'
-  | 'damageDealt'
-  | 'damageTanked'
-  | 'healing'
-  | 'shielding'
-  | 'skillshotsHit'
-  | 'skillshotsDodged';
+  | "gamesPlayed"
+  | "firstPlaces"
+  | "top4"
+  | "placementAvg"
+  | "damageDealt"
+  | "damageTanked"
+  | "healing"
+  | "shielding"
+  | "skillshotsHit"
+  | "skillshotsDodged";
 
-export type LeaderboardOrder = 'asc' | 'desc';
+export type LeaderboardOrder = "asc" | "desc";
 
 export interface LeaderboardChampion {
   id: string;
@@ -119,59 +126,64 @@ export type Orders = "ASC" | "DESC";
 export type SortedState = "ASC" | "DESC" | "OTHER_HEADER_SORTED";
 export type Sort = "NAME" | "PLAYED" | "AVG" | "WR";
 
-export type ToastVariant = 'SUCCESS' | 'ERROR' | 'WARNING';
+export type ToastVariant = "SUCCESS" | "ERROR" | "WARNING";
 
 export interface Toast {
   id: string;
   message: string;
   type: ToastVariant;
-};
+}
 
 export type ErrorCode =
-  | 'BAD_PATH'
-  | 'BAD_REGION'
-  | 'BAD_HOST'
-  | 'METHOD_NOT_ALLOWED'
-  | 'NOT_FOUND'
-  | 'PLAYER_NOT_TRACKED'
-  | 'JOB_NOT_FOUND'
-  | 'UPSTREAM_NOT_FOUND'
-  | 'UPSTREAM_RATE_LIMITED'
-  | 'UPSTREAM_ERROR'
-  | 'INTERNAL_ERROR';
+  | "BAD_PATH"
+  | "BAD_REGION"
+  | "BAD_HOST"
+  | "METHOD_NOT_ALLOWED"
+  | "NOT_FOUND"
+  | "PLAYER_NOT_TRACKED"
+  | "JOB_NOT_FOUND"
+  | "UPSTREAM_NOT_FOUND"
+  | "UPSTREAM_RATE_LIMITED"
+  | "UPSTREAM_ERROR"
+  | "INTERNAL_ERROR";
 
 export interface ApiErrorPayload {
   code: ErrorCode;
   message: string;
   status: number;
   details?: Record<string, unknown>;
-};
+}
 
 export interface ApiErrorEnvelope {
   error: ApiErrorPayload;
-};
+}
 
-export type JobPhase = 'puuid' | 'matchlist' | 'matches' | 'summoner' | 'persisting';
+export type JobPhase =
+  | "puuid"
+  | "matchlist"
+  | "matches"
+  | "summoner"
+  | "persisting";
 
 export interface JobState {
   jobId: string;
-  status: 'queued' | 'running' | 'done' | 'error';
+  status: "queued" | "running" | "done" | "error";
   phase?: JobPhase;
   progress?: { current: number; total: number };
   error?: unknown;
   startedAt: number;
   updatedAt: number;
-};
+}
 
 export interface PlayerStats {
   puuid: string;
   gameName: string;
   tagLine: string;
   profileIconId: number;
-  summonerLevel: number; 
+  summonerLevel: number;
   matchesPlayed: number;
   latestGamePlayed: EpochTimeStamp;
-  placements: PlacementDto
+  placements: PlacementDto;
   placementAvg: number;
   infographics: infographicsDto;
   augmentStats: augmentsStatsDto;
@@ -179,11 +191,11 @@ export interface PlayerStats {
     [championName: string]: championStatsDto;
   };
   teammateStats: teammateStatsDto;
-};
+}
 
 export interface PlacementDto {
   [key: number]: number;
-};
+}
 
 export interface teammateStatDto {
   gameName: string;
@@ -192,11 +204,11 @@ export interface teammateStatDto {
   placements: PlacementDto;
   placementAvg: number;
   lastPlayedAt: number;
-};
+}
 
 export interface teammateStatsDto {
   [teammatePuuid: string]: teammateStatDto;
-};
+}
 
 export interface ProfileLookupDto {
   puuid: string;
@@ -207,7 +219,7 @@ export interface ProfileLookupDto {
   summonerLevel: number;
   tracked: boolean;
   nonProcessedMatchesCount?: number;
-};
+}
 
 export interface championStatsDto {
   timesPlayed: number;
@@ -219,7 +231,7 @@ export interface championStatsDto {
   id: string;
   stage: number;
   roles?: ChampionRole[];
-};
+}
 
 export interface infographicsDto {
   damageStats: damageStatsDto;
@@ -228,18 +240,18 @@ export interface infographicsDto {
   skillShotsStats: skillShotsDto;
   killsDeathsAssists: killDeathAssistsDto;
   healingStats?: healingShieldingStatsDto;
-  shieldingStats?: Omit<healingShieldingStatsDto, 'total'>;
-};
+  shieldingStats?: Omit<healingShieldingStatsDto, "total">;
+}
 
 export interface healingShieldingStatsDto {
   total: numericalStatsDto;
   onTeammates: numericalStatsDto;
-};
+}
 
 export interface augmentsStatsDto {
   [id: number]: {
     picked: number;
-  }
+  };
 }
 
 export interface killDeathAssistsDto {
@@ -267,7 +279,7 @@ export interface damageStatsDto {
     champions: numericalStatsDto;
   };
   perMinute: numericalStatsDto;
-};
+}
 
 export interface damageTakenStatsDto {
   total: numericalStatsDto;
@@ -275,23 +287,23 @@ export interface damageTakenStatsDto {
   magic: numericalStatsDto;
   physical: numericalStatsDto;
   mitigated: numericalStatsDto;
-};
+}
 
 export interface skillShotsDto {
   dodged: numericalStatsDto;
   hit: numericalStatsDto;
-};
+}
 
 export interface goldStatsDto {
   earned: numericalStatsDto;
   spent: numericalStatsDto;
   perMinute: numericalStatsDto;
-};
+}
 
 export interface numericalStatsDto {
   value: number;
   records: recordsDto;
-};
+}
 
 export interface recordsDtoEntry {
   value: number;
@@ -304,27 +316,27 @@ export interface GetPUUIDDto {
   gameName: string;
   puuid: string;
   tagLine: string;
-};
+}
 
 export interface GetPlayerMatchListDto {
-  matchIds: string[]
-};
+  matchIds: string[];
+}
 
 export interface MatchDto {
   metadata: MetaDataDto;
   info: InfoDto;
-};
+}
 
 export interface MatchTimelineDto {
   metadata: MatchTimelineMetaDataDto;
   info: MatchTimelineInfoDto;
-};
+}
 
 export interface MatchTimelineMetaDataDto {
   dataVersion: string;
   matchId: string;
   participants: string[];
-};
+}
 
 export interface MatchTimelineInfoDto {
   endOfGameResult?: string;
@@ -332,18 +344,18 @@ export interface MatchTimelineInfoDto {
   gameId?: number;
   participants?: MatchTimelineParticipantDto[];
   frames: MatchTimelineFrameDto[];
-};
+}
 
 export interface MatchTimelineParticipantDto {
   participantId: number;
   puuid: string;
-};
+}
 
 export interface MatchTimelineFrameDto {
   events: unknown[];
   participantFrames?: Record<string, MatchTimelineParticipantFrameDto>;
   timestamp: number;
-};
+}
 
 export interface MatchTimelineParticipantFrameDto {
   championStats: MatchTimelineChampionStatsDto;
@@ -358,7 +370,7 @@ export interface MatchTimelineParticipantFrameDto {
   timeEnemySpentControlled: number;
   totalGold: number;
   xp: number;
-};
+}
 
 export interface MatchTimelineChampionStatsDto {
   abilityHaste?: number;
@@ -389,7 +401,7 @@ export interface MatchTimelineChampionStatsDto {
   powerRegen: number;
   resourceType?: string;
   spellVamp: number;
-};
+}
 
 export interface MatchTimelineDamageStatsDto {
   magicDamageDone: number;
@@ -404,18 +416,18 @@ export interface MatchTimelineDamageStatsDto {
   trueDamageDone: number;
   trueDamageDoneToChampions: number;
   trueDamageTaken: number;
-};
+}
 
 export interface MatchTimelinePositionDto {
   x: number;
   y: number;
-};
+}
 
 export interface MetaDataDto {
   dataVersion: string;
   matchId: string;
   participants: string[];
-};
+}
 
 export interface InfoDto {
   endOfGameResult: string;
@@ -434,7 +446,7 @@ export interface InfoDto {
   queueId: number;
   teams: TeamDto[];
   tournamentCode: string;
-};
+}
 
 export interface ChallengesDto {
   "12AssistStreakCount": number;
@@ -583,7 +595,7 @@ export interface ChallengesDto {
   wardsGuarded: number;
   wardTakedowns: number;
   wardTakedownsBefore20M: number;
-};
+}
 
 export interface ParticipantDto {
   allInPings: number;
@@ -726,7 +738,7 @@ export interface ParticipantDto {
   wardsKilled: number;
   wardsPlaced: number;
   win: boolean;
-};
+}
 
 export interface MissionsDto {
   playerScore0: number;
@@ -741,43 +753,43 @@ export interface MissionsDto {
   playerScore9: number;
   playerScore10: number;
   playerScore11: number;
-};
+}
 
 export interface PerksDto {
   statPerks: PerkStatsDto;
   styles: PerkStyleDto[];
-};
+}
 
 export interface PerkStatsDto {
   defense: number;
   flex: number;
   offense: number;
-};
+}
 
 export interface PerkStyleDto {
   description: string;
   selections: PerkStyleSelectionDto[];
   style: number;
-};
+}
 
 export interface PerkStyleSelectionDto {
   perk: number;
   var1: number;
   var2: number;
   var3: number;
-};
+}
 
 export interface TeamDto {
   bans: BanDto[];
   objectives: ObjectivesDto;
   teamId: number;
   win: boolean;
-};
+}
 
 export interface BanDto {
   championId: number;
   pickTurn: number;
-};
+}
 
 export interface ObjectivesDto {
   baron: ObjectiveDto;
@@ -787,9 +799,9 @@ export interface ObjectivesDto {
   inhibitor: ObjectiveDto;
   riftHerald: ObjectiveDto;
   tower: ObjectiveDto;
-};
+}
 
 export interface ObjectiveDto {
   first: boolean;
   kills: number;
-};
+}

@@ -13,7 +13,7 @@ interface DamageStatsBodyProps {
   dealtStats: damageStatsDto;
   takenStats: damageTakenStatsDto;
   healingStats?: healingShieldingStatsDto;
-  shieldingStats?: Omit<healingShieldingStatsDto, 'total'>;
+  shieldingStats?: Omit<healingShieldingStatsDto, "total">;
   skillShotsStats?: skillShotsDto;
   matchCount: number;
 }

@@ -44,7 +44,7 @@ const AppHeader = ({
 
           <nav
             aria-label="Primary navigation"
-            className="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:items-center"
+            className="grid w-full grid-cols-4 gap-2 sm:flex sm:w-auto sm:items-center"
           >
             {NAV_ITEMS.map((item) => (
               <HeaderLink

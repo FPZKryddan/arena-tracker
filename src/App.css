@@ -23,7 +23,7 @@
 }
 
 #scrollContainer {
-    scrollbar-gutter: stable both-edges;
+  scrollbar-gutter: stable both-edges;
 }
 
 #root {
@@ -92,7 +92,7 @@
 .augment-0::after,
 .augment-1::after,
 .augment-2::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -0.25rem;
   bottom: 0;
@@ -108,7 +108,7 @@
   .augment-0::after,
   .augment-1::after,
   .augment-2::after {
-    content: '';
+    content: "";
     position: absolute;
     top: -0.125rem;
     bottom: 0;
@@ -122,11 +122,19 @@
 }
 
 .augment-0::after {
-  background-image: linear-gradient(to bottom, var(--color-augment-silver-from), var(--color-augment-silver-to));
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-augment-silver-from),
+    var(--color-augment-silver-to)
+  );
 }
 
 .augment-1::after {
-  background-image: linear-gradient(to bottom, var(--color-augment-gold-from), var(--color-augment-gold-to));
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-augment-gold-from),
+    var(--color-augment-gold-to)
+  );
 }
 
 .augment-2::after {

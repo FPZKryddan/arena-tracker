@@ -20,8 +20,8 @@ const FetchingProgress = ({ isFetching, jobState }: FetchingProgressProps) => {
   const label = jobState?.phase
     ? PHASE_LABELS[jobState.phase]
     : jobState?.status === "queued"
-    ? "Queued search"
-    : "Starting search";
+      ? "Queued search"
+      : "Starting search";
 
   const progress = jobState?.progress;
   const pct =

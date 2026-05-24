@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { IoSearch, IoStar, IoClose } from "react-icons/io5";
 import RegionSelector from "./RegionSelector";
@@ -14,10 +14,10 @@ import { DEFAULT_ARENA_MODE } from "../../utils/arenaModes";
 
 const profilePath = (
   f: Favorite,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): string => {
   const path = `/profile/${f.region}/${encodeURIComponent(
-    f.gameName
+    f.gameName,
   )}/${encodeURIComponent(f.tagLine)}`;
   if (arenaMode === DEFAULT_ARENA_MODE) return path;
   return `${path}?${new URLSearchParams({ mode: arenaMode }).toString()}`;
@@ -39,9 +39,15 @@ const SummonerInput = ({
   submitLabel,
   variant = "default",
 }: SummonerInputProps) => {
-  const params = useParams<{ region?: string; gameName?: string; tagLine?: string }>();
+  const params = useParams<{
+    region?: string;
+    gameName?: string;
+    tagLine?: string;
+  }>();
   const initialName =
-    params.gameName && params.tagLine ? `${params.gameName}#${params.tagLine}` : "";
+    params.gameName && params.tagLine
+      ? `${params.gameName}#${params.tagLine}`
+      : "";
   const initialRegion = (params.region ?? null) as Regions;
 
   const [playerInputName, setPlayerInputName] = useState<string>(initialName);
@@ -49,15 +55,14 @@ const SummonerInput = ({
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const { retrievePlayerData, isFetching, jobState } = useGetPlayerStats(
     region,
-    arenaMode
+    arenaMode,
   );
   const { favorites, remove } = useFavorites();
   const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement>(null);
   const progressIsFetching = isFetching || routeProgress?.isFetching === true;
   const progressJobState = isFetching
     ? jobState
-    : routeProgress?.jobState ?? jobState;
+    : (routeProgress?.jobState ?? jobState);
   const isHero = variant === "hero";
 
   useEffect(() => {
@@ -89,7 +94,7 @@ const SummonerInput = ({
       setIsFocused(false);
     }
     navigate(
-      profilePath({ region: effectiveRegion, gameName, tagLine }, arenaMode)
+      profilePath({ region: effectiveRegion, gameName, tagLine }, arenaMode),
     );
   };
 
@@ -99,19 +104,8 @@ const SummonerInput = ({
     navigate(profilePath(f, arenaMode));
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-    if (containerRef.current && !containerRef.current.contains(e.relatedTarget)) {
-      setIsFocused(false);
-    }
-  };
-
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full items-center"
-      onFocus={() => setIsFocused(true)}
-      onBlur={handleBlur}
-    >
+    <div className="relative w-full items-center">
       <div
         className={`box-border flex w-full flex-row rounded-lg border text-fg transition-colors focus-within:border-accent ${
           isHero
@@ -128,9 +122,14 @@ const SummonerInput = ({
           placeholder="RiotName#TAG"
           value={playerInputName}
           onChange={(e) => setPlayerInputName(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSubmit();
           }}
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
           disabled={progressIsFetching}
         ></input>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState, type MouseEvent } from "react";
 import RegionSelectorItem from "./RegionSelectorItem";
+import useClickOutside from "../../hooks/useClickOutside";
 import type { Regions } from "../../types";
 
 interface RegionSelectorProps {
@@ -7,10 +8,16 @@ interface RegionSelectorProps {
   initialRegion?: Regions;
 }
 
-const RegionSelector = ({ updateRegionCallback, initialRegion }: RegionSelectorProps) => {
+const RegionSelector = ({
+  updateRegionCallback,
+  initialRegion,
+}: RegionSelectorProps) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState<boolean>(false);
   const [regionSelected, setRegionSelected] = useState<Regions>(
-    initialRegion ?? 'EUW'
+    initialRegion ?? "EUW",
+  );
+  const rootRef = useClickOutside<HTMLDivElement>(isSelectorOpen, () =>
+    setIsSelectorOpen(false),
   );
 
   useEffect(() => {
@@ -42,7 +49,7 @@ const RegionSelector = ({ updateRegionCallback, initialRegion }: RegionSelectorP
   };
 
   return (
-    <div className="relative flex h-full items-center">
+    <div ref={rootRef} className="relative flex h-full items-center">
       <button
         type="button"
         className="rounded-md border border-border bg-surface-elevated px-2 py-1.5 text-sm font-medium text-fg transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover"

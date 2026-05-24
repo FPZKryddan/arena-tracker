@@ -8,6 +8,7 @@ import LandingPage from "./pages/LandingPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import MatchPage from "./pages/MatchPage";
 import ProfilePage from "./pages/ProfilePage";
+import ArenaReferencePage from "./pages/ArenaReferencePage";
 import useInitializeAppState from "./hooks/useInitializeAppState";
 import useContextIfDefined from "./hooks/useContextIfDefined";
 import { ToastsContext } from "./contexts/ToastsContext";
@@ -34,6 +35,11 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingShell />} />
         <Route element={<AppShell />}>
+          <Route path="/codex" element={<ArenaReferencePage />} />
+          <Route
+            path="/augments"
+            element={<Navigate to="/reference" replace />}
+          />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/match/:region/:matchId" element={<MatchPage />} />
           <Route path="/compare" element={<ComparePage />} />

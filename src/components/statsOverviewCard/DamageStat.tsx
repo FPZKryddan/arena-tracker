@@ -23,7 +23,7 @@ const DamageStat = ({
   trueDmg,
   matchCount,
 }: DamageStatProps) => {
-  const { formatNumber } = useFormatter(); 
+  const { formatNumber } = useFormatter();
   const label = type === "dealt" ? "Damage Dealt" : "Damage Taken";
   const damageVerb = type === "dealt" ? "dealt" : "taken";
   const totalAverage = getAveragePerMatchLabel(total.value, matchCount);
@@ -57,16 +57,16 @@ const DamageStat = ({
     return (value / total.value) * 100 + "%";
   };
 
-
-
   return (
     <div className="flex flex-col">
       <div className="flex flex-row flex-wrap items-center justify-between gap-x-2 gap-y-0.5">
         <div className="flex flex-row gap-1 items-center">
           <Tooltip
-            text={type === "dealt" ? "Total damage dealt" : "Total damage taken"}
+            text={
+              type === "dealt" ? "Total damage dealt" : "Total damage taken"
+            }
             extra={`Highest damage ${damageVerb}: ${formatNumber(
-              total.records[0]?.value
+              total.records[0]?.value,
             )} | ${totalAverage}`}
           >
             {iconSwitch()}
@@ -86,17 +86,19 @@ const DamageStat = ({
           <span className="text-fg-muted">({totalAverage})</span>
         </p>
       </div>
-      <div
-        className="flex h-2.5 w-full flex-row overflow-hidden rounded-sm bg-border/60"
-      >
+      <div className="flex h-2.5 w-full flex-row overflow-hidden rounded-sm bg-border/60">
         <div
           className="h-full"
           style={{ width: getBarWidthStyling(phyiscal.value) }}
         >
           <Tooltip
-            text={"Total physical damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + formatNumber(phyiscal.value)}
+            text={
+              "Total physical damage " +
+              (type === "dealt" ? "dealt: " : "taken: ") +
+              formatNumber(phyiscal.value)
+            }
             extra={`Highest physical damage ${damageVerb}: ${formatNumber(
-              phyiscal.records[0]?.value
+              phyiscal.records[0]?.value,
             )} | ${getAveragePerMatchLabel(phyiscal.value, matchCount)}`}
           >
             <div
@@ -105,11 +107,18 @@ const DamageStat = ({
             ></div>
           </Tooltip>
         </div>
-        <div className="h-full" style={{ width: getBarWidthStyling(magic.value) }}>
+        <div
+          className="h-full"
+          style={{ width: getBarWidthStyling(magic.value) }}
+        >
           <Tooltip
-            text={"Total magic damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + formatNumber(magic.value)}
+            text={
+              "Total magic damage " +
+              (type === "dealt" ? "dealt: " : "taken: ") +
+              formatNumber(magic.value)
+            }
             extra={`Highest magic damage ${damageVerb}: ${formatNumber(
-              magic.records[0]?.value
+              magic.records[0]?.value,
             )} | ${getAveragePerMatchLabel(magic.value, matchCount)}`}
           >
             <div
@@ -123,9 +132,13 @@ const DamageStat = ({
           style={{ width: getBarWidthStyling(trueDmg.value) }}
         >
           <Tooltip
-            text={"Total true damage " + (type === "dealt" ? 'dealt: ' : 'taken: ')  + formatNumber(trueDmg.value)}
+            text={
+              "Total true damage " +
+              (type === "dealt" ? "dealt: " : "taken: ") +
+              formatNumber(trueDmg.value)
+            }
             extra={`Highest true damage ${damageVerb}: ${formatNumber(
-              trueDmg.records[0]?.value
+              trueDmg.records[0]?.value,
             )} | ${getAveragePerMatchLabel(trueDmg.value, matchCount)}`}
           >
             <div

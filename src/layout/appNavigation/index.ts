@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import type { IconType } from "react-icons";
-import { IoPeople, IoStatsChart, IoTrophy } from "react-icons/io5";
+import { IoBook, IoPeople, IoStatsChart, IoTrophy } from "react-icons/io5";
 
-export type ActivePage = "profiles" | "leaderboard" | "compare";
+export type ActivePage = "profiles" | "codex" | "leaderboard" | "compare";
 
 export interface AppNavigationProps {
   children?: ReactNode;
@@ -18,6 +18,7 @@ export interface AppNavigationItem {
 }
 
 export const getActivePage = (pathname: string): ActivePage => {
+  if (pathname.startsWith("/codex")) return "codex";
   if (pathname.startsWith("/leaderboard")) return "leaderboard";
   if (pathname.startsWith("/compare")) return "compare";
   return "profiles";
@@ -42,11 +43,17 @@ export const NAV_ITEMS: AppNavigationItem[] = [
     defaultTo: "/compare",
     icon: IoPeople,
   },
+  {
+    key: "codex",
+    label: "Codex",
+    defaultTo: "/codex",
+    icon: IoBook,
+  },
 ];
 
 export const getComparePathFromLocation = (
   pathname: string,
-  search: string
+  search: string,
 ): string => {
   const profileMatch = pathname.match(/^\/profile\/([^/]+)\/([^/]+)\/([^/]+)/);
   if (!profileMatch) return "/compare";
@@ -57,7 +64,9 @@ export const getComparePathFromLocation = (
   if (!gameName || !tagLine) return "/compare";
 
   const params = new URLSearchParams({
-    p: [region, encodeURIComponent(gameName), encodeURIComponent(tagLine)].join("|"),
+    p: [region, encodeURIComponent(gameName), encodeURIComponent(tagLine)].join(
+      "|",
+    ),
   });
   const mode = new URLSearchParams(search).get("mode");
   if (mode) params.set("mode", mode);
@@ -67,7 +76,7 @@ export const getComparePathFromLocation = (
 
 export const getNavigationTarget = (
   item: AppNavigationItem,
-  comparePath: string
+  comparePath: string,
 ) => (item.key === "compare" ? comparePath : item.defaultTo);
 
 const safeDecode = (value: string): string | null => {

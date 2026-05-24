@@ -1,10 +1,4 @@
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import { ChampionsContext } from "../../contexts/ChampionsContext";
 import { PlayerStatsContext } from "../../contexts/PlayerStatsContext";
 import useContextIfDefined from "../../hooks/useContextIfDefined";
@@ -16,7 +10,7 @@ import type {
   SortedState,
 } from "../../types";
 const StatsOverviewCard = lazy(
-  () => import("../../components/statsOverviewCard")
+  () => import("../../components/statsOverviewCard"),
 );
 import BottomSheet from "../common/BottomSheet";
 import StatsSkeleton from "../statsOverviewCard/StatsSkeleton";
@@ -43,7 +37,7 @@ const SORT_OPTIONS: { label: string; value: Sort }[] = [
 const emptyStat = () => ({ value: 0, records: [] });
 
 const createEmptyChampionStats = (
-  champion: championData
+  champion: championData,
 ): championStatsDto => ({
   timesPlayed: 0,
   placements: {},
@@ -99,7 +93,8 @@ const createEmptyChampionStats = (
 });
 
 const ChampionList = () => {
-  const { playerStats, loadedProfile } = useContextIfDefined(PlayerStatsContext);
+  const { playerStats, loadedProfile } =
+    useContextIfDefined(PlayerStatsContext);
   const { champions } = useContextIfDefined(ChampionsContext);
   const fuzzySearch = useFuzzy();
   const { SortByName, SortByAvgPlacement, SortByTimesPlayed, SortByWinrate } =
@@ -108,7 +103,7 @@ const ChampionList = () => {
   const [championNameFilter, setChampionNameFilter] = useState<string>("");
   const debouncedNameFilter = useDebouncedValue(championNameFilter, 100);
   const [filters, setFilters] = useState<ChampionFilters>(
-    DEFAULT_CHAMPION_FILTERS
+    DEFAULT_CHAMPION_FILTERS,
   );
   const [sortBy, setSortBy] = useState<Sort>("PLAYED");
   const [order, setOrder] = useState<Orders>("DESC");
@@ -128,9 +123,9 @@ const ChampionList = () => {
     () =>
       playerChampionStats.reduce(
         (max, champion) => Math.max(max, champion.timesPlayed),
-        0
+        0,
       ),
-    [playerChampionStats]
+    [playerChampionStats],
   );
 
   const displayedChampions = useMemo((): championStatsDto[] => {
@@ -176,7 +171,7 @@ const ChampionList = () => {
       setOrder("DESC");
       setSortBy(item);
     },
-    [sortBy]
+    [sortBy],
   );
 
   const podiumChampions = displayedChampions.slice(0, 3);
@@ -252,7 +247,10 @@ const ChampionList = () => {
 };
 
 const ChampionListSkeleton = () => (
-  <div className="flex flex-col gap-3 animate-pulse" aria-label="Loading champions">
+  <div
+    className="flex flex-col gap-3 animate-pulse"
+    aria-label="Loading champions"
+  >
     <div className="flex flex-row items-end justify-center gap-2 sm:gap-3 w-full">
       <ChampionPodiumSkeleton height="h-56 sm:h-64" />
       <ChampionPodiumSkeleton height="h-64 sm:h-72" />
