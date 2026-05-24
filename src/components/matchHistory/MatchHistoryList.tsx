@@ -197,7 +197,7 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
         />
       </div>
       <div className="flex flex-col flex-1 min-w-0">
-        <p className="t-stat">#{me.placement}</p>
+        <p className="t-meta">#{me.placement}</p>
         <p className="t-label truncate">{me.championName}</p>
         {teammates.length > 0 && (
           <TeammatePreview teammates={teammates} version={version} />

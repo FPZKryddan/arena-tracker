@@ -13,7 +13,7 @@ interface ItemCardProps {
 
 const ItemCard = ({ item, version }: ItemCardProps) => (
   <Tooltip renderContent={() => <ItemTooltip item={item} version={version} />}>
-    <article className="flex min-h-20 items-center gap-3 rounded-lg border border-border bg-surface p-3 shadow-resting transition-colors hover:border-border-strong hover:bg-surface-hover">
+    <article className="flex items-center gap-3 rounded-lg border border-border bg-surface p-1 shadow-resting transition-colors hover:border-border-strong hover:bg-surface-hover">
       <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border border-border bg-surface-elevated">
         <img
           src={getDdragonItemIconUrl(version, item.id)}
@@ -24,11 +24,9 @@ const ItemCard = ({ item, version }: ItemCardProps) => (
         />
       </div>
       <div className="min-w-0">
-        <h3 className="t-h2">{item.name}</h3>
+        <h3 className="t-label">{item.name}</h3>
         {item.gold && (
-          <p className="t-stat mt-0.5 text-fg-muted">
-            {item.gold.total} gold
-          </p>
+          <p className="t-stat mt-0.5 text-fg-muted">{item.gold.total} gold</p>
         )}
       </div>
     </article>
@@ -50,9 +48,7 @@ const ItemTooltip = ({ item, version }: ItemCardProps) => (
       <div className="flex flex-wrap items-baseline gap-x-2">
         <p className="t-h2">{item.name}</p>
         {item.gold && (
-          <p className="t-stat text-accent">
-            {item.gold.total} gold
-          </p>
+          <p className="t-stat text-accent">{item.gold.total} gold</p>
         )}
       </div>
       {item.roles.length > 0 && (

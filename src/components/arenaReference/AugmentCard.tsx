@@ -8,7 +8,7 @@ interface AugmentCardProps {
 
 const AugmentCard = ({ augment }: AugmentCardProps) => (
   <Tooltip renderContent={() => <AugmentTooltip augment={augment} />}>
-    <article className="flex min-h-20 items-center gap-3 rounded-lg border border-border bg-surface p-3 shadow-resting transition-colors hover:border-border-strong hover:bg-surface-hover">
+    <article className="flex items-center gap-3 rounded-lg border border-border bg-surface p-1 shadow-resting transition-colors hover:border-border-strong hover:bg-surface-hover">
       <div className="m-1 h-12 w-12 shrink-0 overflow-hidden rounded-md border border-border bg-surface-elevated">
         <img
           src={getCdragonAugmentIconUrl(augment.iconLarge)}
@@ -18,9 +18,7 @@ const AugmentCard = ({ augment }: AugmentCardProps) => (
           className="h-full w-full rounded-md object-cover"
         />
       </div>
-      <h3 className="t-h2 min-w-0">
-        {augment.name}
-      </h3>
+      <h3 className="t-label min-w-0">{augment.name}</h3>
     </article>
   </Tooltip>
 );
@@ -38,9 +36,7 @@ const AugmentTooltip = ({ augment }: AugmentCardProps) => (
     </div>
     <div className="min-w-0">
       <p className="t-h2">{augment.name}</p>
-      <p className="t-body-sm mt-1 text-fg-muted">
-        {augment.desc}
-      </p>
+      <p className="t-body-sm mt-1 text-fg-muted">{augment.desc}</p>
     </div>
   </div>
 );
