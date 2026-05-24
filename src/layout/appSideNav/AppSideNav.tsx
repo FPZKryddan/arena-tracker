@@ -17,7 +17,7 @@ const AppSideNav = ({
   comparePath,
 }: AppNavigationProps) => {
   const { pathname, search } = useLocation();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const activePage = getActivePage(pathname);
   const resolvedComparePath =
     comparePath ?? getComparePathFromLocation(pathname, search);

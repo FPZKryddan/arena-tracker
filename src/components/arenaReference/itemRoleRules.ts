@@ -74,7 +74,15 @@ export const ROLE_RULES: Record<ArenaItemRole, RoleRule> = {
       hasAnyStat(item, "attack-speed", "critical-strike-chance")) ||
     (hasStats(item, "attack-speed") && hasEffects(item, "on-hit")) ||
     (hasStats(item, "critical-strike-chance") &&
-      hasAnyStat(item, "attack-speed", "attack-damage")),
+      hasAnyStat(item, "attack-speed", "attack-damage")) ||
+    (hasStats(item, "adaptive-force") &&
+      hasAnyStat(
+        item,
+        "attack-speed",
+        "armor-penetration",
+        "critical-strike-chance",
+        "critical-strike-damage",
+      )),
   Mage: (item) =>
     (hasStats(item, "ability-power") ||
       hasAnyStat(item, "magic-penetration")) &&
