@@ -73,11 +73,11 @@ const Tooltip = ({
           className={`fixed z-100 rounded-md border border-border bg-surface text-fg
           ${isHovering ? "opacity-100" : "opacity-0 pointer-events-none"}
           ${text ? "px-4 py-2" : ""}
-          max-w-screen text-nowrap text-sm font-medium transition-opacity duration-150`}
+          t-body-sm max-w-screen text-nowrap transition-opacity duration-150`}
           ref={tooltipElementRef}
         >
           {text && <p>{text}</p>}
-          {extra && <p className="text-xs font-normal mt-1">{extra}</p>}
+          {extra && <p className="t-meta mt-1">{extra}</p>}
           {isHovering && renderContent && renderContent()}
         </div>,
         document.body,

@@ -148,7 +148,7 @@ const MatchDetailModal = ({
                 {shareUrl && (
                   <button
                     type="button"
-                    className="flex items-center gap-1 rounded-md border border-border bg-surface-elevated px-2 py-1 text-xs font-semibold text-fg-muted hover:border-border-strong hover:bg-surface-hover hover:text-fg"
+                    className="t-label flex items-center gap-1 rounded-md border border-border bg-surface-elevated px-2 py-1 text-fg-muted hover:border-border-strong hover:bg-surface-hover hover:text-fg"
                     onClick={handleCopyShareUrl}
                   >
                     {shareCopied ? (
@@ -172,7 +172,7 @@ const MatchDetailModal = ({
               </div>
               {loading && <MatchDetailSkeleton />}
               {!loading && !match && (
-                <p className="text-xs">Could not load match.</p>
+                <p className="t-body-sm">Could not load match.</p>
               )}
               {match && (
                 <MatchDetailContent
@@ -272,7 +272,7 @@ const MatchDetailContent = ({
               players[0].subteamPlacement,
             )}`}
           >
-            <p className="text-xs font-semibold mb-1.5">
+            <p className="t-stat mb-1.5">
               #{players[0].subteamPlacement} Place
             </p>
             <div className="flex flex-col gap-2">
@@ -357,7 +357,7 @@ const ParticipantRow = ({
 
   return (
     <div
-      className={`flex flex-col gap-1.5 text-xs p-2 rounded-sm ${
+      className={`flex flex-col gap-1.5 p-2 rounded-sm ${
         isHighlighted ? "bg-info/15 outline outline-1 outline-info" : "bg-bg/35"
       }`}
     >
@@ -370,11 +370,11 @@ const ParticipantRow = ({
           />
         </div>
         <div className="flex flex-col flex-1 min-w-0">
-          <p className="truncate font-medium text-xs">
+          <p className="t-meta truncate">
             {p.riotIdGameName}
             <span className="opacity-50">#{p.riotIdTagline}</span>
           </p>
-          <p className="opacity-70">
+          <p className="t-meta opacity-70">
             {p.championName} / {p.kills}/{p.deaths}/{p.assists}
           </p>
         </div>
@@ -387,7 +387,7 @@ const ParticipantRow = ({
         version={version}
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-1 text-xs">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
         <Stat
           icon={<GiBroadsword className="text-damage-physical" />}
           label="Dealt"
@@ -463,7 +463,7 @@ const LoadoutStrip = ({
   return (
     <div className="grid grid-cols-1 gap-2 rounded-md border border-border/70 bg-surface/45 p-1.5 xl:grid-cols-[auto_minmax(0,1fr)]">
       <div className="min-w-0">
-        <p className="mb-1 text-xs font-semibold uppercase text-fg-muted">
+        <p className="t-eyebrow mb-1 text-fg-muted">
           Augments
         </p>
         <div className="flex flex-row flex-wrap gap-1.5">
@@ -494,7 +494,7 @@ const LoadoutStrip = ({
         </div>
       </div>
       <div className="min-w-0">
-        <p className="mb-1 text-xs font-semibold uppercase text-fg-muted">
+        <p className="t-eyebrow mb-1 text-fg-muted">
           Items
         </p>
         <div className="flex flex-row flex-wrap gap-1.5">
@@ -533,11 +533,11 @@ const AbilityCasts = ({
     <div className="rounded-md border border-border/70 bg-surface/35 px-1.5 py-1.5">
       <div className="mb-1 flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-1">
-          <p className="truncate text-xs font-semibold uppercase text-fg-muted">
+          <p className="t-eyebrow truncate text-fg-muted">
             Ability casts
           </p>
         </div>
-        <p className="shrink-0 text-xs font-semibold tabular-nums text-fg">
+        <p className="t-stat shrink-0 text-fg">
           {totalCasts}
         </p>
       </div>
@@ -567,7 +567,7 @@ const AbilityCasts = ({
               ) : (
                 <HiMiniBolt className="h-5 w-5 shrink-0 text-accent" />
               )}
-              <span className="min-w-0 flex-1 truncate text-right text-xs font-semibold tabular-nums text-fg">
+              <span className="t-stat min-w-0 flex-1 truncate text-right text-fg">
                 {value}
               </span>
             </div>
@@ -582,10 +582,10 @@ const MatchSummaryHeader = ({ match }: { match: MatchDto }) => (
   <section className="relative overflow-hidden rounded-lg px-3 py-3 md:px-3">
     <div className="flex flex-col gap-2.5 md:flex-row md:items-end md:justify-start">
       <div className="min-w-0">
-        <p className="text-lg font-semibold leading-tight md:text-lg">
+        <p className="t-h2">
           Arena Match
         </p>
-        <p className="mt-0.5 truncate text-xs text-fg-muted">
+        <p className="t-meta mt-0.5 truncate text-fg-muted">
           {new Date(match.info.gameCreation).toLocaleString()} /{" "}
           {match.metadata.matchId} / Game duration{" "}
           {formatDuration(match.info.gameDuration)}
@@ -1189,10 +1189,10 @@ const PlayerDamageSparkline = ({
         />
       </svg>
       <div className="flex shrink-0 flex-col items-end leading-tight">
-        <span className="text-xs font-semibold uppercase text-fg-muted">
+        <span className="t-eyebrow text-fg-muted">
           Dealt / Tanked
         </span>
-        <span className="text-xs font-medium tabular-nums text-fg">
+        <span className="t-stat text-fg">
           {formatPlainNumber(timeline.finalDealt)} /{" "}
           {formatPlainNumber(timeline.finalTaken)}
         </span>
@@ -1290,10 +1290,10 @@ const PlayerDamageLineChart = ({
   return (
     <div className="flex flex-col gap-1.5 rounded-md border border-border/70 bg-surface/45 p-2">
       <div className="flex flex-row flex-wrap items-center justify-between gap-1.5">
-        <p className="text-xs font-semibold uppercase tracking-normal text-fg-muted">
+        <p className="t-eyebrow text-fg-muted">
           Damage curve
         </p>
-        <p className="text-xs font-medium tabular-nums text-fg-muted">
+        <p className="t-stat text-fg-muted">
           Dealt {formatPlainNumber(timeline.finalDealt)} / Tanked{" "}
           {formatPlainNumber(timeline.finalTaken)}
         </p>
@@ -1332,9 +1332,9 @@ const DamageCurveTotal = ({
         className="h-1.5 w-1.5 rounded-full"
         style={{ backgroundColor: color }}
       />
-      <p className="text-xs font-semibold uppercase text-fg-muted">{label}</p>
+      <p className="t-eyebrow text-fg-muted">{label}</p>
     </div>
-    <p className="mt-0.5 text-xs font-semibold tabular-nums text-fg">
+    <p className="t-stat mt-0.5 text-fg">
       {formatPlainNumber(value)}
     </p>
   </div>
@@ -1378,7 +1378,7 @@ const EndGameStats = ({
       </div>
       <button
         type="button"
-        className="flex w-fit flex-row items-center gap-0.5 rounded-sm px-0.5 text-xs font-medium uppercase text-fg-muted hover:text-fg disabled:pointer-events-none disabled:opacity-40"
+        className="t-label flex w-fit flex-row items-center gap-0.5 rounded-sm px-0.5 text-fg-muted hover:text-fg disabled:pointer-events-none disabled:opacity-40"
         aria-expanded={expanded}
         disabled={!hasAdvancedDetails}
         onClick={() => setExpanded((isExpanded) => !isExpanded)}
@@ -1401,7 +1401,7 @@ const EndGameStats = ({
           <AbilityCasts casts={abilityCasts} spellIcons={spellIcons} />
           {advancedSections.map((section) => (
             <div key={section.title} className="flex flex-col gap-1">
-              <p className="text-xs font-semibold uppercase tracking-normal text-fg-muted">
+              <p className="t-eyebrow text-fg-muted">
                 {section.title}
               </p>
               <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 xl:grid-cols-4">
@@ -1468,11 +1468,7 @@ const EndGameStatChip = ({
         image.src = FALLBACK_STAT_ICON;
       }}
     />
-    <p
-      className={`min-w-0 truncate font-medium tabular-nums text-fg ${
-        compact ? "text-xs" : "text-xs"
-      }`}
-    >
+    <p className="t-stat min-w-0 truncate text-fg">
       {row.value}
     </p>
   </div>
@@ -1492,8 +1488,8 @@ const Stat = ({
   <div className="grid grid-cols-[1rem_minmax(0,1fr)] items-center gap-1">
     <span className="flex items-center justify-center">{icon}</span>
     <div className="flex flex-col leading-tight">
-      <span className="text-xs uppercase opacity-60">{label}</span>
-      <span className="grid grid-cols-[minmax(0,auto)_0.75rem] items-center gap-0.5 font-medium tabular-nums leading-none">
+      <span className="t-eyebrow opacity-60">{label}</span>
+      <span className="t-stat grid grid-cols-[minmax(0,auto)_0.75rem] items-center gap-0.5">
         <span className="min-w-0 truncate">{value}</span>
         {isLeader && (
           <HiMiniStar

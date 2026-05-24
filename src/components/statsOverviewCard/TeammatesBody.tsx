@@ -79,7 +79,7 @@ const TeammatesBody = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm font-semibold">Frequent Teammates</p>
+      <p className="t-h2">Frequent Teammates</p>
       <ul className="flex flex-col gap-1">
         {teammates.map((teammate) => (
           <TeammateRow
@@ -99,7 +99,7 @@ const TeammatesBody = ({
         ))}
         {interactive && (
           <button
-            className="hover:text-accent hover:cursor-pointer disabled:hidden"
+            className="t-label hover:text-accent hover:cursor-pointer disabled:hidden"
             disabled={isShowingAllTeammates}
             onClick={() => setVisibleTeammatesCount(visibleTeammatesCount + 3)}
           >
@@ -184,7 +184,7 @@ const TeammateRow = ({
       onClick={interactive ? onSelect : undefined}
       onKeyDown={interactive ? handleKeyDown : undefined}
     >
-      <div className="h-9 w-9 aspect-square rounded-full overflow-hidden bg-surface-elevated text-fg flex items-center justify-center text-sm font-semibold shrink-0">
+      <div className="t-label h-9 w-9 aspect-square rounded-full overflow-hidden bg-surface-elevated text-fg flex items-center justify-center shrink-0">
         {profile ? (
           <img
             src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${profile.profileIconId}.png`}
@@ -200,29 +200,29 @@ const TeammateRow = ({
           <Link
             to={profilePath}
             aria-label={`Open ${displayGameName}#${displayTagLine} profile`}
-            className="block truncate text-xs font-medium transition-colors hover:text-accent"
+            className="t-meta block truncate transition-colors hover:text-accent"
             onClick={(event) => event.stopPropagation()}
           >
             {displayGameName}
             <span className="opacity-60">#{displayTagLine}</span>
           </Link>
         ) : (
-          <p className="block truncate text-xs font-medium">
+          <p className="t-meta block truncate">
             {displayGameName}
             <span className="opacity-60">#{displayTagLine}</span>
           </p>
         )}
-        <p className="text-xs opacity-70">
+        <p className="t-meta opacity-70">
           {profile ? `Lv. ${profile.summonerLevel} / ` : ""}
           {teammate.gamesPlayed} games
         </p>
       </div>
       <div className="flex shrink-0 flex-col items-end leading-tight">
-        <span className="text-xs font-semibold uppercase text-fg-muted">
+        <span className="t-eyebrow text-fg-muted">
           Avg
         </span>
         <p
-          className={`text-sm font-semibold tabular-nums ${getAvgColor(
+          className={`t-stat ${getAvgColor(
             teammate.placementAvg,
           )}`}
         >

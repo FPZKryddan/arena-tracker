@@ -44,6 +44,20 @@ export interface ItemDataDto {
 
 export type Regions = "EUW" | "EUNE" | "NA" | null;
 
+export type RegionStats = Record<Exclude<Regions, null>, number>;
+
+export interface TrackedPlayersStatsDto {
+  tracked: number;
+  perRegion: RegionStats;
+  lastUpdateAt: string;
+}
+
+export interface TrackedMatchesStatsDto {
+  total: number;
+  perRegion: RegionStats;
+  latestMatchAt: number;
+}
+
 export type ArenaModeSelection = "all" | "normal" | "3x6";
 
 export type LeaderboardSort =

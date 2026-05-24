@@ -53,20 +53,20 @@ const TeammateDetailCard = ({
     <div className="flex flex-col gap-4 text-fg p-2">
       <div className="flex flex-col gap-1 pr-10">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <p className="min-w-0 text-lg font-semibold">
-            <span className="text-fg-muted text-sm">Stats with </span>
+          <p className="t-h2 min-w-0">
+            <span className="t-body-sm text-fg-muted">Stats with </span>
             {displayGameName}
             <span className="text-fg-muted">#{displayTagLine}</span>
           </p>
           <Link
             to={profilePath}
             onClick={onProfileClick}
-            className="text-xs font-semibold text-accent transition-colors hover:text-fg"
+            className="t-label text-accent transition-colors hover:text-fg"
           >
             View profile
           </Link>
         </div>
-        <p className="text-xs text-fg-muted">
+        <p className="t-meta text-fg-muted">
           Last played: {formatLastPlayed(teammate.lastPlayedAt)}
         </p>
       </div>

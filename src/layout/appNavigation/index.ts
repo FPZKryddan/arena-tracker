@@ -2,6 +2,9 @@ import type { ReactNode } from "react";
 import type { IconType } from "react-icons";
 import { IoBook, IoPeople, IoStatsChart, IoTrophy } from "react-icons/io5";
 
+const LAST_VIEWED_PROFILE_STORAGE_KEY = "lastViewedProfilePath";
+const PROFILE_PATH_PATTERN = /^\/profile\/[^/?#]+\/[^/?#]+\/[^/?#]+\/?$/;
+
 export type ActivePage = "profiles" | "codex" | "leaderboard" | "compare";
 
 export interface AppNavigationProps {
@@ -27,7 +30,7 @@ export const getActivePage = (pathname: string): ActivePage => {
 export const NAV_ITEMS: AppNavigationItem[] = [
   {
     key: "profiles",
-    label: "Profiles",
+    label: "Profile",
     defaultTo: "/",
     icon: IoStatsChart,
   },
@@ -74,10 +77,43 @@ export const getComparePathFromLocation = (
   return `/compare?${params.toString()}`;
 };
 
+export const getProfilePathFromLocation = (
+  pathname: string,
+  search: string,
+): string | null => (isProfilePath(pathname) ? `${pathname}${search}` : null);
+
+export const saveLastViewedProfilePath = (profilePath: string): void => {
+  if (!isProfilePath(profilePath) || typeof window === "undefined") return;
+
+  try {
+    window.sessionStorage.setItem(LAST_VIEWED_PROFILE_STORAGE_KEY, profilePath);
+  } catch {
+    // Storage may be unavailable in restricted browser contexts.
+  }
+};
+
+export const getLastViewedProfilePath = (): string => {
+  if (typeof window === "undefined") return "/";
+
+  try {
+    const savedPath = window.sessionStorage.getItem(
+      LAST_VIEWED_PROFILE_STORAGE_KEY,
+    );
+    return savedPath && isProfilePath(savedPath) ? savedPath : "/";
+  } catch {
+    return "/";
+  }
+};
+
 export const getNavigationTarget = (
   item: AppNavigationItem,
   comparePath: string,
-) => (item.key === "compare" ? comparePath : item.defaultTo);
+  profilePath = "/",
+) => {
+  if (item.key === "compare") return comparePath;
+  if (item.key === "profiles") return profilePath;
+  return item.defaultTo;
+};
 
 const safeDecode = (value: string): string | null => {
   try {
@@ -86,3 +122,6 @@ const safeDecode = (value: string): string | null => {
     return null;
   }
 };
+
+const isProfilePath = (path: string): boolean =>
+  PROFILE_PATH_PATTERN.test(path.split(/[?#]/, 1)[0]);

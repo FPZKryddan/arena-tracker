@@ -19,11 +19,11 @@ const AugmentTierSection = ({ tier }: AugmentTierSectionProps) => (
     <header className="flex items-center gap-2">
       <h2
         id={`augment-tier-${tier.rarity}`}
-        className="text-lg font-semibold text-fg"
+        className="t-h2 text-fg"
       >
         {tier.name}
       </h2>
-      <span className="rounded-full border border-border px-2 py-0.5 text-xs font-semibold">
+      <span className="t-stat rounded-full border border-border px-2 py-0.5">
         {tier.augments.length}
       </span>
     </header>

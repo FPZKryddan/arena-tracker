@@ -116,8 +116,8 @@ const SummonerInput = ({
         <input
           type="text"
           name="playerInput"
-          className={`h-full min-w-0 w-full rounded-lg bg-transparent px-4 text-left font-normal text-fg placeholder:text-fg-muted focus:outline-0 ${
-            isHero ? "text-base" : ""
+          className={`h-full min-w-0 w-full rounded-lg bg-transparent px-4 text-left text-fg placeholder:text-fg-muted focus:outline-0 ${
+            isHero ? "t-body" : "t-body-sm"
           }`}
           placeholder="RiotName#TAG"
           value={playerInputName}
@@ -147,7 +147,7 @@ const SummonerInput = ({
             onClick={handleSubmit}
             className={
               submitLabel
-                ? "flex items-center gap-2 rounded-lg bg-accent px-3 text-sm font-semibold text-accent-fg transition-colors hover:cursor-pointer hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60 sm:px-4"
+                ? "t-label flex items-center gap-2 rounded-lg bg-accent px-3 text-accent-fg transition-colors hover:cursor-pointer hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60 sm:px-4"
                 : "rounded-lg px-2 text-fg-muted transition-colors hover:cursor-pointer hover:bg-surface-hover hover:text-fg"
             }
             disabled={progressIsFetching}
@@ -173,7 +173,7 @@ const SummonerInput = ({
 
       {showDropdown && (
         <ul className="absolute left-0 right-0 top-12 z-20 max-h-72 overflow-y-auto rounded-lg border border-border bg-surface">
-          <li className="flex items-center gap-2 px-4 py-2 text-xs text-fg-muted border-b border-border">
+          <li className="t-label flex items-center gap-2 px-4 py-2 text-fg-muted border-b border-border">
             <IoStar className="w-3.5 h-3.5 text-favorite" />
             <span>Favorites</span>
           </li>
@@ -186,12 +186,12 @@ const SummonerInput = ({
                 handleSelectFavorite(f);
               }}
             >
-              <div className="flex items-center gap-2 text-fg text-sm min-w-0">
-                <span className="truncate font-medium">
+              <div className="t-body-sm flex items-center gap-2 text-fg min-w-0">
+                <span className="t-label truncate">
                   {f.gameName}
                   <span className="text-fg-muted">#{f.tagLine}</span>
                 </span>
-                <span className="rounded-sm border border-border px-1.5 py-0.5 text-xs uppercase text-fg-muted">
+                <span className="t-meta rounded-sm border border-border px-1.5 py-0.5 text-fg-muted">
                   {f.region}
                 </span>
               </div>

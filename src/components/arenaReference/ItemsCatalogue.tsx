@@ -109,7 +109,7 @@ const ItemsCatalogue = ({ search }: ItemsCatalogueProps) => {
         />
       ) : (
         <div className="flex flex-col gap-7">
-          <p className="text-xs font-medium tabular-nums text-fg-muted">
+          <p className="t-meta text-fg-muted">
             Showing {visibleCount} of {arenaItems.length} items
           </p>
           {tierGroups.map((tier) => (

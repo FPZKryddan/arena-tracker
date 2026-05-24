@@ -71,7 +71,7 @@ const DamageStat = ({
           >
             {iconSwitch()}
           </Tooltip>
-          <p className="text-xs font-semibold">{label}</p>
+          <p className="t-label">{label}</p>
           <RecordMatchButton
             matchId={total.records[0]?.matchId}
             label={
@@ -81,7 +81,7 @@ const DamageStat = ({
             }
           />
         </div>
-        <p className="flex flex-row flex-wrap justify-end gap-x-1 text-xs font-medium tabular-nums">
+        <p className="t-stat flex flex-row flex-wrap justify-end gap-x-1">
           <span>{formatNumber(total.value)}</span>
           <span className="text-fg-muted">({totalAverage})</span>
         </p>

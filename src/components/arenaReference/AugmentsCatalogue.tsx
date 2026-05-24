@@ -3,6 +3,7 @@ import { useAugmentsQuery } from "../../hooks/queries";
 import type { augmentsData } from "../../types";
 import AugmentTierSection from "./AugmentTierSection";
 import { CatalogueSkeleton, CatalogueState } from "./CatalogueFeedback";
+import { isDisplayAugment } from "./augmentRules";
 
 interface AugmentsCatalogueProps {
   search: string;
@@ -13,9 +14,6 @@ const TIER_NAMES: Record<number, string> = {
   1: "Gold",
   2: "Prismatic",
 };
-
-const isDisplayAugment = (augment: augmentsData): boolean =>
-  augment.rarity !== 4 && augment.apiName !== "null_augment";
 
 const AugmentsCatalogue = ({ search }: AugmentsCatalogueProps) => {
   const {
@@ -86,7 +84,7 @@ const AugmentsCatalogue = ({ search }: AugmentsCatalogueProps) => {
 
   return (
     <div className="flex flex-col gap-7">
-      <p className="text-xs font-medium tabular-nums text-fg-muted">
+      <p className="t-meta text-fg-muted">
         Showing {visibleCount} of {displayAugments.length} augments
       </p>
       {tierGroups.map((tier) => (

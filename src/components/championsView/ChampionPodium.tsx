@@ -109,7 +109,7 @@ const PodiumSlot = memo(
         />
         <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/65 to-transparent" />
         <div
-          className={`absolute left-2 top-2 rounded-sm ${style.badge} px-2 py-0.5 text-xs font-semibold`}
+          className={`t-stat absolute left-2 top-2 rounded-sm ${style.badge} px-2 py-0.5`}
         >
           {style.label}
         </div>
@@ -119,8 +119,8 @@ const PodiumSlot = memo(
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 flex flex-col gap-1.5 p-1.5 text-left text-on-media sm:p-2">
-          <p className="truncate text-sm font-semibold">{champion.name}</p>
-          <div className="grid grid-cols-1 gap-0.5 text-xs sm:grid-cols-3 sm:gap-1">
+          <p className="t-h2 truncate">{champion.name}</p>
+          <div className="grid grid-cols-1 gap-0.5 sm:grid-cols-3 sm:gap-1">
             <PodiumStat label="Played" value={String(played)} />
             <PodiumStat label="Avg" value={String(avg)} />
             <PodiumStat label="WR" value={wr} />
@@ -147,8 +147,8 @@ const PodiumSlot = memo(
 
 const PodiumStat = ({ label, value }: { label: string; value: string }) => (
   <div className="flex min-w-0 items-center justify-between gap-1 rounded-sm bg-media-scrim/35 px-1 py-0.5 leading-tight sm:flex-col sm:items-start sm:justify-start sm:bg-transparent sm:px-0 sm:py-0">
-    <span className="truncate uppercase opacity-70">{label}</span>
-    <span className="truncate font-semibold tabular-nums">{value}</span>
+    <span className="t-eyebrow truncate opacity-70">{label}</span>
+    <span className="t-stat truncate">{value}</span>
   </div>
 );
 

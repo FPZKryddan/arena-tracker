@@ -24,9 +24,9 @@ const ItemCard = ({ item, version }: ItemCardProps) => (
         />
       </div>
       <div className="min-w-0">
-        <h3 className="text-sm font-semibold leading-5">{item.name}</h3>
+        <h3 className="t-h2">{item.name}</h3>
         {item.gold && (
-          <p className="mt-0.5 text-xs font-medium tabular-nums text-fg-muted">
+          <p className="t-stat mt-0.5 text-fg-muted">
             {item.gold.total} gold
           </p>
         )}
@@ -48,9 +48,9 @@ const ItemTooltip = ({ item, version }: ItemCardProps) => (
     </div>
     <div className="min-w-0">
       <div className="flex flex-wrap items-baseline gap-x-2">
-        <p className="text-sm font-semibold leading-5">{item.name}</p>
+        <p className="t-h2">{item.name}</p>
         {item.gold && (
-          <p className="text-xs font-medium tabular-nums text-accent">
+          <p className="t-stat text-accent">
             {item.gold.total} gold
           </p>
         )}
@@ -60,7 +60,7 @@ const ItemTooltip = ({ item, version }: ItemCardProps) => (
           {item.roles.map((role) => (
             <span
               key={role}
-              className="rounded-full border border-accent px-2 py-0.5 text-xs font-medium text-accent"
+              className="t-meta rounded-full border border-accent px-2 py-0.5 text-accent"
             >
               {role}
             </span>
@@ -72,7 +72,7 @@ const ItemTooltip = ({ item, version }: ItemCardProps) => (
           {item.grantedStats.map((stat) => (
             <span
               key={stat.value}
-              className="flex items-center w-fit gap-1 rounded-sm bg-surface-elevated px-2 py-0.5 text-xs font-medium text-fg"
+              className="t-meta flex items-center w-fit gap-1 rounded-sm bg-surface-elevated px-2 py-0.5 text-fg"
             >
               <GameStatIcon stat={stat.value} />
               {stat.amount} {stat.label}
@@ -85,14 +85,14 @@ const ItemTooltip = ({ item, version }: ItemCardProps) => (
           {item.effects.map((effect) => (
             <span
               key={effect.value}
-              className="rounded-sm border border-border px-2 py-0.5 text-xs font-medium text-fg-muted"
+              className="t-meta rounded-sm border border-border px-2 py-0.5 text-fg-muted"
             >
               {effect.label}
             </span>
           ))}
         </div>
       )}
-      <p className="mt-1 text-xs font-normal leading-5 text-fg-muted">
+      <p className="t-body-sm mt-1 text-fg-muted">
         {itemDescriptionToText(item)}
       </p>
     </div>

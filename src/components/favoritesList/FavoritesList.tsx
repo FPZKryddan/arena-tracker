@@ -13,7 +13,7 @@ const FavoritesList = () => {
 
   return (
     <div className="w-full">
-      <div className="mb-3 flex items-center gap-2 text-sm text-fg-muted">
+      <div className="t-h2 mb-3 flex items-center gap-2 text-fg-muted">
         <IoStar className="w-4 h-4 text-favorite" />
         <span>Favorites</span>
       </div>
@@ -24,13 +24,13 @@ const FavoritesList = () => {
               <button
                 type="button"
                 onClick={() => navigate(profilePath(f))}
-                className="hover:cursor-pointer text-sm flex items-center gap-2"
+                className="t-body-sm hover:cursor-pointer flex items-center gap-2"
               >
-                <span className="font-medium">
+                <span className="t-label">
                   {f.gameName}
                   <span className="text-fg-muted">#{f.tagLine}</span>
                 </span>
-                <span className="rounded-sm border border-border px-1.5 py-0.5 text-xs uppercase text-fg-muted">
+                <span className="t-meta rounded-sm border border-border px-1.5 py-0.5 text-fg-muted">
                   {f.region}
                 </span>
               </button>

@@ -113,12 +113,9 @@ const MatchHistoryList = ({
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      {/* <h2 className="text-xs font-semibold text-fg">
-        MATCH HISTORY
-      </h2> */}
       {loading && matches.length === 0 && <MatchHistorySkeleton />}
       {!loading && matches.length === 0 && (
-        <p className="text-fg-muted text-xs">No recent matches.</p>
+        <p className="t-body-sm text-fg-muted">No recent matches.</p>
       )}
       {matchRows.length > 0 && (
         <ul className="flex flex-col gap-1.5">
@@ -186,7 +183,7 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
   return (
     <li
       onClick={onClick}
-      className={`flex flex-row items-center gap-2 rounded-md border-l-4 p-2 text-xs text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover ${placementColor(
+      className={`flex flex-row items-center gap-2 rounded-md border-l-4 p-2 text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover ${placementColor(
         me.placement,
       )}`}
     >
@@ -200,8 +197,8 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
         />
       </div>
       <div className="flex flex-col flex-1 min-w-0">
-        <p className="font-semibold">#{me.placement}</p>
-        <p className="truncate">{me.championName}</p>
+        <p className="t-stat">#{me.placement}</p>
+        <p className="t-label truncate">{me.championName}</p>
         {teammates.length > 0 && (
           <TeammatePreview teammates={teammates} version={version} />
         )}
@@ -213,13 +210,13 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
         version={version}
       />
       <div className="flex flex-col text-right shrink-0">
-        <p>
+        <p className="t-stat">
           {me.kills}/{me.deaths}/{me.assists}
         </p>
-        <p className="text-fg-muted">
+        <p className="t-meta text-fg-muted">
           {formatDuration(match.info.gameDuration)}
         </p>
-        <p className="text-fg-subtle">
+        <p className="t-meta text-fg-subtle">
           {formatRelative(match.info.gameCreation)}
         </p>
       </div>
@@ -321,7 +318,7 @@ const TeammatePreview = ({ teammates, version }: TeammatePreviewProps) => {
                 className="absolute left-4 top-0 h-5 w-5 rounded-full object-cover bg-surface-elevated ring-2 ring-surface"
               />
             </div>
-            <p className="truncate">
+            <p className="t-meta truncate">
               w/ {teammateName} on {teammate.championName}
             </p>
           </div>

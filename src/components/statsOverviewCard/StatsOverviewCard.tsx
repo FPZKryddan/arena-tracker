@@ -199,9 +199,9 @@ const NoStatsState = ({
     <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-4 text-on-media">
       <div className="flex items-center gap-2">
         <IoStatsChart className="h-5 w-5 text-success" />
-        <p className="text-sm font-semibold">No recorded stats</p>
+        <p className="t-label">No recorded stats</p>
       </div>
-      <h2 className="text-2xl font-semibold leading-tight">{name}</h2>
+      <h2 className="t-h1">{name}</h2>
     </div>
   </div>
 );

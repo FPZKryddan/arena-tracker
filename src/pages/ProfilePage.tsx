@@ -203,7 +203,7 @@ const ProfileUpdateButton = ({
       disabled={!canUpdateProfile}
       aria-label={updateLabel}
       title={updateLabel}
-      className="relative flex h-11 w-full text-center lg:w-fit shrink-0 items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50"
+      className="t-label relative flex h-11 w-full text-center lg:w-fit shrink-0 items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50"
     >
       Update
       <IoRefresh
@@ -211,7 +211,7 @@ const ProfileUpdateButton = ({
         aria-hidden
       />
       {pendingMatchesCount > 0 && (
-        <span className="min-w-5 rounded-full bg-accent px-1.5 py-0.5 text-center text-xs font-semibold leading-none text-bg tabular-nums">
+        <span className="t-stat min-w-5 rounded-full bg-accent px-1.5 py-0.5 text-center text-bg">
           {pendingMatchesCount}
         </span>
       )}
@@ -231,8 +231,8 @@ const PendingMatchesNotice = ({
   if (pendingMatchesCount === 0 || isFetching) return null;
 
   return (
-    <p className="self-end pr-1 text-xs font-medium text-fg-muted">
-      <span className="text-accent tabular-nums">{pendingMatchesCount}</span>{" "}
+    <p className="t-meta self-end pr-1 text-fg-muted">
+      <span className="t-stat text-accent">{pendingMatchesCount}</span>{" "}
       {pendingMatchesCount === 1 ? "game" : "games"} waiting to process
     </p>
   );

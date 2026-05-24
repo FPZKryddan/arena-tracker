@@ -52,7 +52,7 @@ const RegionSelector = ({
     <div ref={rootRef} className="relative flex h-full items-center">
       <button
         type="button"
-        className="rounded-md border border-border bg-surface-elevated px-2 py-1.5 text-sm font-medium text-fg transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover"
+        className="t-label rounded-md border border-border bg-surface-elevated px-2 py-1.5 text-fg transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover"
         onClick={(e) => regionSelectorClicked(e)}
       >
         {regionSelected}

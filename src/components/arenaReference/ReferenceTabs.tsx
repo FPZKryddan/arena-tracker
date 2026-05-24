@@ -25,7 +25,7 @@ const ReferenceTabs = ({ value, onChange }: ReferenceTabsProps) => (
         aria-controls={`${tab.value}-panel`}
         aria-selected={value === tab.value}
         onClick={() => onChange(tab.value)}
-        className={`rounded-sm px-3 py-1 text-xs font-semibold transition-colors ${
+        className={`t-label rounded-sm px-3 py-1 transition-colors ${
           value === tab.value
             ? "bg-accent text-accent-fg"
             : "text-fg-muted hover:bg-surface-hover hover:text-fg"

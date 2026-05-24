@@ -657,7 +657,7 @@ const ComparePage = () => {
           {canAddPlayer && (
             <button
               type="button"
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-surface/45 px-4 text-sm font-semibold text-fg-muted transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover hover:text-fg lg:w-fit"
+              className="t-label flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-surface/45 px-4 text-fg-muted transition-colors hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover hover:text-fg lg:w-fit"
               onClick={addPlayerSlot}
             >
               <IoAdd className="h-4 w-4" />
@@ -752,7 +752,7 @@ const FavoriteCompareQuickAdd = ({
 
   return (
     <section className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-3">
-      <div className="flex items-center gap-2 text-sm font-semibold text-fg-muted">
+      <div className="t-h2 flex items-center gap-2 text-fg-muted">
         <IoStar className="h-4 w-4 text-favorite" />
         Favorites
       </div>
@@ -766,7 +766,7 @@ const FavoriteCompareQuickAdd = ({
             <button
               key={targetKey(target)}
               type="button"
-              className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
+              className={`t-body-sm flex items-center gap-2 rounded-md border px-3 py-2 transition-colors ${
                 disabled
                   ? "border-border bg-bg/40 text-fg-subtle opacity-65"
                   : "border-border bg-bg/35 text-fg hover:cursor-pointer hover:border-border-strong hover:bg-surface-hover"
@@ -775,11 +775,11 @@ const FavoriteCompareQuickAdd = ({
               disabled={disabled}
               aria-label={`Add ${handleFor(target)} to comparison`}
             >
-              <span className="min-w-0 truncate font-medium">
+              <span className="t-label min-w-0 truncate">
                 {target.gameName}
                 <span className="text-fg-muted">#{target.tagLine}</span>
               </span>
-              <span className="rounded-sm border border-border px-1.5 py-0.5 text-xs uppercase text-fg-muted">
+              <span className="t-meta rounded-sm border border-border px-1.5 py-0.5 text-fg-muted">
                 {target.region}
               </span>
             </button>
@@ -820,10 +820,10 @@ const ComparePlayerPicker = ({
       className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-3"
     >
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold">{label}</h2>
+        <h2 className="t-h2">{label}</h2>
         <div className="flex items-center gap-2">
           {target && (
-            <span className="rounded-sm border border-border px-2 py-1 text-xs font-semibold uppercase text-fg-muted">
+            <span className="t-meta rounded-sm border border-border px-2 py-1 text-fg-muted">
               {target.region}
             </span>
           )}
@@ -843,7 +843,7 @@ const ComparePlayerPicker = ({
       <div className="box-border flex h-11 w-full flex-row rounded-lg border border-border bg-bg text-fg transition-colors focus-within:border-accent">
         <input
           type="text"
-          className="h-full w-full min-w-0 rounded-lg bg-transparent px-4 text-left text-sm font-normal text-fg placeholder:text-fg-muted focus:outline-0"
+          className="t-body-sm h-full w-full min-w-0 rounded-lg bg-transparent px-4 text-left text-fg placeholder:text-fg-muted focus:outline-0"
           placeholder="RiotName#TAG"
           value={draft.handle}
           onChange={(event) => onHandleChange(slotIndex, event.target.value)}
@@ -870,7 +870,7 @@ const ComparePlayerPicker = ({
       </div>
 
       {(target || error || isLoading) && (
-        <div className="min-h-4 text-xs">
+        <div className="t-meta min-h-4">
           {error ? (
             <p className="text-danger">{error}</p>
           ) : isLoading ? (
@@ -909,7 +909,7 @@ const CompareMetricPanel = ({
       <section className="hidden overflow-x-auto rounded-lg border border-border bg-surface md:block">
         <div style={{ minWidth: `${desktopMinWidth}rem` }}>
           <div
-            className="grid gap-2 border-b border-border px-3 py-2 text-xs font-semibold uppercase text-fg-muted"
+            className="t-eyebrow grid gap-2 border-b border-border px-3 py-2 text-fg-muted"
             style={gridStyle}
           >
             <span>Metric</span>
@@ -951,7 +951,7 @@ const MobileMetricCard = ({ metric }: { metric: CompareMetric }) => {
   return (
     <article className="rounded-lg border border-border bg-surface p-3">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="min-w-0 truncate text-sm font-semibold text-fg">
+        <h3 className="t-h2 min-w-0 truncate text-fg">
           {metric.label}
         </h3>
       </div>
@@ -963,10 +963,10 @@ const MobileMetricCard = ({ metric }: { metric: CompareMetric }) => {
             className="grid gap-2 py-2 first:pt-0 last:pb-0"
           >
             <div className="flex min-w-0 items-center justify-between gap-2">
-              <p className="min-w-0 truncate text-xs font-medium text-fg">
+              <p className="t-meta min-w-0 truncate text-fg">
                 {handleFor(entry.target)}
               </p>
-              <span className="shrink-0 rounded-sm border border-border px-1.5 py-0.5 text-xs uppercase text-fg-muted">
+              <span className="t-meta shrink-0 rounded-sm border border-border px-1.5 py-0.5 text-fg-muted">
                 {entry.target.region}
               </span>
             </div>
@@ -998,7 +998,7 @@ const CompareMetricRow = ({
       style={gridStyle}
     >
       <div className="min-w-0">
-        <p className="truncate text-xs font-semibold text-fg">{metric.label}</p>
+        <p className="t-label truncate text-fg">{metric.label}</p>
       </div>
       {metric.values.map((entry) => (
         <MetricValueGroup
@@ -1036,9 +1036,9 @@ const MetricValueGroup = ({
 
     return (
       <p
-        className={`truncate ${
-          mobile ? "text-left text-lg" : "text-right text-lg"
-        } font-semibold tabular-nums ${
+        className={`t-stat-display truncate ${
+          mobile ? "text-left" : "text-right"
+        } ${
           isLeading ? "text-success" : "text-fg-muted"
         }`}
       >
@@ -1064,11 +1064,11 @@ const MetricValueGroup = ({
 
         return (
           <div key={part.key} className="min-w-0">
-            <p className="truncate text-xs font-semibold uppercase text-fg-subtle">
+            <p className="t-eyebrow truncate text-fg-subtle">
               {part.label}
             </p>
             <p
-              className={`truncate text-sm font-semibold tabular-nums ${
+              className={`t-stat truncate ${
                 isLeading ? "text-success" : "text-fg-muted"
               }`}
             >
@@ -1131,7 +1131,7 @@ const CompareStatsSlot = ({
 };
 
 const EmptyCompareSlot = ({ label }: { label: string }) => (
-  <div className="flex min-h-64 items-center justify-center rounded-lg border border-dashed border-border bg-surface/45 p-4 text-center text-sm font-semibold text-fg-muted">
+  <div className="t-body-sm flex min-h-64 items-center justify-center rounded-lg border border-dashed border-border bg-surface/45 p-4 text-center text-fg-muted">
     {label}
   </div>
 );

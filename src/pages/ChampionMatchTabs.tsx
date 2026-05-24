@@ -85,7 +85,7 @@ const TabButton = ({
     aria-controls={controls}
     aria-selected={active}
     onClick={onClick}
-    className={`rounded-sm px-3 py-1 text-xs font-semibold transition-colors ${
+    className={`t-label rounded-sm px-3 py-1 transition-colors ${
       active
         ? "bg-accent text-accent-fg"
         : "text-fg-muted hover:text-fg hover:bg-surface-hover"

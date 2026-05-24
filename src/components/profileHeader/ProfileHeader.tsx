@@ -26,12 +26,12 @@ const ProfileHeader = () => {
         }
       ></img>
       <div className="flex flex-col items-start justify-center">
-        <h1 className="text-left text-base font-medium text-fg-muted text-nowrap md:text-2xl">
+        <h1 className="t-h1 text-left text-fg-muted text-nowrap">
           {playerStats && playerStats.gameName !== ""
             ? playerStats.gameName + "#" + playerStats.tagLine
             : "RiotName#TAG"}
         </h1>
-        <p className="self-start text-left text-xs font-medium text-success md:text-lg">
+        <p className="t-body-sm self-start text-left text-success">
           {champProgressToPercent()}% to{" "}
           <span className="text-accent">Arena Mastery</span>
         </p>

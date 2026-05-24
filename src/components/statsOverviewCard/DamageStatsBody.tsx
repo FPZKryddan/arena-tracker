@@ -98,7 +98,7 @@ const DAMAGE_LEGEND = [
 ] as const;
 
 const DamageLegend = () => (
-  <div className="flex flex-row flex-wrap gap-x-2.5 gap-y-1 text-xs font-medium text-fg-muted">
+  <div className="t-meta flex flex-row flex-wrap gap-x-2.5 gap-y-1 text-fg-muted">
     {DAMAGE_LEGEND.map((item) => (
       <div key={item.label} className="flex items-center gap-1">
         <span

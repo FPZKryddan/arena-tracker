@@ -18,7 +18,7 @@ const AugmentCard = ({ augment }: AugmentCardProps) => (
           className="h-full w-full rounded-md object-cover"
         />
       </div>
-      <h3 className="min-w-0 text-sm font-semibold leading-5">
+      <h3 className="t-h2 min-w-0">
         {augment.name}
       </h3>
     </article>
@@ -37,8 +37,8 @@ const AugmentTooltip = ({ augment }: AugmentCardProps) => (
       />
     </div>
     <div className="min-w-0">
-      <p className="text-sm font-semibold leading-5">{augment.name}</p>
-      <p className="mt-1 text-xs font-normal leading-5 text-fg-muted">
+      <p className="t-h2">{augment.name}</p>
+      <p className="t-body-sm mt-1 text-fg-muted">
         {augment.desc}
       </p>
     </div>

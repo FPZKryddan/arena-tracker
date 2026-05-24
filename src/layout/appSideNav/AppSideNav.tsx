@@ -5,11 +5,17 @@ import ThemeToggle from "../../components/themeToggle";
 import {
   getActivePage,
   getComparePathFromLocation,
+  getLastViewedProfilePath,
   getNavigationTarget,
+  getProfilePathFromLocation,
   NAV_ITEMS,
+  saveLastViewedProfilePath,
   type AppNavigationItem,
   type AppNavigationProps,
 } from "../appNavigation";
+
+const DESKTOP_MEDIA_QUERY = "(min-width: 768px)";
+const MOBILE_MEDIA_QUERY = "(max-width: 768px)";
 
 const AppSideNav = ({
   children,
@@ -17,15 +23,27 @@ const AppSideNav = ({
   comparePath,
 }: AppNavigationProps) => {
   const { pathname, search } = useLocation();
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia(DESKTOP_MEDIA_QUERY).matches,
+  );
   const activePage = getActivePage(pathname);
   const resolvedComparePath =
     comparePath ?? getComparePathFromLocation(pathname, search);
+  const currentProfilePath = getProfilePathFromLocation(pathname, search);
+  const profilePath = currentProfilePath ?? getLastViewedProfilePath();
   const minimizeOnMobile = () => {
-    if (window.matchMedia("(max-width: 767px)").matches) {
+    if (window.matchMedia(MOBILE_MEDIA_QUERY).matches) {
       setIsExpanded(false);
     }
   };
+
+  useEffect(() => {
+    if (currentProfilePath) {
+      saveLastViewedProfilePath(currentProfilePath);
+    }
+  }, [currentProfilePath]);
 
   useEffect(() => {
     if (!isExpanded) return;
@@ -88,7 +106,7 @@ const AppSideNav = ({
             aria-label="Arena Tracker home"
           >
             <IoFlash className="h-5 w-5 shrink-0 text-accent" />
-            <span className="truncate whitespace-nowrap text-base font-semibold">
+            <span className="t-h2 truncate whitespace-nowrap">
               Arena Tracker
             </span>
           </Link>
@@ -103,7 +121,7 @@ const AppSideNav = ({
           {NAV_ITEMS.map((item) => (
             <SideNavLink
               key={item.key}
-              to={getNavigationTarget(item, resolvedComparePath)}
+              to={getNavigationTarget(item, resolvedComparePath, profilePath)}
               label={item.label}
               active={activePage === item.key}
               Icon={item.icon}
@@ -156,7 +174,7 @@ const SideNavLink = ({
     aria-current={active ? "page" : undefined}
     aria-label={label}
     title={expanded ? undefined : label}
-    className={`grid h-10 grid-cols-[2.5rem_minmax(0,1fr)] items-center gap-2 overflow-hidden rounded-md text-sm font-semibold transition-[width,background-color,color] duration-200 ${
+    className={`t-label grid h-10 grid-cols-[2.5rem_minmax(0,1fr)] items-center gap-2 overflow-hidden rounded-md transition-[width,background-color,color] duration-200 ${
       expanded ? "w-full" : "w-10"
     } ${
       active

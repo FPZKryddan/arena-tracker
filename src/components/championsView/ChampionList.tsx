@@ -190,7 +190,7 @@ const ChampionList = () => {
           type="text"
           value={championNameFilter}
           placeholder="Search for a champion"
-          className="w-full lg:w-1/2 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-normal text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
+          className="t-body-sm w-full lg:w-1/2 rounded-md border border-border bg-surface px-3 py-1.5 text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
           onChange={(e) => setChampionNameFilter(e.target.value)}
         />
       </div>
@@ -209,7 +209,7 @@ const ChampionList = () => {
       {loading ? (
         <ChampionListSkeleton />
       ) : displayedChampions.length === 0 ? (
-        <p className="text-fg-muted text-xs text-center py-8">
+        <p className="t-body-sm text-fg-muted text-center py-8">
           No champions match your filters.
         </p>
       ) : (
@@ -294,7 +294,7 @@ const SortPill = ({ label, sorted, onClick }: SortPillProps) => {
     <button
       type="button"
       onClick={onClick}
-      className={`flex cursor-pointer flex-row items-center gap-0.5 rounded-md border px-2.5 py-1 text-xs font-semibold transition-colors ${
+      className={`t-label flex cursor-pointer flex-row items-center gap-0.5 rounded-md border px-2.5 py-1 transition-colors ${
         active
           ? "border-accent bg-accent text-accent-fg"
           : "border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg"

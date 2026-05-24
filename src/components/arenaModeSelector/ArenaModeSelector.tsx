@@ -25,7 +25,7 @@ const ArenaModeSelector = ({
           type="button"
           aria-pressed={selected}
           onClick={() => onChange(option.value)}
-          className={`rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors hover:cursor-pointer ${
+          className={`t-label rounded-full border px-3 py-1.5 transition-colors hover:cursor-pointer ${
             selected
               ? "border-accent bg-accent text-accent-fg"
               : "border-border bg-surface text-fg-muted hover:border-border-strong hover:bg-surface-hover hover:text-fg"

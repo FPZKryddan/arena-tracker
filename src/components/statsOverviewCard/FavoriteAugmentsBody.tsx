@@ -54,9 +54,9 @@ const FavoriteAugmentsBody = ({ augments }: FavoriteAugmentsBodyProps) => {
   return (
     <div className="flex w-full flex-col gap-2.5">
       <div className="flex flex-row items-center justify-between gap-2">
-        <h2 className="text-xs font-semibold">Favorite Augments</h2>
+        <h2 className="t-h2">Favorite Augments</h2>
         {!isLoading && !isError && totalPicked > 0 && (
-          <p className="text-xs font-medium tabular-nums text-fg-muted">
+          <p className="t-stat text-fg-muted">
             {totalPicked} picks
           </p>
         )}
@@ -96,7 +96,7 @@ const FavoriteAugmentsSkeleton = () => (
 );
 
 const FavoriteAugmentsMessage = ({ message }: { message: string }) => (
-  <div className="flex min-h-12 w-full items-center justify-center rounded-md border border-dashed border-border px-3 text-center text-xs font-medium text-fg-muted">
+  <div className="t-body-sm flex min-h-12 w-full items-center justify-center rounded-md border border-dashed border-border px-3 text-center text-fg-muted">
     {message}
   </div>
 );
