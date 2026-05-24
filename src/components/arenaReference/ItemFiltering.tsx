@@ -71,7 +71,7 @@ const ItemFiltering = ({
             type="button"
             aria-expanded={isOpen}
             aria-controls="arena-item-filters-panel"
-            className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:cursor-pointer ${
+            className={`t-label flex items-center gap-2 rounded-md border px-3 py-2 transition-colors hover:cursor-pointer ${
               filtersAreActive
                 ? "border-accent bg-accent text-accent-fg"
                 : "border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg"
@@ -81,7 +81,7 @@ const ItemFiltering = ({
             <HiOutlineAdjustmentsHorizontal className="text-lg" />
             Filters
             {selectedFilters.length > 0 && (
-              <span className="rounded-full bg-surface px-1.5 text-xs text-fg">
+              <span className="t-stat rounded-full bg-surface px-1.5 text-fg">
                 {selectedFilters.length}
               </span>
             )}
@@ -93,7 +93,7 @@ const ItemFiltering = ({
               aria-label="Item filters"
               className="absolute left-0 top-full z-20 mt-2 flex w-72 flex-col gap-4 rounded-lg border border-border bg-surface p-4 text-fg shadow-raised sm:w-[36rem]"
             >
-              <p className="text-xs text-fg-muted">
+              <p className="t-body-sm text-fg-muted">
                 Items must match every selected filter.
               </p>
               <FilterGroup
@@ -137,7 +137,7 @@ const ItemFiltering = ({
         {filtersAreActive && (
           <button
             type="button"
-            className="text-xs font-medium text-fg-muted transition-colors hover:text-fg"
+            className="t-label text-fg-muted transition-colors hover:text-fg"
             onClick={() =>
               onFiltersChange({ roles: [], stats: [], effects: [] })
             }
@@ -154,7 +154,7 @@ const ItemFiltering = ({
               key={`${filter.group}-${filter.value}`}
               type="button"
               aria-label={`Remove ${filter.label} filter`}
-              className="flex items-center gap-1 rounded-full border border-border bg-surface-elevated px-2 py-1 text-xs font-medium text-fg-muted transition-colors hover:border-border-strong hover:text-fg"
+              className="t-label flex items-center gap-1 rounded-full border border-border bg-surface-elevated px-2 py-1 text-fg-muted transition-colors hover:border-border-strong hover:text-fg"
               onClick={() => removeFilter(filter)}
             >
               {filter.group === "stats" && <GameStatIcon stat={filter.value} />}
@@ -184,7 +184,7 @@ const FilterGroup = <TValue extends string>({
   renderIcon,
 }: FilterGroupProps<TValue>) => (
   <section className="flex flex-col gap-2">
-    <legend className="text-xs font-semibold uppercase text-fg-subtle">
+    <legend className="t-eyebrow text-fg-subtle">
       {label}
     </legend>
     <div className="flex flex-wrap gap-2">
@@ -196,7 +196,7 @@ const FilterGroup = <TValue extends string>({
             key={value}
             type="button"
             aria-pressed={selected}
-            className={`flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${
+            className={`t-label flex items-center gap-1 rounded-full border px-2.5 py-1 transition-colors ${
               selected
                 ? "border-accent bg-accent text-accent-fg"
                 : "border-border bg-surface-elevated text-fg-muted hover:border-border-strong hover:text-fg"

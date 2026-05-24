@@ -33,7 +33,7 @@ const FetchingProgress = ({ isFetching, jobState }: FetchingProgressProps) => {
     <div className="mt-2 flex w-full flex-col gap-1.5 rounded-lg border border-border bg-surface px-4 py-2.5">
       <div className="flex flex-row items-center gap-2">
         <ClipLoader size={14} color="var(--color-info)" />
-        <p className="text-xs text-fg">
+        <p className="t-meta text-fg">
           {label}
           {progress ? ` (${progress.current}/${progress.total})` : ""}
         </p>

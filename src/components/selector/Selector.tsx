@@ -23,7 +23,7 @@ const Selector = ({
       } */}
       <div className="relative" onClick={toggleCallBack}>
         <p
-          className={`select-none rounded-md border px-10 py-1 text-center text-base font-semibold hover:cursor-pointer ${
+          className={`t-label select-none rounded-md border px-10 py-1 text-center hover:cursor-pointer ${
             isOpen ? "bg-accent text-accent-fg" : "bg-surface-elevated text-fg"
           }`}
         >

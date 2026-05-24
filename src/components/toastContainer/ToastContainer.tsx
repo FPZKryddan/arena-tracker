@@ -17,7 +17,7 @@ const ToastContainer = ({ toasts }: ToastContainerProps) => {
             exit={{ opacity: 0, y: -50 }}
             transition={{ duration: 0.15, ease: easeOut }}
             layout
-            className={`pointer-events-none w-full select-none rounded-md border px-4 py-2 text-center text-sm ${
+            className={`t-body-sm pointer-events-none w-full select-none rounded-md border px-4 py-2 text-center ${
               toast.type === "SUCCESS"
                 ? "border-success bg-success text-success-fg"
                 : toast.type === "WARNING"

@@ -3,7 +3,8 @@
 @custom-variant light (&:where(:root.light, :root.light *));
 
 /* Arena Tracker -- Strict Utility Scale (editorial)
-   Type:    text-xs | text-sm | text-base | text-lg | text-2xl | text-display
+   Type:    t-display | t-h1 | t-h2 | t-eyebrow | t-body | t-body-sm
+            t-label | t-meta | t-stat-display | t-stat | t-mono
    Weight:  font-normal | font-medium | font-semibold  (no bold / extrabold)
    Spacing: 0 0.5 1 1.5 2 2.5 3 4 5 6 7 8 10 12 16 20 24 -- no [Npx]
    Radius:  rounded-sm | rounded-md | rounded-lg | rounded-full
@@ -147,19 +148,16 @@ body {
 
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --text-xs: 0.75rem;
-  --text-xs--line-height: 1rem;
-  --text-sm: 0.875rem;
-  --text-sm--line-height: 1.25rem;
-  --text-base: 1rem;
-  --text-base--line-height: 1.5rem;
-  --text-lg: 1.125rem;
-  --text-lg--line-height: 1.75rem;
-  --text-2xl: 1.5rem;
-  --text-2xl--line-height: 2rem;
-  --text-display: 3.75rem;
-  --text-display--line-height: 4rem;
+  --text-xs: 0.75rem; /* 12 */
+  --text-sm: 0.875rem; /* 14 */
+  --text-base: 1rem; /* 16 */
+  --text-lg: 1.125rem; /* 18 */
+  --text-2xl: 1.5rem; /* 24 */
+  --text-display: 3.75rem; /* 60 — hero only */
+  --text-stat-display: 2.25rem; /* 36 — KPI heroes */
 
   --shadow-resting:
     0 0.0625rem 0.125rem var(--color-shadow), 0 0.5rem 1.75rem rgb(0 0 0 / 0.08);
@@ -209,4 +207,89 @@ body {
   --color-rank-second-fg: var(--color-rank-second-fg);
   --color-rank-third: var(--color-rank-third);
   --color-rank-third-fg: var(--color-rank-third-fg);
+}
+
+@utility t-display {
+  font-size: var(--text-display);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+/* Section start within a page — "Performance Index", "Stat by stat" */
+@utility t-h1 {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* Sub-section, card title — "Damage profile", "Frequent duos" */
+@utility t-h2 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+/* Eyebrow — small uppercase label above headings and table headers */
+@utility t-eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+/* Default running text — paragraphs, descriptions */
+@utility t-body {
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+/* Secondary copy, sub-labels, table cells */
+@utility t-body-sm {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Form labels, button text */
+@utility t-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+/* Timestamps, breadcrumbs, IDs in metadata position */
+@utility t-meta {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Big tabular numerals — KPI cards, hero stats */
+@utility t-stat-display {
+  font-size: var(--text-stat-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Inline tabular numerals — table cells, in-copy numbers */
+@utility t-stat {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Code-like sequences — match IDs, debug, keyboard shortcuts */
+@utility t-mono {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }

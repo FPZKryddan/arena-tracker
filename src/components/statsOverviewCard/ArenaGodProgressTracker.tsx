@@ -30,10 +30,10 @@ const ArenaGodProgressTracker = ({
         <div className="h-4 w-4 rounded-full bg-surface" />
       </div>
       <div className="flex min-w-0 items-baseline gap-1.5">
-        <span className="truncate text-xs font-semibold text-fg-muted">
+        <span className="t-label truncate text-fg-muted">
           {title}
         </span>
-        <span className="shrink-0 text-xs font-semibold text-success">
+        <span className="t-stat shrink-0 text-success">
           {cappedCompleted}/{target}
         </span>
       </div>

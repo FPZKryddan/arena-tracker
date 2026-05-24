@@ -1,6 +1,7 @@
 type StatsSkeletonProps = {
   standalone?: boolean;
   showTeammates?: boolean;
+  showHeader?: boolean;
 };
 
 const BAR_HEIGHTS = [72, 104, 132, 92, 116, 150, 126, 176];
@@ -8,6 +9,7 @@ const BAR_HEIGHTS = [72, 104, 132, 92, 116, 150, 126, 176];
 const StatsSkeleton = ({
   standalone,
   showTeammates = true,
+  showHeader = true,
 }: StatsSkeletonProps) => {
   return (
     <div
@@ -18,7 +20,7 @@ const StatsSkeleton = ({
       } flex h-fit w-full grow-0 animate-pulse flex-col gap-6 rounded-lg`}
       aria-label="Loading stats overview"
     >
-      <StatsHeaderSkeleton />
+      {showHeader && <StatsHeaderSkeleton />}
 
       <div className="order-2 md:order-none">
         <DamageStatsSkeleton />

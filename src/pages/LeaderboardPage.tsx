@@ -218,7 +218,7 @@ const LeaderboardPage = () => {
               onChange={handleArenaModeChange}
             />
             <div className="flex h-9 items-center gap-2 rounded-md border border-border bg-bg px-3">
-              <span className="text-xs font-semibold uppercase text-fg-subtle">
+              <span className="t-eyebrow text-fg-subtle">
                 Region
               </span>
               <RegionSelector
@@ -227,7 +227,7 @@ const LeaderboardPage = () => {
               />
             </div>
             {isFetching && !isLoading && (
-              <div className="flex h-9 items-center gap-2 rounded-md border border-border bg-bg px-3 text-xs font-semibold text-info">
+              <div className="t-meta flex h-9 items-center gap-2 rounded-md border border-border bg-bg px-3 text-info">
                 <ClipLoader size={14} color="var(--color-info)" />
                 Updating
               </div>
@@ -388,11 +388,11 @@ const PodiumSlot = ({
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/75 to-media-scrim/20" />
       <div
-        className={`absolute left-2 top-2 rounded-sm ${style.badge} px-2 py-0.5 text-xs font-semibold`}
+        className={`t-stat absolute left-2 top-2 rounded-sm ${style.badge} px-2 py-0.5`}
       >
         {style.label}
       </div>
-      <span className="absolute right-2 top-2 rounded-sm bg-media-scrim/55 px-2 py-0.5 text-xs font-semibold text-on-media">
+      <span className="t-stat absolute right-2 top-2 rounded-sm bg-media-scrim/55 px-2 py-0.5 text-on-media">
         #{rank}
       </span>
 
@@ -408,14 +408,14 @@ const PodiumSlot = ({
 
       <div className="absolute bottom-0 left-0 right-0 flex flex-col gap-2 p-2 text-left text-on-media sm:p-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold sm:text-base">
+          <p className="t-h2 truncate">
             {player.name}
           </p>
-          <p className="truncate text-xs font-semibold uppercase opacity-75">
+          <p className="t-meta truncate opacity-75">
             #{player.tag}
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-1 text-xs">
+        <div className="grid grid-cols-3 gap-1">
           <PodiumStat label="1sts" value={formatInteger(player.firstPlaces)} />
           <PodiumStat label="Top 4" value={formatInteger(player.top4)} />
           <PodiumStat
@@ -430,8 +430,8 @@ const PodiumSlot = ({
 
 const PodiumStat = ({ label, value }: { label: string; value: string }) => (
   <div className="flex min-w-0 flex-col leading-tight">
-    <span className="truncate text-xs uppercase opacity-70">{label}</span>
-    <span className="truncate font-semibold tabular-nums">{value}</span>
+    <span className="t-eyebrow truncate opacity-70">{label}</span>
+    <span className="t-stat truncate">{value}</span>
   </div>
 );
 
@@ -456,7 +456,7 @@ const LeaderboardTable = ({
 }: LeaderboardTableProps) => (
   <section className="overflow-x-auto rounded-lg border border-border bg-surface">
     <table className="w-full min-w-96 border-collapse text-left">
-      <thead className="border-b border-border text-xs font-semibold uppercase text-fg-subtle">
+      <thead className="t-eyebrow border-b border-border text-fg-subtle">
         <tr>
           <th className="w-16 px-3 py-3">Rank</th>
           <th className="min-w-96 px-3 py-3">Player</th>
@@ -526,7 +526,7 @@ const LeaderboardRow = ({
 
   return (
     <tr className="transition-colors hover:bg-surface-hover/55">
-      <td className="px-3 py-3 text-sm font-semibold tabular-nums text-fg-muted">
+      <td className="t-stat px-3 py-3 text-fg-muted">
         #{rank}
       </td>
       <td className="px-3 py-3">
@@ -543,14 +543,14 @@ const LeaderboardRow = ({
           />
           <div className="flex min-w-0 flex-col gap-2">
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">
+              <p className="t-label truncate">
                 {player.name}
-                <span className="font-semibold text-fg-muted">
+                <span className="text-fg-muted">
                   #{player.tag}
                 </span>
               </p>
-              <p className="mt-1 text-xs font-semibold text-fg-subtle">
-                Level <span className="tabular-nums">{player.level}</span>
+              <p className="t-meta mt-1 text-fg-subtle">
+                Level <span className="t-stat">{player.level}</span>
               </p>
             </div>
             <PlayerTopPicks
@@ -565,7 +565,7 @@ const LeaderboardRow = ({
       {LEADERBOARD_COLUMNS.map((column) => (
         <td
           key={`${getPlayerKey(player)}-${column.sortBy}`}
-          className={`px-3 py-3 text-right text-sm font-semibold tabular-nums text-fg ${
+          className={`t-stat px-3 py-3 text-right text-fg ${
             column.cellClassName ?? ""
           }`}
         >
@@ -680,7 +680,7 @@ const AugmentPickIcon = ({
           />
         </div>
       ) : (
-        <div className="grid h-7 min-w-7 place-items-center rounded-md border border-border bg-surface-elevated px-1 text-xs font-semibold text-fg-muted">
+        <div className="t-stat grid h-7 min-w-7 place-items-center rounded-md border border-border bg-surface-elevated px-1 text-fg-muted">
           {augment.id}
         </div>
       )}
@@ -696,8 +696,8 @@ const PickTooltip = ({
   details: string;
 }) => (
   <div className="max-w-xs whitespace-normal px-2.5 py-2">
-    <p className="text-sm font-semibold leading-4">{title}</p>
-    <p className="mt-1 text-xs font-semibold leading-4 text-fg-muted">
+    <p className="t-label">{title}</p>
+    <p className="t-body-sm mt-1 text-fg-muted">
       {details}
     </p>
   </div>
@@ -745,9 +745,9 @@ const LeaderboardPagination = ({
 
   return (
     <section className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-3 lg:flex-row lg:items-center lg:justify-between">
-      <p className="text-sm font-semibold text-fg-muted">
+      <p className="t-meta text-fg-muted">
         Page{" "}
-        <span className="text-fg tabular-nums">
+        <span className="t-stat text-fg">
           {page} / {safeTotalPages}
         </span>
         <span className="text-fg-subtle">
@@ -773,9 +773,9 @@ const LeaderboardPagination = ({
 
         <form
           onSubmit={handleSubmit}
-          className="flex h-9 items-center rounded-md border border-border bg-bg text-sm font-semibold text-fg-muted focus-within:border-accent"
+          className="flex h-9 items-center rounded-md border border-border bg-bg text-fg-muted focus-within:border-accent"
         >
-          <label htmlFor="leaderboard-page" className="px-3 text-xs">
+          <label htmlFor="leaderboard-page" className="t-label px-3">
             Go to
           </label>
           <input
@@ -785,11 +785,11 @@ const LeaderboardPagination = ({
             max={safeTotalPages}
             value={draftPage}
             onChange={(event) => setDraftPage(event.target.value)}
-            className="h-full w-16 border-x border-border bg-transparent px-2 text-center text-sm font-semibold tabular-nums text-fg focus:outline-none"
+            className="t-stat h-full w-16 border-x border-border bg-transparent px-2 text-center text-fg focus:outline-none"
           />
           <button
             type="submit"
-            className="h-full px-3 text-xs font-semibold transition-colors hover:bg-surface-hover hover:text-fg"
+            className="t-label h-full px-3 transition-colors hover:bg-surface-hover hover:text-fg"
           >
             Go
           </button>
@@ -830,7 +830,7 @@ const PaginationButton = ({
 }: PaginationButtonProps) => (
   <button
     type="button"
-    className="flex h-9 items-center justify-center gap-2 rounded-md border border-border bg-bg px-3 text-sm font-semibold text-fg-muted transition-colors hover:border-border-strong hover:bg-surface-hover hover:text-fg disabled:cursor-not-allowed disabled:opacity-45"
+    className="t-label flex h-9 items-center justify-center gap-2 rounded-md border border-border bg-bg px-3 text-fg-muted transition-colors hover:border-border-strong hover:bg-surface-hover hover:text-fg disabled:cursor-not-allowed disabled:opacity-45"
     onClick={onClick}
     disabled={disabled}
   >
@@ -852,8 +852,8 @@ const LeaderboardState = ({ icon, title, body }: LeaderboardStateProps) => (
       {icon}
     </div>
     <div>
-      <h2 className="text-base font-semibold">{title}</h2>
-      <p className="mt-1 max-w-md text-sm leading-6 text-fg-muted">{body}</p>
+      <h2 className="t-h2">{title}</h2>
+      <p className="t-body-sm mt-1 max-w-md text-fg-muted">{body}</p>
     </div>
   </section>
 );

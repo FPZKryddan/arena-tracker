@@ -30,7 +30,7 @@ const ArenaReferencePage = () => {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder={`Search ${tab}`}
-              className="min-w-0 flex-1 bg-transparent text-sm text-fg outline-none placeholder:text-fg-subtle"
+              className="t-body-sm min-w-0 flex-1 bg-transparent text-fg outline-none placeholder:text-fg-subtle"
             />
           </label>
         </section>

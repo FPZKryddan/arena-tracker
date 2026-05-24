@@ -32,8 +32,8 @@ const SimpleStat = ({
   return (
     <div className="flex flex-row gap-1 items-center">
       <div className="flex flex-row items-baseline gap-1">
-        <p className="text-xs font-normal">{formatNumber(stat.value)}</p>
-        <p className="text-[0.65rem] font-medium text-fg-muted tabular-nums">
+        <p className="t-stat">{formatNumber(stat.value)}</p>
+        <p className="t-stat text-fg-muted">
           {average}/game
         </p>
       </div>

@@ -25,6 +25,7 @@ import TeammatesBody from "./TeammatesBody";
 interface StatsOverviewCardProps {
   stats: PlayerStats | championStatsDto;
   standalone?: boolean;
+  showHeader?: boolean;
   favoriteRegion?: Exclude<Regions, null>;
   profileRegion?: Exclude<Regions, null>;
   arenaMode?: ArenaModeSelection;
@@ -33,6 +34,7 @@ interface StatsOverviewCardProps {
 const StatsOverviewCard = ({
   stats,
   standalone,
+  showHeader = true,
   favoriteRegion,
   profileRegion,
   arenaMode,
@@ -112,34 +114,39 @@ const StatsOverviewCard = ({
               <div className="absolute inset-0 bg-gradient-to-b from-media-scrim/10 via-media-scrim/30 to-transparent" />
             </div>
           )}
-          <div className={bannerImgUrl ? "relative pt-24" : "relative"}>
-            <StatsOverviewHeader
-              kills={stats.infographics.killsDeathsAssists.kills}
-              deaths={stats.infographics.killsDeathsAssists.deaths}
-              assists={stats.infographics.killsDeathsAssists.assists}
-              matchCount={matchCount}
-              name={displayName}
-              imgUrl={getImgUrl()}
-              profilePath={profilePath}
-              favoriteTarget={
-                "gameName" in stats && effectiveFavoriteRegion
-                  ? {
-                      gameName: stats.gameName,
-                      tagLine: stats.tagLine,
-                      region: effectiveFavoriteRegion as Exclude<Regions, null>,
-                    }
-                  : undefined
-              }
-              trailing={
-                isPlayerStats ? (
-                  <ArenaGodProgressTracker
-                    completedChampions={arenaGodCompletedChampions}
-                    totalChampions={champions.length}
-                  />
-                ) : undefined
-              }
-            />
-          </div>
+          {showHeader && (
+            <div className={bannerImgUrl ? "relative pt-24" : "relative"}>
+              <StatsOverviewHeader
+                kills={stats.infographics.killsDeathsAssists.kills}
+                deaths={stats.infographics.killsDeathsAssists.deaths}
+                assists={stats.infographics.killsDeathsAssists.assists}
+                matchCount={matchCount}
+                name={displayName}
+                imgUrl={getImgUrl()}
+                profilePath={profilePath}
+                favoriteTarget={
+                  "gameName" in stats && effectiveFavoriteRegion
+                    ? {
+                        gameName: stats.gameName,
+                        tagLine: stats.tagLine,
+                        region: effectiveFavoriteRegion as Exclude<
+                          Regions,
+                          null
+                        >,
+                      }
+                    : undefined
+                }
+                trailing={
+                  isPlayerStats ? (
+                    <ArenaGodProgressTracker
+                      completedChampions={arenaGodCompletedChampions}
+                      totalChampions={champions.length}
+                    />
+                  ) : undefined
+                }
+              />
+            </div>
+          )}
           <div className="relative flex flex-col w-full gap-6">
             <div className="order-2 md:order-none">
               <DamageStatsBody
@@ -176,6 +183,7 @@ const StatsOverviewCard = ({
         <NoStatsState
           name={displayName}
           imageUrl={bannerImgUrl ?? getImgUrl()}
+          showIdentity={showHeader}
         />
       )}
     </div>
@@ -185,25 +193,33 @@ const StatsOverviewCard = ({
 const NoStatsState = ({
   name,
   imageUrl,
+  showIdentity,
 }: {
   name: string;
   imageUrl: string;
-}) => (
-  <div className="relative min-h-56 w-full overflow-hidden rounded-lg border border-border bg-surface-elevated">
-    <img
-      src={imageUrl}
-      alt={name}
-      className="absolute inset-0 h-full w-full object-cover object-[center_25%]"
-    />
-    <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/60 to-media-scrim/10" />
-    <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-4 text-on-media">
-      <div className="flex items-center gap-2">
-        <IoStatsChart className="h-5 w-5 text-success" />
-        <p className="text-sm font-semibold">No recorded stats</p>
+  showIdentity: boolean;
+}) =>
+  showIdentity ? (
+    <div className="relative min-h-56 w-full overflow-hidden rounded-lg border border-border bg-surface-elevated">
+      <img
+        src={imageUrl}
+        alt={name}
+        className="absolute inset-0 h-full w-full object-cover object-[center_25%]"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/60 to-media-scrim/10" />
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-4 text-on-media">
+        <div className="flex items-center gap-2">
+          <IoStatsChart className="h-5 w-5 text-success" />
+          <p className="t-label">No recorded stats</p>
+        </div>
+        <h2 className="t-h1">{name}</h2>
       </div>
-      <h2 className="text-2xl font-semibold leading-tight">{name}</h2>
     </div>
-  </div>
-);
+  ) : (
+    <div className="t-body-sm flex min-h-56 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-surface/45 p-4 text-fg-muted">
+      <IoStatsChart className="h-5 w-5 text-success" />
+      No recorded stats
+    </div>
+  );
 
 export default StatsOverviewCard;

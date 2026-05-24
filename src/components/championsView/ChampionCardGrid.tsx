@@ -18,7 +18,7 @@ const ChampionCardGrid = ({
   interactive = true,
 }: ChampionCardGridProps) => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 2xl:grid-cols-4 gap-2">
+    <div className="grid grid-cols-2 sm:grid-cols-4 2xl:grid-cols-6 gap-2">
       {champions.map((champion, idx) => (
         <ChampionCard
           key={champion.id}
@@ -64,7 +64,7 @@ const ChampionCard = memo(
           className={imageClassName}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-media-scrim via-media-scrim/55 to-transparent" />
-        <div className="absolute left-1 top-1 rounded-sm bg-media-scrim/45 px-1.5 py-0.5 text-xs font-semibold text-on-media/90">
+        <div className="t-stat absolute left-1 top-1 rounded-sm bg-media-scrim/45 px-1.5 py-0.5 text-on-media/90">
           #{rank}
         </div>
         {isComplete && (
@@ -73,8 +73,8 @@ const ChampionCard = memo(
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 p-1.5 flex flex-col gap-1 text-on-media text-left">
-          <p className="font-semibold text-base truncate">{champion.name}</p>
-          <div className="flex flex-wrap gap-1 text-xs">
+          <p className="t-h2 truncate">{champion.name}</p>
+          <div className="flex flex-wrap gap-1">
             <CardStat label="P" value={String(played)} />
             <CardStat label="A" value={String(avg)} />
             <CardStat label="WR" value={wr} />
@@ -101,8 +101,8 @@ const ChampionCard = memo(
 
 const CardStat = ({ label, value }: { label: string; value: string }) => (
   <span className="rounded-sm bg-media-scrim/45 px-1 py-0">
-    <span className="opacity-70">{label} </span>
-    <span className="font-semibold">{value}</span>
+    <span className="t-meta opacity-70">{label} </span>
+    <span className="t-stat">{value}</span>
   </span>
 );
 

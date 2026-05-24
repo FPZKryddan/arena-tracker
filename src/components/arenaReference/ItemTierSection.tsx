@@ -20,11 +20,11 @@ const ItemTierSection = ({ tier, version }: ItemTierSectionProps) => (
     <header className="flex items-center gap-2">
       <h2
         id={`item-tier-${tier.cost}`}
-        className="text-lg font-semibold text-fg"
+        className="t-h2 text-fg"
       >
         {tier.label}
       </h2>
-      <span className="rounded-full border border-border px-2 py-0.5 text-xs font-semibold">
+      <span className="t-stat rounded-full border border-border px-2 py-0.5">
         {tier.items.length}
       </span>
     </header>

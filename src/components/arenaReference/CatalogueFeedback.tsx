@@ -13,14 +13,14 @@ export const CatalogueState = ({
 }: CatalogueStateProps) => (
   <section className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-surface/50 p-6 text-center">
     <div>
-      <h2 className="text-base font-semibold">{title}</h2>
-      <p className="mt-1 text-sm text-fg-muted">{body}</p>
+      <h2 className="t-h2">{title}</h2>
+      <p className="t-body-sm mt-1 text-fg-muted">{body}</p>
     </div>
     {actionLabel && onAction && (
       <button
         type="button"
         onClick={onAction}
-        className="mt-1 rounded-md border border-border bg-surface px-3 py-2 text-sm font-semibold transition-colors hover:border-border-strong hover:bg-surface-hover"
+        className="t-label mt-1 rounded-md border border-border bg-surface px-3 py-2 transition-colors hover:border-border-strong hover:bg-surface-hover"
       >
         {actionLabel}
       </button>

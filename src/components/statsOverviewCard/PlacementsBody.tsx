@@ -139,19 +139,23 @@ const PlacementsBody = ({
         <div
           className={`flex min-w-28 flex-col rounded-md px-2.5 py-2 ${averagePlacementTone}`}
         >
-          <p className="text-xs font-semibold uppercase leading-none opacity-80">
+          <p className="t-eyebrow opacity-80">
             Avg Place
           </p>
-          <p className="mt-1 text-2xl font-semibold leading-none tabular-nums">
+          <p className="t-stat-display mt-1">
             {averagePlacement.toFixed(2)}
           </p>
         </div>
-        <div className="flex flex-1 flex-row flex-wrap justify-start gap-x-2.5 gap-y-1 text-xs font-medium text-fg-muted sm:justify-end">
-          <p>Played: {getTotalMatches(placements)}</p>
+        <div className="t-meta flex flex-1 flex-row flex-wrap justify-start gap-x-2.5 gap-y-1 text-fg-muted sm:justify-end">
           <p>
-            <span className="text-success">{getWins(placements)}</span> /
-            <span className="text-danger">{" " + getLosses(placements)}</span> (
-            {getWinrate(placements)}%)
+            Played: <span className="t-stat">{getTotalMatches(placements)}</span>
+          </p>
+          <p>
+            <span className="t-stat text-success">{getWins(placements)}</span> /
+            <span className="t-stat text-danger">
+              {" " + getLosses(placements)}
+            </span>{" "}
+            (<span className="t-stat">{getWinrate(placements)}%</span>)
           </p>
         </div>
       </div>

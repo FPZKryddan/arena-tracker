@@ -5,6 +5,7 @@ import ChampionList from "../components/championsView/ChampionList";
 import MatchHistoryList from "../components/matchHistory";
 import ChampionMatchTabs from "./ChampionMatchTabs";
 import ArenaModeSelector from "../components/arenaModeSelector";
+import ProfileHeader from "../components/profileHeader";
 import StatsOverviewCard from "../components/statsOverviewCard";
 import StatsSkeleton from "../components/statsOverviewCard/StatsSkeleton";
 import SummonerInput from "../components/summonerInput";
@@ -71,19 +72,24 @@ const ProfilePage = () => {
 
   return (
     <main className="box-border flex min-h-dvh w-full flex-col gap-5 bg-bg p-3 text-fg md:gap-7 md:p-6">
-      <h1 className="sr-only">Arena profile</h1>
-
-      <header className="block lg:hidden">
-        <ProfileSearchControls
-          routeProgress={routeProgress}
-          arenaMode={arenaMode}
-          pendingMatchesCount={pendingMatchesCount}
-          pendingMatchesLabel={pendingMatchesLabel}
-          canUpdateProfile={canUpdateProfile}
-          onUpdateProfile={handleUpdateProfile}
-          onArenaModeChange={handleArenaModeChange}
-        />
-      </header>
+      <ProfileHeader
+        stats={playerStats}
+        profile={profile}
+        gameName={gameName}
+        tagLine={tagLine}
+        region={region}
+        actions={
+          <ProfileHeaderActions
+            routeProgress={routeProgress}
+            arenaMode={arenaMode}
+            pendingMatchesCount={pendingMatchesCount}
+            pendingMatchesLabel={pendingMatchesLabel}
+            canUpdateProfile={canUpdateProfile}
+            onUpdateProfile={handleUpdateProfile}
+            onArenaModeChange={handleArenaModeChange}
+          />
+        }
+      />
 
       <section
         aria-label="Profile dashboard"
@@ -99,17 +105,6 @@ const ProfilePage = () => {
           aria-label="Champions and matches"
           className="order-2 h-full w-full md:order-1 md:w-1/2 xl:order-2 xl:w-2/4"
         >
-          <div className="hidden lg:flex flex-col gap-3">
-            <ProfileSearchControls
-              routeProgress={routeProgress}
-              arenaMode={arenaMode}
-              pendingMatchesCount={pendingMatchesCount}
-              pendingMatchesLabel={pendingMatchesLabel}
-              canUpdateProfile={canUpdateProfile}
-              onUpdateProfile={handleUpdateProfile}
-              onArenaModeChange={handleArenaModeChange}
-            />
-          </div>
           <ProfileChampionMatches arenaMode={arenaMode} />
         </section>
         <section
@@ -136,7 +131,7 @@ const ProfilePage = () => {
   );
 };
 
-interface ProfileSearchControlsProps {
+interface ProfileHeaderActionsProps {
   routeProgress: RouteProgress;
   arenaMode: ArenaModeSelection;
   pendingMatchesCount: number;
@@ -146,7 +141,7 @@ interface ProfileSearchControlsProps {
   onArenaModeChange: (nextMode: ArenaModeSelection) => void;
 }
 
-const ProfileSearchControls = ({
+const ProfileHeaderActions = ({
   routeProgress,
   arenaMode,
   pendingMatchesCount,
@@ -154,10 +149,15 @@ const ProfileSearchControls = ({
   canUpdateProfile,
   onUpdateProfile,
   onArenaModeChange,
-}: ProfileSearchControlsProps) => (
-  <section className="flex flex-col gap-3">
-    <div className="flex w-full flex-col lg:flex-row items-start gap-3">
-      <div className="min-w-0 flex-1 w-full">
+}: ProfileHeaderActionsProps) => (
+  <div className="flex w-full flex-col gap-2 sm:w-fit sm:items-end">
+    <ArenaModeSelector
+      value={arenaMode}
+      onChange={onArenaModeChange}
+      variant="segmented"
+    />
+    <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-start">
+      <div className="min-w-0 flex-1 sm:w-64">
         <SummonerInput routeProgress={routeProgress} arenaMode={arenaMode} />
       </div>
       <ProfileUpdateButton
@@ -168,12 +168,7 @@ const ProfileSearchControls = ({
         onUpdateProfile={onUpdateProfile}
       />
     </div>
-    <ArenaModeSelector value={arenaMode} onChange={onArenaModeChange} />
-    <PendingMatchesNotice
-      pendingMatchesCount={pendingMatchesCount}
-      isFetching={routeProgress.isFetching}
-    />
-  </section>
+  </div>
 );
 
 interface ProfileUpdateButtonProps {
@@ -203,38 +198,19 @@ const ProfileUpdateButton = ({
       disabled={!canUpdateProfile}
       aria-label={updateLabel}
       title={updateLabel}
-      className="relative flex h-11 w-full text-center lg:w-fit shrink-0 items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50"
+      className="t-label relative flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-border bg-surface px-4 text-center text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
     >
-      Update
+      Update profile
       <IoRefresh
         className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
         aria-hidden
       />
       {pendingMatchesCount > 0 && (
-        <span className="min-w-5 rounded-full bg-accent px-1.5 py-0.5 text-center text-xs font-semibold leading-none text-bg tabular-nums">
+        <span className="t-stat min-w-5 rounded-full bg-accent px-1.5 py-0.5 text-center text-bg">
           {pendingMatchesCount}
         </span>
       )}
     </button>
-  );
-};
-
-interface PendingMatchesNoticeProps {
-  pendingMatchesCount: number;
-  isFetching: boolean;
-}
-
-const PendingMatchesNotice = ({
-  pendingMatchesCount,
-  isFetching,
-}: PendingMatchesNoticeProps) => {
-  if (pendingMatchesCount === 0 || isFetching) return null;
-
-  return (
-    <p className="self-end pr-1 text-xs font-medium text-fg-muted">
-      <span className="text-accent tabular-nums">{pendingMatchesCount}</span>{" "}
-      {pendingMatchesCount === 1 ? "game" : "games"} waiting to process
-    </p>
   );
 };
 
@@ -270,12 +246,15 @@ const ProfileStatsOverview = ({
   arenaMode,
   standalone = false,
 }: ProfileStatsOverviewProps) => {
-  if (playerStats === null) return <StatsSkeleton standalone={standalone} />;
+  if (playerStats === null) {
+    return <StatsSkeleton standalone={standalone} showHeader={false} />;
+  }
 
   return (
     <StatsOverviewCard
       stats={playerStats}
       standalone={standalone}
+      showHeader={false}
       arenaMode={arenaMode}
     />
   );

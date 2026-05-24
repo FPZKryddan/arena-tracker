@@ -4,6 +4,7 @@ import ThemeToggle from "../../components/themeToggle";
 import {
   getActivePage,
   getComparePathFromLocation,
+  getLastViewedProfilePath,
   getNavigationTarget,
   NAV_ITEMS,
   type AppNavigationItem,
@@ -19,6 +20,7 @@ const AppHeader = ({
   const activePage = getActivePage(pathname);
   const resolvedComparePath =
     comparePath ?? getComparePathFromLocation(pathname, search);
+  const profilePath = getLastViewedProfilePath();
 
   return (
     <div
@@ -33,7 +35,7 @@ const AppHeader = ({
               aria-label="Arena Tracker home"
             >
               <IoFlash className="h-5 w-5 shrink-0 text-accent" />
-              <span className="truncate text-base font-semibold md:text-lg">
+              <span className="t-h2 truncate">
                 Arena Tracker
               </span>
             </Link>
@@ -49,7 +51,7 @@ const AppHeader = ({
             {NAV_ITEMS.map((item) => (
               <HeaderLink
                 key={item.key}
-                to={getNavigationTarget(item, resolvedComparePath)}
+                to={getNavigationTarget(item, resolvedComparePath, profilePath)}
                 label={item.label}
                 active={activePage === item.key}
                 Icon={item.icon}
@@ -78,7 +80,7 @@ const HeaderLink = ({ to, label, active, Icon }: HeaderLinkProps) => (
   <Link
     to={to}
     aria-current={active ? "page" : undefined}
-    className={`box-content flex h-9 min-w-0 items-center justify-center gap-1.5 border-b-4 px-2 text-xs font-semibold transition-colors sm:px-3 ${
+    className={`t-label box-content flex h-9 min-w-0 items-center justify-center gap-1.5 border-b-4 px-2 transition-colors sm:px-3 ${
       active
         ? "border-accent text-fg"
         : "border-transparent text-fg hover:border-border-strong"

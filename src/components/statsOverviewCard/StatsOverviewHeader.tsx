@@ -97,7 +97,7 @@ const StatsOverviewHeader = ({
         )}
         <div className="flex min-w-0 flex-col">
           <div className="flex flex-row items-center gap-2">
-            <h1 className="min-w-0 truncate text-base font-semibold">
+            <h1 className="t-h2 min-w-0 truncate">
               {profilePath ? (
                 <Link
                   to={profilePath}

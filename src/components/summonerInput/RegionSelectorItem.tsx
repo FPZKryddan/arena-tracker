@@ -13,7 +13,7 @@ const RegionSelectorItem = ({
     <li>
       <button
         type="button"
-        className="w-full rounded-sm px-2 py-1 text-sm text-fg-muted transition-colors hover:bg-surface-hover hover:text-fg"
+        className="t-label w-full rounded-sm px-2 py-1 text-fg-muted transition-colors hover:bg-surface-hover hover:text-fg"
         onClick={() => onClickCallBack(region)}
       >
         {region}

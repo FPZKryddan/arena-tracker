@@ -87,7 +87,7 @@ const ChampionFiltering = ({
           className={`absolute left-1/2 top-full z-20 mt-2 w-72 -translate-x-1/2 rounded-lg border border-border bg-surface p-4 text-fg
         ${isOpen ? "flex" : "hidden"}`}
         >
-          <ul className="text-xs flex flex-col gap-3 w-full">
+          <ul className="t-label flex flex-col gap-3 w-full">
             <ChampionFilteringCheckbox
               label="Show completed champions?"
               value={filters.showCompleted}

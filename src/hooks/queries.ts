@@ -13,6 +13,8 @@ import type {
   MatchTimelineDto,
   PlayerStats,
   Regions,
+  TrackedMatchesStatsDto,
+  TrackedPlayersStatsDto,
 } from "../types";
 import { getChampionDataUrl, getSpellIconUrl } from "../championIcon";
 import { getApiBase, getStoredRegion } from "./useApiBase";
@@ -63,6 +65,8 @@ export const queryKeys = {
   championSpellIcons: (version: string, championNames: string[]) =>
     ["championSpellIcons", version, championNames] as const,
   items: (version: string) => ["items", version] as const,
+  trackedPlayersStats: ["stats", "players"] as const,
+  trackedMatchesStats: ["stats", "matches"] as const,
   match: (region: string, matchId: string) =>
     ["match", region, matchId] as const,
   matchTimeline: (region: string, matchId: string) =>
@@ -172,6 +176,18 @@ const fetchItems = async (
   });
 
   return items;
+};
+
+const fetchTrackedPlayersStats = async (): Promise<TrackedPlayersStatsDto> => {
+  const res = await fetch(`${getApiBase()}/stats/players`);
+  if (!res.ok) throw new ApiError(await parseApiError(res));
+  return (await res.json()) as TrackedPlayersStatsDto;
+};
+
+const fetchTrackedMatchesStats = async (): Promise<TrackedMatchesStatsDto> => {
+  const res = await fetch(`${getApiBase()}/stats/matches`);
+  if (!res.ok) throw new ApiError(await parseApiError(res));
+  return (await res.json()) as TrackedMatchesStatsDto;
 };
 
 const fetchMatch = async (
@@ -357,6 +373,20 @@ export const useItemDataQuery = () => {
     enabled: !!version,
   });
 };
+
+export const useTrackedPlayersStatsQuery = () =>
+  useQuery({
+    queryKey: queryKeys.trackedPlayersStats,
+    queryFn: fetchTrackedPlayersStats,
+    staleTime: 30_000,
+  });
+
+export const useTrackedMatchesStatsQuery = () =>
+  useQuery({
+    queryKey: queryKeys.trackedMatchesStats,
+    queryFn: fetchTrackedMatchesStats,
+    staleTime: 30_000,
+  });
 
 export const useMatchQuery = (
   matchId: string | undefined | null,
