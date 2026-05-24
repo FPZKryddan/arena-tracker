@@ -21,29 +21,32 @@ const ARENA_MODE_API_VALUES: Record<ArenaModeSelection, readonly string[]> = {
   "3x6": ["3x6"],
 };
 
-const ARENA_MODE_QUEUE_IDS: Record<ArenaModeSelection, readonly ArenaQueueId[]> = {
+const ARENA_MODE_QUEUE_IDS: Record<
+  ArenaModeSelection,
+  readonly ArenaQueueId[]
+> = {
   all: ARENA_QUEUE_IDS,
   normal: [1700, 1710],
   "3x6": [1750],
 };
 
 export const parseArenaMode = (
-  value: string | null | undefined
+  value: string | null | undefined,
 ): ArenaModeSelection =>
   value === "normal" || value === "3x6" ? value : DEFAULT_ARENA_MODE;
 
 export const getArenaModesParam = (
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): string => ARENA_MODE_API_VALUES[arenaMode].join(",");
 
 export const createArenaModesSearch = (
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): string =>
   new URLSearchParams({ modes: getArenaModesParam(arenaMode) }).toString();
 
 export const createArenaMatchesSearch = (
   limit: number,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): string => {
   const params = new URLSearchParams({ limit: String(limit) });
   if (arenaMode === DEFAULT_ARENA_MODE) {
@@ -55,10 +58,10 @@ export const createArenaMatchesSearch = (
 };
 
 export const getArenaPlacementCount = (
-  arenaMode: ArenaModeSelection | undefined
+  arenaMode: ArenaModeSelection | undefined,
 ): ArenaPlacementCount => (arenaMode === "3x6" ? 6 : 8);
 
 export const matchQueueIdBelongsToArenaMode = (
   queueId: number,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): boolean => ARENA_MODE_QUEUE_IDS[arenaMode].includes(queueId as ArenaQueueId);

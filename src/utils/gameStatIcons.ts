@@ -60,5 +60,4 @@ const GAME_STAT_ICON_FILES: Record<GameStatIconKey, string> = {
 export const getGameStatIconUrl = (stat: GameStatIconKey): string =>
   `${CDRAGON_STAT_ICON_BASE}${GAME_STAT_ICON_FILES[stat]}`;
 
-export const FALLBACK_GAME_STAT_ICON_URL =
-  getGameStatIconUrl("adaptive-force");
+export const FALLBACK_GAME_STAT_ICON_URL = getGameStatIconUrl("adaptive-force");

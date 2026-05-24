@@ -4,9 +4,13 @@ const averageFormatter = new Intl.NumberFormat(undefined, {
 
 export const getAveragePerMatch = (
   value: number,
-  matchCount: number
+  matchCount: number,
 ): number => {
-  if (!Number.isFinite(value) || !Number.isFinite(matchCount) || matchCount <= 0) {
+  if (
+    !Number.isFinite(value) ||
+    !Number.isFinite(matchCount) ||
+    matchCount <= 0
+  ) {
     return 0;
   }
 
@@ -20,9 +24,9 @@ export const formatAveragePerMatch = (value: number): string => {
 
 export const getAveragePerMatchLabel = (
   value: number,
-  matchCount: number
+  matchCount: number,
 ): string => {
   return `${formatAveragePerMatch(
-    getAveragePerMatch(value, matchCount)
+    getAveragePerMatch(value, matchCount),
   )} avg/game`;
 };

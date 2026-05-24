@@ -52,7 +52,8 @@ const Tooltip = ({
       const top = hasSpaceAbove
         ? triggerRect.top - tooltipRect.height - gap
         : triggerRect.top + triggerRect.height + gap;
-      const left = triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
+      const left =
+        triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
 
       tooltipElementRef.current.style.top = toRem(clamp(top, 0, maxTop));
       tooltipElementRef.current.style.left = toRem(clamp(left, 0, maxLeft));
@@ -78,8 +79,9 @@ const Tooltip = ({
           {text && <p>{text}</p>}
           {extra && <p className="text-xs font-normal mt-1">{extra}</p>}
           {isHovering && renderContent && renderContent()}
-        </div>
-      , document.body)}
+        </div>,
+        document.body,
+      )}
     </div>
   );
 };

@@ -76,12 +76,9 @@ const Hero = () => (
           <FavoritesList />
         </div>
       </div>
-
     </div>
   </section>
 );
-
-
 
 const Overview = () => (
   <section className="border-y border-border bg-surface/35">
@@ -217,7 +214,7 @@ const AugmentsMock = () => {
   const { data: augments = [] } = useAugmentsQuery();
   const augmentStats = useMemo(
     () => createLandingAugmentStats(augments),
-    [augments]
+    [augments],
   );
 
   return (

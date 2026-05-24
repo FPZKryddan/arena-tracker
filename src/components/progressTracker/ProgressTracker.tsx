@@ -5,7 +5,7 @@ interface ProgressTrackerProps {
   current: number;
   total: number;
   totalWidth: number;
-  tracking: "played" | "top-4" | "victory" | 'none';
+  tracking: "played" | "top-4" | "victory" | "none";
 }
 
 const ProgressTracker = ({
@@ -36,15 +36,15 @@ const ProgressTracker = ({
   const tooltipTextSwitch = (): string => {
     switch (tracking) {
       case "played":
-        return 'Played - ' + current;
+        return "Played - " + current;
       case "top-4":
-        return 'Placed in the top-4 - ' + current;
+        return "Placed in the top-4 - " + current;
       case "victory":
-        return 'Won - ' + current;
+        return "Won - " + current;
       case "none":
-        return 'Not played - ' + current;
+        return "Not played - " + current;
       default:
-        return '';
+        return "";
     }
   };
 
@@ -53,8 +53,7 @@ const ProgressTracker = ({
       <div
         className={`relative h-full ${colorClass} outline-accent hover:z-10 hover:outline-1`}
         style={{ width: getBarWidthStyling(), transition: "width 0.3s" }}
-        >
-      </div>
+      ></div>
     </Tooltip>
   );
 };

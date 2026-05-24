@@ -24,7 +24,7 @@ export const hasActiveItemFilters = (filters: ArenaItemFilters): boolean =>
 
 export const matchesItemFilters = (
   item: ClassifiedArenaItem,
-  filters: ArenaItemFilters
+  filters: ArenaItemFilters,
 ): boolean =>
   filters.roles.every((role) => item.roles.includes(role)) &&
   filters.stats.every((stat) => item.statKeys.has(stat)) &&

@@ -86,8 +86,7 @@ const PodiumSlot = memo(
   ({ rank, champion, clickCallback, interactive }: PodiumSlotProps) => {
     const style = RANK_STYLES[rank];
     const played = champion.timesPlayed;
-    const avg =
-      played > 0 ? Math.ceil(champion.placementAvg * 100) / 100 : "-";
+    const avg = played > 0 ? Math.ceil(champion.placementAvg * 100) / 100 : "-";
     const wr = played > 0 ? getWinrate(champion.placements) + "%" : "-";
     const isComplete = champion.stage >= 3;
 
@@ -95,7 +94,9 @@ const PodiumSlot = memo(
       interactive ? "cursor-pointer hover:border-accent" : "cursor-default"
     } ${isComplete ? "outline outline-1 outline-success/60" : ""}`;
     const imageClassName = `absolute inset-0 h-full w-full object-cover object-top ${
-      interactive ? "transition-transform duration-300 group-hover:scale-[1.03]" : ""
+      interactive
+        ? "transition-transform duration-300 group-hover:scale-[1.03]"
+        : ""
     }`;
     const content = (
       <>
@@ -118,9 +119,7 @@ const PodiumSlot = memo(
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 flex flex-col gap-1.5 p-1.5 text-left text-on-media sm:p-2">
-          <p className="truncate text-sm font-semibold">
-            {champion.name}
-          </p>
+          <p className="truncate text-sm font-semibold">{champion.name}</p>
           <div className="grid grid-cols-1 gap-0.5 text-xs sm:grid-cols-3 sm:gap-1">
             <PodiumStat label="Played" value={String(played)} />
             <PodiumStat label="Avg" value={String(avg)} />
@@ -143,20 +142,12 @@ const PodiumSlot = memo(
         {content}
       </button>
     );
-  }
+  },
 );
 
-const PodiumStat = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) => (
+const PodiumStat = ({ label, value }: { label: string; value: string }) => (
   <div className="flex min-w-0 items-center justify-between gap-1 rounded-sm bg-media-scrim/35 px-1 py-0.5 leading-tight sm:flex-col sm:items-start sm:justify-start sm:bg-transparent sm:px-0 sm:py-0">
-    <span className="truncate uppercase opacity-70">
-      {label}
-    </span>
+    <span className="truncate uppercase opacity-70">{label}</span>
     <span className="truncate font-semibold tabular-nums">{value}</span>
   </div>
 );

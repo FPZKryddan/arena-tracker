@@ -42,8 +42,7 @@ type ChampionCardProps = {
 const ChampionCard = memo(
   ({ rank, champion, clickCallback, interactive }: ChampionCardProps) => {
     const played = champion.timesPlayed;
-    const avg =
-      played > 0 ? Math.ceil(champion.placementAvg * 100) / 100 : "-";
+    const avg = played > 0 ? Math.ceil(champion.placementAvg * 100) / 100 : "-";
     const wr = played > 0 ? getWinrate(champion.placements) + "%" : "-";
     const isComplete = champion.stage >= 3;
 
@@ -51,7 +50,9 @@ const ChampionCard = memo(
       interactive ? "cursor-pointer hover:border-accent" : "cursor-default"
     } ${isComplete ? "border-success/70" : "border-transparent"}`;
     const imageClassName = `absolute inset-0 h-full w-full object-cover object-top ${
-      interactive ? "transition-transform duration-300 group-hover:scale-[1.03]" : ""
+      interactive
+        ? "transition-transform duration-300 group-hover:scale-[1.03]"
+        : ""
     }`;
     const content = (
       <>
@@ -95,7 +96,7 @@ const ChampionCard = memo(
         {content}
       </button>
     );
-  }
+  },
 );
 
 const CardStat = ({ label, value }: { label: string; value: string }) => (

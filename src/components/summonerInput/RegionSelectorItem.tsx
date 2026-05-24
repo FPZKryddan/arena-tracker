@@ -5,7 +5,10 @@ interface RegionSelectorItemProps {
   onClickCallBack: (region: Regions) => void;
 }
 
-const RegionSelectorItem = ({ region, onClickCallBack }: RegionSelectorItemProps) => {
+const RegionSelectorItem = ({
+  region,
+  onClickCallBack,
+}: RegionSelectorItemProps) => {
   return (
     <li>
       <button

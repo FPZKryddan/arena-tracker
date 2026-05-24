@@ -9,5 +9,7 @@ export const buildMatchSharePath = (region: Region, matchId: string): string =>
 
 export const buildMatchShareUrl = (region: Region, matchId: string): string => {
   const path = buildMatchSharePath(region, matchId);
-  return typeof window === "undefined" ? path : `${window.location.origin}${path}`;
+  return typeof window === "undefined"
+    ? path
+    : `${window.location.origin}${path}`;
 };

@@ -11,7 +11,7 @@ import {
 import { ROLE_OVERRIDES } from "./itemRoleOverrides";
 
 export const ARENA_ITEM_ROLES: readonly ArenaItemRole[] = ITEM_ROLE_OPTIONS.map(
-  ({ value }) => value
+  ({ value }) => value,
 );
 
 export type RoleRuleInput = Pick<ItemMetadata, "statKeys" | "effectKeys"> & {
@@ -21,14 +21,14 @@ export type RoleRuleInput = Pick<ItemMetadata, "statKeys" | "effectKeys"> & {
 
 type RoleRule = (item: RoleRuleInput) => boolean;
 
-export const hasAll = <T,>(
+export const hasAll = <T>(
   values: ReadonlySet<T>,
-  requiredValues: readonly T[]
+  requiredValues: readonly T[],
 ): boolean => requiredValues.every((value) => values.has(value));
 
-export const hasAny = <T,>(
+export const hasAny = <T>(
   values: ReadonlySet<T>,
-  requiredValues: readonly T[]
+  requiredValues: readonly T[],
 ): boolean => requiredValues.some((value) => values.has(value));
 
 const hasStats = (
@@ -67,7 +67,7 @@ export const ROLE_RULES: Record<ArenaItemRole, RoleRule> = {
       "magic-resist",
       "life-steal",
       "omnivamp",
-      "tenacity"
+      "tenacity",
     ),
   Marksman: (item) =>
     (hasStats(item, "attack-damage") &&
@@ -76,7 +76,9 @@ export const ROLE_RULES: Record<ArenaItemRole, RoleRule> = {
     (hasStats(item, "critical-strike-chance") &&
       hasAnyStat(item, "attack-speed", "attack-damage")),
   Mage: (item) =>
-    (hasStats(item, "ability-power") || hasAnyStat(item, "magic-penetration")) && !hasAnyStat(item, "heal-and-shield-power"),
+    (hasStats(item, "ability-power") ||
+      hasAnyStat(item, "magic-penetration")) &&
+    !hasAnyStat(item, "heal-and-shield-power"),
   Support: (item) =>
     hasStats(item, "heal-and-shield-power") ||
     (hasStats(item, "mana-regen") &&
@@ -95,12 +97,12 @@ export const classifyItemRoles = (item: RoleRuleInput): ArenaItemRole[] => {
   const override = ROLE_OVERRIDES[item.name];
   if (tags.has("Boots")) {
     return ARENA_ITEM_ROLES.filter((role) =>
-      (override?.include ?? []).includes(role)
+      (override?.include ?? []).includes(role),
     );
   }
 
   const roles = new Set(
-    ARENA_ITEM_ROLES.filter((role) => ROLE_RULES[role](item))
+    ARENA_ITEM_ROLES.filter((role) => ROLE_RULES[role](item)),
   );
 
   override?.exclude?.forEach((role) => roles.delete(role));

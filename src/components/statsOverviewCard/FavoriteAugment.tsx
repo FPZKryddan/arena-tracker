@@ -22,7 +22,11 @@ const FavoriteAugment = ({
   return (
     <Tooltip
       renderContent={() => (
-        <AugmentTooltip name={augmentData.name} rank={rank} pickCount={pickCount} />
+        <AugmentTooltip
+          name={augmentData.name}
+          rank={rank}
+          pickCount={pickCount}
+        />
       )}
     >
       <div className="rounded-md border border-border bg-surface/70 p-2 transition-colors hover:border-border-strong hover:bg-surface-hover">
@@ -45,11 +49,7 @@ const FavoriteAugment = ({
   );
 };
 
-const AugmentIcon = ({
-  augmentData,
-}: {
-  augmentData: augmentsData;
-}) => (
+const AugmentIcon = ({ augmentData }: { augmentData: augmentsData }) => (
   <div className="h-8 w-8 shrink-0 overflow-hidden rounded-md border border-border bg-surface-elevated">
     <img
       src={BASE_ICON_URL + augmentData.iconLarge}

@@ -9,10 +9,7 @@ import {
   hasActiveItemFilters,
   matchesItemFilters,
 } from "./itemFilters";
-import {
-  ITEM_EFFECT_OPTIONS,
-  ITEM_STAT_OPTIONS,
-} from "./itemMetadata";
+import { ITEM_EFFECT_OPTIONS, ITEM_STAT_OPTIONS } from "./itemMetadata";
 import { classifyArenaItem } from "./itemRoleRules";
 import { ITEM_TIERS, isPurchasableArenaItem } from "./itemShopRules";
 
@@ -22,12 +19,7 @@ interface ItemsCatalogueProps {
 
 const ItemsCatalogue = ({ search }: ItemsCatalogueProps) => {
   const [filters, setFilters] = useState(DEFAULT_ARENA_ITEM_FILTERS);
-  const {
-    data: items = {},
-    isError,
-    isLoading,
-    refetch,
-  } = useItemDataQuery();
+  const { data: items = {}, isError, isLoading, refetch } = useItemDataQuery();
   const ddragonVersion = useDdragonVersion();
   const normalizedSearch = search.trim().toLocaleLowerCase();
 
@@ -35,32 +27,34 @@ const ItemsCatalogue = ({ search }: ItemsCatalogueProps) => {
     () =>
       Object.entries(items)
         .filter(([, item]) => isPurchasableArenaItem(item))
-        .map(([itemId, item]) => classifyArenaItem({ ...item, id: Number(itemId) }))
+        .map(([itemId, item]) =>
+          classifyArenaItem({ ...item, id: Number(itemId) }),
+        )
         .sort((a, b) => a.name.localeCompare(b.name)),
-    [items]
+    [items],
   );
   const availableStats = useMemo(
     () =>
       ITEM_STAT_OPTIONS.filter(({ value }) =>
-        arenaItems.some((item) => item.statKeys.has(value))
+        arenaItems.some((item) => item.statKeys.has(value)),
       ),
-    [arenaItems]
+    [arenaItems],
   );
   const availableEffects = useMemo(
     () =>
       ITEM_EFFECT_OPTIONS.filter(({ value }) =>
-        arenaItems.some((item) => item.effectKeys.has(value))
+        arenaItems.some((item) => item.effectKeys.has(value)),
       ),
-    [arenaItems]
+    [arenaItems],
   );
   const visibleItems = useMemo(
     () =>
       arenaItems.filter(
         (item) =>
           item.name.toLocaleLowerCase().includes(normalizedSearch) &&
-          matchesItemFilters(item, filters)
+          matchesItemFilters(item, filters),
       ),
-    [arenaItems, filters, normalizedSearch]
+    [arenaItems, filters, normalizedSearch],
   );
   const tierGroups = useMemo(
     () =>
@@ -69,7 +63,7 @@ const ItemsCatalogue = ({ search }: ItemsCatalogueProps) => {
         label,
         items: visibleItems.filter((item) => item.gold?.total === cost),
       })).filter((tier) => tier.items.length > 0),
-    [visibleItems]
+    [visibleItems],
   );
   const visibleCount = visibleItems.length;
   const filtersAreActive = hasActiveItemFilters(filters);

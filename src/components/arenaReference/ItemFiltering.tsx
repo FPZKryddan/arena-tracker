@@ -10,10 +10,7 @@ import {
   type ArenaItemStatKey,
   type ItemFilterOption,
 } from "./itemMetadata";
-import {
-  hasActiveItemFilters,
-  type ArenaItemFilters,
-} from "./itemFilters";
+import { hasActiveItemFilters, type ArenaItemFilters } from "./itemFilters";
 
 interface ItemFilteringProps {
   filters: ArenaItemFilters;
@@ -27,9 +24,9 @@ type SelectedFilter =
   | { group: "stats"; value: ArenaItemStatKey; label: string }
   | { group: "effects"; value: ArenaItemEffectKey; label: string };
 
-const toggleValue = <TValue extends string,>(
+const toggleValue = <TValue extends string>(
   values: TValue[],
-  value: TValue
+  value: TValue,
 ): TValue[] =>
   values.includes(value)
     ? values.filter((selectedValue) => selectedValue !== value)
@@ -46,9 +43,9 @@ const ItemFiltering = ({
   const dropdownRef = useClickOutside<HTMLDivElement>(isOpen, closeDropdown);
   const filtersAreActive = hasActiveItemFilters(filters);
   const selectedFilters: SelectedFilter[] = [
-    ...ITEM_ROLE_OPTIONS.filter(({ value }) => filters.roles.includes(value)).map(
-      ({ value, label }) => ({ group: "roles" as const, value, label })
-    ),
+    ...ITEM_ROLE_OPTIONS.filter(({ value }) =>
+      filters.roles.includes(value),
+    ).map(({ value, label }) => ({ group: "roles" as const, value, label })),
     ...availableStats
       .filter(({ value }) => filters.stats.includes(value))
       .map(({ value, label }) => ({ group: "stats" as const, value, label })),
@@ -61,7 +58,7 @@ const ItemFiltering = ({
     onFiltersChange({
       ...filters,
       [filter.group]: filters[filter.group].filter(
-        (selectedValue) => selectedValue !== filter.value
+        (selectedValue) => selectedValue !== filter.value,
       ),
     });
   };
@@ -179,7 +176,7 @@ interface FilterGroupProps<TValue extends string> {
   renderIcon?: (value: TValue) => React.ReactNode;
 }
 
-const FilterGroup = <TValue extends string,>({
+const FilterGroup = <TValue extends string>({
   label,
   options,
   selectedValues,

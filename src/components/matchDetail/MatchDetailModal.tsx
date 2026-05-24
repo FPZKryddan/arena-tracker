@@ -20,7 +20,13 @@ import {
   HiMiniLink,
   HiMiniXMark,
 } from "react-icons/hi2";
-import { GiBroadsword, GiShield, GiHealthNormal, GiArrowDunk, GiAcrobatic } from "react-icons/gi";
+import {
+  GiBroadsword,
+  GiShield,
+  GiHealthNormal,
+  GiArrowDunk,
+  GiAcrobatic,
+} from "react-icons/gi";
 import { FaShieldAlt } from "react-icons/fa";
 import { HiMiniStar } from "react-icons/hi2";
 import useDdragonVersion from "../../hooks/useDdragonVersion";
@@ -59,7 +65,7 @@ ChartJS.register(
   LinearScale,
   LineElement,
   PointElement,
-  Tooltip
+  Tooltip,
 );
 
 interface MatchDetailModalProps {
@@ -92,16 +98,18 @@ const MatchDetailModal = ({
   const [shareCopied, setShareCopied] = useState(false);
   const { data: match, isLoading: loading } = useMatchQuery(
     isOpen ? matchId : null,
-    region
+    region,
   );
   const { data: timeline, isLoading: timelineLoading } = useMatchTimelineQuery(
     isOpen ? matchId : null,
-    region
+    region,
   );
   const shareUrl = useMemo(
     () =>
-      match && region ? buildMatchShareUrl(region, match.metadata.matchId) : null,
-    [match, region]
+      match && region
+        ? buildMatchShareUrl(region, match.metadata.matchId)
+        : null,
+    [match, region],
   );
 
   const handleCopyShareUrl = async () => {
@@ -179,7 +187,7 @@ const MatchDetailModal = ({
         </>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 };
 
@@ -199,11 +207,11 @@ const MatchDetailContent = ({
   const { data: augmentList = [] } = useAugmentsQuery();
   const { data: itemData = {} } = useItemDataQuery();
   const championNames = useMemo(
-    () => match.info.participants.map((participant) => participant.championName),
-    [match.info.participants]
+    () =>
+      match.info.participants.map((participant) => participant.championName),
+    [match.info.participants],
   );
-  const { data: spellIconMap = {} } =
-    useChampionSpellIconsQuery(championNames);
+  const { data: spellIconMap = {} } = useChampionSpellIconsQuery(championNames);
   const augmentLookup = useMemo(() => {
     const map = new Map<number, augmentsData>();
     for (const a of augmentList) map.set(a.id, a);
@@ -212,7 +220,7 @@ const MatchDetailContent = ({
   const timelineFrames = useMemo(() => {
     const frames = timeline?.info.frames ?? [];
     const framesWithParticipants = frames.filter(
-      (frame) => Object.keys(frame.participantFrames ?? {}).length > 0
+      (frame) => Object.keys(frame.participantFrames ?? {}).length > 0,
     );
     const finalFrame =
       framesWithParticipants[framesWithParticipants.length - 1];
@@ -231,11 +239,11 @@ const MatchDetailContent = ({
     subteams.get(team)!.push(p);
   }
   const orderedTeams = Array.from(subteams.entries()).sort(
-    (a, b) => a[1][0].subteamPlacement - b[1][0].subteamPlacement
+    (a, b) => a[1][0].subteamPlacement - b[1][0].subteamPlacement,
   );
 
   const findLeader = (
-    accessor: (p: ParticipantDto) => number
+    accessor: (p: ParticipantDto) => number,
   ): string | undefined => {
     let best: ParticipantDto | undefined;
     for (const p of match.info.participants) {
@@ -261,7 +269,7 @@ const MatchDetailContent = ({
           <div
             key={teamId}
             className={`rounded-md border-l-4 p-2 ${placementClass(
-              players[0].subteamPlacement
+              players[0].subteamPlacement,
             )}`}
           >
             <p className="text-xs font-semibold mb-1.5">
@@ -276,10 +284,10 @@ const MatchDetailContent = ({
                   isHighlighted={p.puuid === highlightPuuid}
                   leaders={leaders}
                   finalParticipantFrame={timelineFrames.finalParticipantFrames.get(
-                    p.participantId
+                    p.participantId,
                   )}
                   damageTimeline={timelineFrames.damageTimelines.get(
-                    p.participantId
+                    p.participantId,
                   )}
                   statAvailability={timelineFrames.statAvailability}
                   itemData={itemData}
@@ -344,7 +352,7 @@ const ParticipantRow = ({
     p.playerAugment4,
   ].filter((id) => id && id !== 0);
   const items = [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5].filter(
-    (id) => id && id !== 0
+    (id) => id && id !== 0,
   );
 
   return (
@@ -431,7 +439,6 @@ const ParticipantRow = ({
       ) : isTimelineLoading ? (
         <EndGameStatsSkeleton />
       ) : null}
-
     </div>
   );
 };
@@ -447,7 +454,10 @@ const LoadoutStrip = ({
   items: number[];
   version: string;
 }) => {
-  const augmentSlots = Array.from({ length: 4 }, (_, index) => augmentIds[index]);
+  const augmentSlots = Array.from(
+    { length: 4 },
+    (_, index) => augmentIds[index],
+  );
   const itemSlots = Array.from({ length: 6 }, (_, index) => items[index]);
 
   return (
@@ -568,11 +578,7 @@ const AbilityCasts = ({
   );
 };
 
-const MatchSummaryHeader = ({
-  match,
-}: {
-  match: MatchDto;
-}) => (
+const MatchSummaryHeader = ({ match }: { match: MatchDto }) => (
   <section className="relative overflow-hidden rounded-lg px-3 py-3 md:px-3">
     <div className="flex flex-col gap-2.5 md:flex-row md:items-end md:justify-start">
       <div className="min-w-0">
@@ -581,7 +587,8 @@ const MatchSummaryHeader = ({
         </p>
         <p className="mt-0.5 truncate text-xs text-fg-muted">
           {new Date(match.info.gameCreation).toLocaleString()} /{" "}
-          {match.metadata.matchId} / Game duration {formatDuration(match.info.gameDuration)}
+          {match.metadata.matchId} / Game duration{" "}
+          {formatDuration(match.info.gameDuration)}
         </p>
       </div>
     </div>
@@ -639,7 +646,7 @@ const EMPTY_END_GAME_STAT_AVAILABILITY: EndGameStatAvailability = {
 };
 
 const buildParticipantFrameMap = (
-  frame?: MatchTimelineFrameDto
+  frame?: MatchTimelineFrameDto,
 ): Map<number, MatchTimelineParticipantFrameDto> => {
   const map = new Map<number, MatchTimelineParticipantFrameDto>();
 
@@ -651,7 +658,7 @@ const buildParticipantFrameMap = (
 };
 
 const buildPlayerDamageTimelineMap = (
-  frames: MatchTimelineFrameDto[]
+  frames: MatchTimelineFrameDto[],
 ): Map<number, PlayerDamageTimeline> => {
   const partialTimelines = new Map<
     number,
@@ -659,22 +666,20 @@ const buildPlayerDamageTimelineMap = (
   >();
 
   frames.forEach((frame) => {
-    Object.values(frame.participantFrames ?? {}).forEach(
-      (participantFrame) => {
-        const existing = partialTimelines.get(participantFrame.participantId) ?? {
-          labels: [],
-          dealt: [],
-          taken: [],
-        };
+    Object.values(frame.participantFrames ?? {}).forEach((participantFrame) => {
+      const existing = partialTimelines.get(participantFrame.participantId) ?? {
+        labels: [],
+        dealt: [],
+        taken: [],
+      };
 
-        existing.labels.push(formatTimelineTimestamp(frame.timestamp));
-        existing.dealt.push(
-          participantFrame.damageStats.totalDamageDoneToChampions
-        );
-        existing.taken.push(participantFrame.damageStats.totalDamageTaken);
-        partialTimelines.set(participantFrame.participantId, existing);
-      }
-    );
+      existing.labels.push(formatTimelineTimestamp(frame.timestamp));
+      existing.dealt.push(
+        participantFrame.damageStats.totalDamageDoneToChampions,
+      );
+      existing.taken.push(participantFrame.damageStats.totalDamageTaken);
+      partialTimelines.set(participantFrame.participantId, existing);
+    });
   });
 
   return new Map(
@@ -687,26 +692,25 @@ const buildPlayerDamageTimelineMap = (
           finalDealt: timeline.dealt[timeline.dealt.length - 1] ?? 0,
           finalTaken: timeline.taken[timeline.taken.length - 1] ?? 0,
         },
-      ])
+      ]),
   );
 };
 
 const hasOwnField = <T extends object>(
   source: T | undefined,
-  key: keyof T
-): boolean =>
-  !!source && Object.prototype.hasOwnProperty.call(source, key);
+  key: keyof T,
+): boolean => !!source && Object.prototype.hasOwnProperty.call(source, key);
 
 const championStatExistsInFrame = (
   frame: MatchTimelineFrameDto | undefined,
-  key: keyof MatchTimelineChampionStatsDto
+  key: keyof MatchTimelineChampionStatsDto,
 ): boolean =>
   Object.values(frame?.participantFrames ?? {}).some((participantFrame) =>
-    hasOwnField(participantFrame.championStats, key)
+    hasOwnField(participantFrame.championStats, key),
   );
 
 const buildEndGameStatAvailability = (
-  finalFrame?: MatchTimelineFrameDto
+  finalFrame?: MatchTimelineFrameDto,
 ): EndGameStatAvailability => {
   if (!finalFrame) return EMPTY_END_GAME_STAT_AVAILABILITY;
 
@@ -722,7 +726,7 @@ const buildEndGameStatAvailability = (
     magicPenPercent: championStatExistsInFrame(finalFrame, "magicPenPercent"),
     bonusMagicPenPercent: championStatExistsInFrame(
       finalFrame,
-      "bonusMagicPenPercent"
+      "bonusMagicPenPercent",
     ),
   };
 };
@@ -732,7 +736,7 @@ const isFiniteNumber = (value: unknown): value is number =>
 
 const getChampionStatValue = (
   stats: MatchTimelineChampionStatsDto,
-  key: keyof MatchTimelineChampionStatsDto
+  key: keyof MatchTimelineChampionStatsDto,
 ): number | undefined => {
   const value = stats[key];
   return isFiniteNumber(value) ? value : undefined;
@@ -740,7 +744,7 @@ const getChampionStatValue = (
 
 const getDamageStatValue = (
   stats: MatchTimelineDamageStatsDto,
-  key: keyof MatchTimelineDamageStatsDto
+  key: keyof MatchTimelineDamageStatsDto,
 ): number | undefined => {
   const value = stats[key];
   return isFiniteNumber(value) ? value : undefined;
@@ -760,9 +764,8 @@ const formatPercentStat = (value: number): string => {
 
 const formatNumberValue = (
   value: number | undefined,
-  formatNumber: (value: number) => string
-): string =>
-  isFiniteNumber(value) ? formatNumber(value) : MISSING_STAT_VALUE;
+  formatNumber: (value: number) => string,
+): string => (isFiniteNumber(value) ? formatNumber(value) : MISSING_STAT_VALUE);
 
 const formatDecimalValue = (value: number | undefined): string =>
   isFiniteNumber(value) ? formatDecimalStat(value) : MISSING_STAT_VALUE;
@@ -787,7 +790,7 @@ const stripItemHtml = (value: string): string =>
 const extractItemArmorPen = (item: ItemDataDto | undefined) => {
   const stats = item?.stats ?? {};
   const text = stripItemHtml(
-    `${item?.description ?? ""} ${item?.plaintext ?? ""}`
+    `${item?.description ?? ""} ${item?.plaintext ?? ""}`,
   );
   const statsFlat = stats.FlatArmorPenetrationMod ?? 0;
   const statsPercent = stats.PercentArmorPenetrationMod ?? 0;
@@ -800,14 +803,12 @@ const extractItemArmorPen = (item: ItemDataDto | undefined) => {
     textFlat += Number(match[1]);
   }
 
-  for (const match of text.matchAll(
-    /(\d+(?:\.\d+)?)%\s+Armor Penetration/gi
-  )) {
+  for (const match of text.matchAll(/(\d+(?:\.\d+)?)%\s+Armor Penetration/gi)) {
     textPercent += Number(match[1]) / 100;
   }
 
   for (const match of text.matchAll(
-    /(\d+(?:\.\d+)?)%\s+Bonus Armor Penetration/gi
+    /(\d+(?:\.\d+)?)%\s+Bonus Armor Penetration/gi,
   )) {
     textBonusPercent += Number(match[1]) / 100;
   }
@@ -847,7 +848,7 @@ const buildArmorPenRows = ({
         bonusPercent: total.bonusPercent + itemPen.bonusPercent,
       };
     },
-    { flat: 0, percent: 0, bonusPercent: 0 }
+    { flat: 0, percent: 0, bonusPercent: 0 },
   );
   const flat =
     trustedPositiveStat(stats.armorPen) ??
@@ -923,7 +924,7 @@ const buildEndGameStatSections = ({
     key: keyof MatchTimelineChampionStatsDto,
     icon: string,
     formatter: (value: number | undefined) => string = (value) =>
-      formatNumberValue(value, formatNumber)
+      formatNumberValue(value, formatNumber),
   ): EndGameStatRow => ({
     label,
     value: formatter(getChampionStatValue(finalStats, key)),
@@ -935,19 +936,19 @@ const buildEndGameStatSections = ({
     label: string,
     key: keyof MatchTimelineChampionStatsDto,
     icon: string,
-    formatter?: (value: number | undefined) => string
+    formatter?: (value: number | undefined) => string,
   ): EndGameStatRow | null =>
     isAvailable ? championRow(label, key, icon, formatter) : null;
 
   const damageRow = (
     label: string,
     key: keyof MatchTimelineDamageStatsDto,
-    icon: string
+    icon: string,
   ): EndGameStatRow => ({
     label,
     value: formatNumberValue(
       getDamageStatValue(finalFrame.damageStats, key),
-      formatNumber
+      formatNumber,
     ),
     icon,
   });
@@ -961,39 +962,35 @@ const buildEndGameStatSections = ({
     championRow(
       "Attack damage",
       "attackDamage",
-      getGameStatIconUrl("attack-damage")
+      getGameStatIconUrl("attack-damage"),
     ),
     championRow(
       "Ability power",
       "abilityPower",
-      getGameStatIconUrl("ability-power")
+      getGameStatIconUrl("ability-power"),
     ),
     championRow("Armor", "armor", getGameStatIconUrl("armor")),
     championRow(
       "Magic resist",
       "magicResist",
-      getGameStatIconUrl("magic-resist")
+      getGameStatIconUrl("magic-resist"),
     ),
     championRow(
       "Attack speed",
       "attackSpeed",
       getGameStatIconUrl("attack-speed"),
-      formatDecimalValue
+      formatDecimalValue,
     ),
     championRow(
       "Ability haste",
       "abilityHaste",
-      getGameStatIconUrl("ability-haste")
+      getGameStatIconUrl("ability-haste"),
     ),
-    championRow(
-      "Max health",
-      "healthMax",
-      getGameStatIconUrl("health")
-    ),
+    championRow("Max health", "healthMax", getGameStatIconUrl("health")),
     championRow(
       "Movement speed",
       "movementSpeed",
-      getGameStatIconUrl("move-speed")
+      getGameStatIconUrl("move-speed"),
     ),
   ];
 
@@ -1006,14 +1003,14 @@ const buildEndGameStatSections = ({
           "Critical strike chance",
           "critChance",
           getGameStatIconUrl("critical-strike-chance"),
-          formatPercentValue
+          formatPercentValue,
         ),
         optionalChampionRow(
           availability.critDamage,
           "Critical strike damage",
           "critDamage",
           getGameStatIconUrl("critical-strike-damage"),
-          formatCritDamageValue
+          formatCritDamageValue,
         ),
       ].filter((row): row is EndGameStatRow => row !== null),
     },
@@ -1025,21 +1022,21 @@ const buildEndGameStatSections = ({
           "Life steal",
           "lifesteal",
           getGameStatIconUrl("life-steal"),
-          formatPercentValue
+          formatPercentValue,
         ),
         optionalChampionRow(
           availability.omnivamp,
           "Omnivamp",
           "omnivamp",
           getGameStatIconUrl("omnivamp"),
-          formatPercentValue
+          formatPercentValue,
         ),
         optionalChampionRow(
           availability.spellVamp,
           "Spell vamp",
           "spellVamp",
           getGameStatIconUrl("spell-vamp"),
-          formatPercentValue
+          formatPercentValue,
         ),
       ].filter((row): row is EndGameStatRow => row !== null),
     },
@@ -1051,13 +1048,13 @@ const buildEndGameStatSections = ({
           "Tenacity",
           "ccReduction",
           getGameStatIconUrl("tenacity"),
-          formatPercentValue
+          formatPercentValue,
         ),
         optionalChampionRow(
           availability.healthRegen,
           "Health regen",
           "healthRegen",
-          getGameStatIconUrl("health-regen")
+          getGameStatIconUrl("health-regen"),
         ),
       ].filter((row): row is EndGameStatRow => row !== null),
     },
@@ -1072,21 +1069,21 @@ const buildEndGameStatSections = ({
           availability.magicPen,
           "Magic penetration",
           "magicPen",
-          getGameStatIconUrl("magic-penetration")
+          getGameStatIconUrl("magic-penetration"),
         ),
         optionalChampionRow(
           availability.magicPenPercent,
           "Magic penetration percent",
           "magicPenPercent",
           getGameStatIconUrl("magic-penetration"),
-          formatPercentValue
+          formatPercentValue,
         ),
         optionalChampionRow(
           availability.bonusMagicPenPercent,
           "Bonus magic penetration",
           "bonusMagicPenPercent",
           getGameStatIconUrl("magic-penetration"),
-          formatPercentValue
+          formatPercentValue,
         ),
       ].filter((row): row is EndGameStatRow => row !== null),
     },
@@ -1096,17 +1093,17 @@ const buildEndGameStatSections = ({
         damageRow(
           "Magic",
           "magicDamageDoneToChampions",
-          getGameStatIconUrl("magic-damage")
+          getGameStatIconUrl("magic-damage"),
         ),
         damageRow(
           "Physical",
           "physicalDamageDoneToChampions",
-          getGameStatIconUrl("physical-damage")
+          getGameStatIconUrl("physical-damage"),
         ),
         damageRow(
           "True",
           "trueDamageDoneToChampions",
-          getGameStatIconUrl("true-damage")
+          getGameStatIconUrl("true-damage"),
         ),
       ],
     },
@@ -1116,12 +1113,12 @@ const buildEndGameStatSections = ({
         damageRow(
           "Magic",
           "magicDamageTaken",
-          getGameStatIconUrl("magic-resist")
+          getGameStatIconUrl("magic-resist"),
         ),
         damageRow(
           "Physical",
           "physicalDamageTaken",
-          getGameStatIconUrl("armor")
+          getGameStatIconUrl("armor"),
         ),
         damageRow("True", "trueDamageTaken", getGameStatIconUrl("true-damage")),
       ],
@@ -1135,7 +1132,7 @@ const buildSparklinePoints = (
   values: number[],
   width: number,
   height: number,
-  maxValue: number
+  maxValue: number,
 ): string => {
   if (values.length === 0) return "";
 
@@ -1262,7 +1259,7 @@ const PlayerDamageLineChart = ({
         callbacks: {
           label: (context) =>
             `${context.dataset.label}: ${formatPlainNumber(
-              Number(context.parsed.y)
+              Number(context.parsed.y),
             )}`,
         },
       },
@@ -1335,9 +1332,7 @@ const DamageCurveTotal = ({
         className="h-1.5 w-1.5 rounded-full"
         style={{ backgroundColor: color }}
       />
-      <p className="text-xs font-semibold uppercase text-fg-muted">
-        {label}
-      </p>
+      <p className="text-xs font-semibold uppercase text-fg-muted">{label}</p>
     </div>
     <p className="mt-0.5 text-xs font-semibold tabular-nums text-fg">
       {formatPlainNumber(value)}
@@ -1371,7 +1366,8 @@ const EndGameStats = ({
     itemData,
     formatNumber,
   });
-  const hasAdvancedDetails = advancedSections.length > 0 || abilityCasts.length > 0;
+  const hasAdvancedDetails =
+    advancedSections.length > 0 || abilityCasts.length > 0;
 
   return (
     <div className="flex flex-col gap-1 border-t border-border/60 pt-1.5">
@@ -1569,7 +1565,10 @@ const ParticipantRowSkeleton = () => (
     </div>
     <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
       {[...Array(6)].map((_, i) => (
-        <div key={`stat-skeleton-${i}`} className="flex flex-row items-center gap-1">
+        <div
+          key={`stat-skeleton-${i}`}
+          className="flex flex-row items-center gap-1"
+        >
           <div className="h-3.5 w-3.5 bg-border rounded-sm" />
           <div className="flex flex-col gap-0.5">
             <div className="h-2 w-10 bg-border/70 rounded-sm" />

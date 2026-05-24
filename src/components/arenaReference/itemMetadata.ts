@@ -11,11 +11,7 @@ export type ArenaItemRole =
 
 export type ArenaItemStatKey = Exclude<
   GameStatIconKey,
-  | "level"
-  | "spell-vamp"
-  | "physical-damage"
-  | "magic-damage"
-  | "true-damage"
+  "level" | "spell-vamp" | "physical-damage" | "magic-damage" | "true-damage"
 >;
 
 export type ArenaItemEffectKey =
@@ -109,8 +105,16 @@ const STAT_DEFINITIONS: readonly ItemStatDefinition[] = [
     label: "Life Steal",
     pattern: /Life Steal$/i,
   },
-  { value: "move-speed", label: "Move Speed", pattern: /Move(?:ment)? Speed$/i },
-  { value: "adaptive-force", label: "Adaptive Force", pattern: /Adaptive Force$/i },
+  {
+    value: "move-speed",
+    label: "Move Speed",
+    pattern: /Move(?:ment)? Speed$/i,
+  },
+  {
+    value: "adaptive-force",
+    label: "Adaptive Force",
+    pattern: /Adaptive Force$/i,
+  },
   { value: "omnivamp", label: "Omnivamp", pattern: /Omnivamp$/i },
   { value: "tenacity", label: "Tenacity", pattern: /Tenacity$/i },
   { value: "lethality", label: "Lethality", pattern: /Lethality$/i },
@@ -186,7 +190,9 @@ export const itemDescriptionToText = (item: ItemDataDto): string => {
   return toPlainText(withNewlines) || NO_EFFECTS_FALLBACK;
 };
 
-export const parseGrantedStats = (description: string): NormalizedItemStat[] => {
+export const parseGrantedStats = (
+  description: string,
+): NormalizedItemStat[] => {
   const statsBlock = description.match(/<stats>([\s\S]*?)<\/stats>/i)?.[1];
   if (!statsBlock) return [];
 
@@ -194,7 +200,9 @@ export const parseGrantedStats = (description: string): NormalizedItemStat[] => 
     .split(/<br\s*\/?>/i)
     .map((line) => toPlainText(line))
     .reduce<NormalizedItemStat[]>((stats, line) => {
-      const definition = STAT_DEFINITIONS.find(({ pattern }) => pattern.test(line));
+      const definition = STAT_DEFINITIONS.find(({ pattern }) =>
+        pattern.test(line),
+      );
       if (!definition) return stats;
 
       const amount = line.replace(definition.pattern, "").trim();
@@ -215,7 +223,7 @@ export const getItemMetadata = (item: ItemDataDto): ItemMetadata => {
   const grantedStats = parseGrantedStats(item.description);
   const itemTags = new Set(item.tags ?? []);
   const effects = EFFECT_DEFINITIONS.filter(({ tag }) => itemTags.has(tag)).map(
-    ({ value, label }) => ({ value, label })
+    ({ value, label }) => ({ value, label }),
   );
 
   return {

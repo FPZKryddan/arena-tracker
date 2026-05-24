@@ -16,7 +16,8 @@ const DdragonVersionProvider = ({ children }: DdragonVersionProps) => {
     let cancelled = false;
     fetch("https://ddragon.leagueoflegends.com/api/versions.json")
       .then((res) => {
-        if (!res.ok) throw new Error(`DDragon versions fetch failed: ${res.status}`);
+        if (!res.ok)
+          throw new Error(`DDragon versions fetch failed: ${res.status}`);
         return res.json() as Promise<string[]>;
       })
       .then((versions) => {

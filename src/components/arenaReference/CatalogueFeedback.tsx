@@ -37,7 +37,10 @@ export const CatalogueSkeleton = ({
 }) => (
   <div className="flex animate-pulse flex-col gap-7" aria-label={label}>
     {Array.from({ length: grouped ? 3 : 1 }, (_, group) => (
-      <section key={`catalogue-loading-${group}`} className="flex flex-col gap-3">
+      <section
+        key={`catalogue-loading-${group}`}
+        className="flex flex-col gap-3"
+      >
         {grouped && <div className="h-6 w-28 rounded-md bg-border/60" />}
         <div className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-2.5">
           {Array.from({ length: 6 }, (_, entry) => (

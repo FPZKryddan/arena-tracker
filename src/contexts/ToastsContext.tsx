@@ -28,7 +28,7 @@ type ToastsContextValue = {
 };
 
 export const ToastsContext = createContext<ToastsContextValue | undefined>(
-  undefined
+  undefined,
 );
 
 const DEFAULT_DURATION_MS = 3000;
@@ -80,7 +80,7 @@ const ToastsProvider = ({ children }: ToastsProviderProps) => {
 
       return toastId;
     },
-    []
+    [],
   );
 
   useEffect(() => {

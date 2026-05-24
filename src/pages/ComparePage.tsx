@@ -6,12 +6,7 @@ import {
   type FormEvent,
 } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import {
-  IoAdd,
-  IoClose,
-  IoSearch,
-  IoStar,
-} from "react-icons/io5";
+import { IoAdd, IoClose, IoSearch, IoStar } from "react-icons/io5";
 import { ClipLoader } from "react-spinners";
 import ArenaModeSelector from "../components/arenaModeSelector";
 import PageHeader from "../components/common/PageHeader";
@@ -23,10 +18,7 @@ import { getStoredRegion, normalizeRegion } from "../hooks/useApiBase";
 import { getWinrate } from "../hooks/useStatsAggregator";
 import useFavorites, { type Favorite } from "../hooks/useFavorites";
 import { ApiError, formatApiError } from "../utils/apiError";
-import {
-  DEFAULT_ARENA_MODE,
-  parseArenaMode,
-} from "../utils/arenaModes";
+import { DEFAULT_ARENA_MODE, parseArenaMode } from "../utils/arenaModes";
 import type {
   ArenaModeSelection,
   numericalStatsDto,
@@ -77,11 +69,10 @@ const PLAYER_PARAM = "p";
 const REGIONS: Region[] = ["EUW", "EUNE", "NA"];
 
 const isRegion = (value: string | undefined): value is Region =>
-  typeof value === "string" &&
-  REGIONS.includes(value.toUpperCase() as Region);
+  typeof value === "string" && REGIONS.includes(value.toUpperCase() as Region);
 
 const parseRiotId = (
-  value: string
+  value: string,
 ): Pick<CompareTarget, "gameName" | "tagLine"> | null => {
   const trimmed = value.trim();
   const hashIndex = trimmed.lastIndexOf("#");
@@ -122,7 +113,12 @@ const safeDecode = (value: string): string | null => {
 
 const decodeCompareTarget = (value: string): CompareTarget | null => {
   const [region, encodedGameName, encodedTagLine, ...extra] = value.split("|");
-  if (extra.length > 0 || !isRegion(region) || !encodedGameName || !encodedTagLine) {
+  if (
+    extra.length > 0 ||
+    !isRegion(region) ||
+    !encodedGameName ||
+    !encodedTagLine
+  ) {
     return null;
   }
 
@@ -147,22 +143,22 @@ const uniqueTargets = (targets: CompareTarget[]): CompareTarget[] => {
 };
 
 const getTargetsFromSearchParams = (
-  searchParams: URLSearchParams
+  searchParams: URLSearchParams,
 ): CompareTarget[] =>
   uniqueTargets(
     searchParams
       .getAll(PLAYER_PARAM)
       .map(decodeCompareTarget)
-      .filter((target): target is CompareTarget => target !== null)
+      .filter((target): target is CompareTarget => target !== null),
   );
 
 const createCompareSearchParams = (
   targets: Array<CompareTarget | null>,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): URLSearchParams => {
   const params = new URLSearchParams();
   uniqueTargets(
-    targets.filter((target): target is CompareTarget => target !== null)
+    targets.filter((target): target is CompareTarget => target !== null),
   ).forEach((target) => {
     params.append(PLAYER_PARAM, encodeCompareTarget(target));
   });
@@ -172,7 +168,7 @@ const createCompareSearchParams = (
 
 const createDrafts = (
   targets: CompareTarget[],
-  fallbackRegion: Region
+  fallbackRegion: Region,
 ): CompareDraft[] =>
   Array.from({ length: MAX_COMPARE_PLAYERS }, (_, index) => {
     const target = targets[index];
@@ -212,7 +208,7 @@ const getRecordValue = (stat: numericalStatsDto | undefined): number =>
 
 const getAveragePerMatch = (
   stats: PlayerStats,
-  stat: numericalStatsDto | undefined
+  stat: numericalStatsDto | undefined,
 ): number => {
   if (stats.matchesPlayed <= 0) return 0;
   return getStatValue(stat) / stats.matchesPlayed;
@@ -223,7 +219,7 @@ const createMetrics = (comparisons: LoadedComparison[]): CompareMetric[] => {
     label: string,
     getValue: (stats: PlayerStats) => number,
     format: (value: number) => string,
-    higherIsBetter = true
+    higherIsBetter = true,
   ): CompareMetric => ({
     label,
     parts: [
@@ -245,7 +241,7 @@ const createMetrics = (comparisons: LoadedComparison[]): CompareMetric[] => {
     getStat: (stats: PlayerStats) => numericalStatsDto | undefined,
     format: (value: number) => string = formatCompact,
     averageFormat: (value: number) => string = formatCompact,
-    higherIsBetter = true
+    higherIsBetter = true,
   ): CompareMetric => ({
     label,
     parts: [
@@ -269,55 +265,56 @@ const createMetrics = (comparisons: LoadedComparison[]): CompareMetric[] => {
   return [
     metric("Played", (stats) => stats.matchesPlayed, formatInteger),
     metric("Avg Place", (stats) => stats.placementAvg, formatAverage, false),
-    metric("Top 4 Rate", (stats) => getWinrate(stats.placements), formatPercent),
+    metric(
+      "Top 4 Rate",
+      (stats) => getWinrate(stats.placements),
+      formatPercent,
+    ),
     metric("1st Places", (stats) => stats.placements[1] ?? 0, formatInteger),
     metric("KDA", getKda, formatKda),
     statMetric(
       "Kills",
       (stats) => stats.infographics.killsDeathsAssists.kills,
       formatInteger,
-      formatAverage
+      formatAverage,
     ),
     statMetric(
       "Deaths",
       (stats) => stats.infographics.killsDeathsAssists.deaths,
       formatInteger,
       formatAverage,
-      false
+      false,
     ),
     statMetric(
       "Assists",
       (stats) => stats.infographics.killsDeathsAssists.assists,
       formatInteger,
-      formatAverage
+      formatAverage,
     ),
     statMetric(
       "Champion Dmg",
-      (stats) => stats.infographics.damageStats.total.champions
+      (stats) => stats.infographics.damageStats.total.champions,
     ),
     statMetric(
       "Damage Taken",
-      (stats) => stats.infographics.damageTakenStats.total
+      (stats) => stats.infographics.damageTakenStats.total,
     ),
-    statMetric(
-      "Healing",
-      (stats) => stats.infographics.healingStats?.total
-    ),
+    statMetric("Healing", (stats) => stats.infographics.healingStats?.total),
     statMetric(
       "Shielding",
-      (stats) => stats.infographics.shieldingStats?.onTeammates
+      (stats) => stats.infographics.shieldingStats?.onTeammates,
     ),
     statMetric(
       "Skillshots Hit",
       (stats) => stats.infographics.skillShotsStats.hit,
       formatInteger,
-      formatAverage
+      formatAverage,
     ),
     statMetric(
       "Skillshots Dodged",
       (stats) => stats.infographics.skillShotsStats.dodged,
       formatInteger,
-      formatAverage
+      formatAverage,
     ),
     metric("Arena God", getArenaGodCount, formatInteger),
   ];
@@ -348,7 +345,7 @@ const ComparePage = () => {
 
   const searchTargets = useMemo(
     () => getTargetsFromSearchParams(searchParams),
-    [searchParams]
+    [searchParams],
   );
 
   const targets = useMemo(
@@ -356,31 +353,31 @@ const ComparePage = () => {
       searchTargets.length > 0
         ? searchTargets
         : routeTarget
-        ? [routeTarget]
-        : [],
-    [routeTarget, searchTargets]
+          ? [routeTarget]
+          : [],
+    [routeTarget, searchTargets],
   );
   const targetsKey = useMemo(
     () => targets.map(encodeCompareTarget).join("\n"),
-    [targets]
+    [targets],
   );
   const slotTargets = useMemo<Array<CompareTarget | null>>(
     () =>
       Array.from(
         { length: MAX_COMPARE_PLAYERS },
-        (_, index) => targets[index] ?? null
+        (_, index) => targets[index] ?? null,
       ),
-    [targets]
+    [targets],
   );
 
   const [drafts, setDrafts] = useState<CompareDraft[]>(() =>
-    createDrafts(targets, storedRegion)
+    createDrafts(targets, storedRegion),
   );
   const [visibleSlotCount, setVisibleSlotCount] = useState(() =>
-    Math.max(INITIAL_COMPARE_PLAYERS, targets.length)
+    Math.max(INITIAL_COMPARE_PLAYERS, targets.length),
   );
   const [formErrors, setFormErrors] = useState<Array<string | null>>(() =>
-    Array.from({ length: MAX_COMPARE_PLAYERS }, () => null)
+    Array.from({ length: MAX_COMPARE_PLAYERS }, () => null),
   );
 
   const navigateToTargets = useCallback(
@@ -392,10 +389,10 @@ const ComparePage = () => {
           pathname: "/compare",
           search: search ? `?${search}` : "",
         },
-        { replace }
+        { replace },
       );
     },
-    [arenaMode, navigate]
+    [arenaMode, navigate],
   );
   const handleArenaModeChange = useCallback(
     (nextMode: ArenaModeSelection) => {
@@ -409,7 +406,7 @@ const ComparePage = () => {
         return next;
       });
     },
-    [setSearchParams]
+    [setSearchParams],
   );
 
   useEffect(() => {
@@ -428,38 +425,38 @@ const ComparePage = () => {
     slotTargets[0]?.region,
     slotTargets[0]?.gameName,
     slotTargets[0]?.tagLine,
-    arenaMode
+    arenaMode,
   );
   const query1 = usePlayerStatsQuery(
     slotTargets[1]?.region,
     slotTargets[1]?.gameName,
     slotTargets[1]?.tagLine,
-    arenaMode
+    arenaMode,
   );
   const query2 = usePlayerStatsQuery(
     slotTargets[2]?.region,
     slotTargets[2]?.gameName,
     slotTargets[2]?.tagLine,
-    arenaMode
+    arenaMode,
   );
   const query3 = usePlayerStatsQuery(
     slotTargets[3]?.region,
     slotTargets[3]?.gameName,
     slotTargets[3]?.tagLine,
-    arenaMode
+    arenaMode,
   );
   const playerQueries = useMemo(
     () => [query0, query1, query2, query3],
-    [query0, query1, query2, query3]
+    [query0, query1, query2, query3],
   );
 
   const visibleIndexes = useMemo(
     () => Array.from({ length: visibleSlotCount }, (_, index) => index),
-    [visibleSlotCount]
+    [visibleSlotCount],
   );
   const visibleTargets = useMemo(
     () => slotTargets.slice(0, visibleSlotCount),
-    [slotTargets, visibleSlotCount]
+    [slotTargets, visibleSlotCount],
   );
   const canAddPlayer = useMemo(() => {
     if (visibleSlotCount >= MAX_COMPARE_PLAYERS) return false;
@@ -474,10 +471,10 @@ const ComparePage = () => {
       .map((target, index) =>
         target && playerQueries[index].data
           ? { target, stats: playerQueries[index].data }
-          : null
+          : null,
       )
       .filter(
-        (comparison): comparison is LoadedComparison => comparison !== null
+        (comparison): comparison is LoadedComparison => comparison !== null,
       );
   }, [playerQueries, visibleTargets]);
 
@@ -490,23 +487,23 @@ const ComparePage = () => {
     (index: number, patch: Partial<CompareDraft>) => {
       setDrafts((current) =>
         current.map((draft, draftIndex) =>
-          draftIndex === index ? { ...draft, ...patch } : draft
-        )
+          draftIndex === index ? { ...draft, ...patch } : draft,
+        ),
       );
     },
-    []
+    [],
   );
   const updateDraftHandle = useCallback(
     (index: number, handle: string) => {
       updateDraft(index, { handle });
     },
-    [updateDraft]
+    [updateDraft],
   );
   const updateDraftRegion = useCallback(
     (index: number, region: Region) => {
       updateDraft(index, { region });
     },
-    [updateDraft]
+    [updateDraft],
   );
 
   const loadPlayer = useCallback(
@@ -516,8 +513,8 @@ const ComparePage = () => {
       if (!parsed) {
         setFormErrors((current) =>
           current.map((error, errorIndex) =>
-            errorIndex === index ? "Use RiotName#TAG." : error
-          )
+            errorIndex === index ? "Use RiotName#TAG." : error,
+          ),
         );
         return;
       }
@@ -530,42 +527,42 @@ const ComparePage = () => {
         (target, targetIndex) =>
           targetIndex !== index &&
           target !== null &&
-          targetKey(target) === targetKey(nextTarget)
+          targetKey(target) === targetKey(nextTarget),
       );
 
       if (duplicate) {
         setFormErrors((current) =>
           current.map((error, errorIndex) =>
-            errorIndex === index ? "Already in comparison." : error
-          )
+            errorIndex === index ? "Already in comparison." : error,
+          ),
         );
         return;
       }
 
       setFormErrors((current) =>
         current.map((error, errorIndex) =>
-          errorIndex === index ? null : error
-        )
+          errorIndex === index ? null : error,
+        ),
       );
 
       const nextTargets = [...slotTargets];
       nextTargets[index] = nextTarget;
       navigateToTargets(nextTargets);
     },
-    [drafts, navigateToTargets, slotTargets]
+    [drafts, navigateToTargets, slotTargets],
   );
 
   const clearPlayer = useCallback(
     (index: number) => {
       setDrafts((current) =>
         current.map((draft, draftIndex) =>
-          draftIndex === index ? { ...draft, handle: "" } : draft
-        )
+          draftIndex === index ? { ...draft, handle: "" } : draft,
+        ),
       );
       setFormErrors((current) =>
         current.map((error, errorIndex) =>
-          errorIndex === index ? null : error
-        )
+          errorIndex === index ? null : error,
+        ),
       );
       if (!slotTargets[index]) {
         if (index >= INITIAL_COMPARE_PLAYERS) {
@@ -578,13 +575,11 @@ const ComparePage = () => {
       nextTargets[index] = null;
       navigateToTargets(nextTargets);
     },
-    [navigateToTargets, slotTargets]
+    [navigateToTargets, slotTargets],
   );
 
   const addPlayerSlot = useCallback(() => {
-    setVisibleSlotCount((count) =>
-      Math.min(MAX_COMPARE_PLAYERS, count + 1)
-    );
+    setVisibleSlotCount((count) => Math.min(MAX_COMPARE_PLAYERS, count + 1));
   }, []);
 
   const addFavoritePlayer = useCallback(
@@ -592,21 +587,22 @@ const ComparePage = () => {
       const nextTarget = favoriteToTarget(favorite);
       if (
         slotTargets.some(
-          (target) => target !== null && targetKey(target) === targetKey(nextTarget)
+          (target) =>
+            target !== null && targetKey(target) === targetKey(nextTarget),
         )
       ) {
         return;
       }
 
       const visibleEmptyIndex = slotTargets.findIndex(
-        (target, index) => index < visibleSlotCount && target === null
+        (target, index) => index < visibleSlotCount && target === null,
       );
       const nextIndex =
         visibleEmptyIndex >= 0
           ? visibleEmptyIndex
           : canAddPlayer
-          ? visibleSlotCount
-          : -1;
+            ? visibleSlotCount
+            : -1;
 
       if (nextIndex < 0 || nextIndex >= MAX_COMPARE_PLAYERS) return;
 
@@ -615,7 +611,7 @@ const ComparePage = () => {
       setVisibleSlotCount((count) => Math.max(count, nextIndex + 1));
       navigateToTargets(nextTargets);
     },
-    [canAddPlayer, navigateToTargets, slotTargets, visibleSlotCount]
+    [canAddPlayer, navigateToTargets, slotTargets, visibleSlotCount],
   );
 
   return (
@@ -647,7 +643,9 @@ const ComparePage = () => {
                   draft={draft}
                   target={target}
                   isLoading={query.isFetching}
-                  error={formErrors[index] ?? getQueryError(query.error, target)}
+                  error={
+                    formErrors[index] ?? getQueryError(query.error, target)
+                  }
                   onClear={() => clearPlayer(index)}
                   onHandleChange={updateDraftHandle}
                   onRegionChange={updateDraftRegion}
@@ -676,7 +674,6 @@ const ComparePage = () => {
           onAddFavorite={addFavoritePlayer}
         />
 
-
         <section className="overflow-x-auto pb-2">
           <div className="flex w-full min-w-0 flex-row items-start gap-4">
             {visibleIndexes.map((index) => {
@@ -684,14 +681,14 @@ const ComparePage = () => {
               const query = playerQueries[index];
               return (
                 <CompareStatsSlot
-                key={`compare-stats-${index}`}
-                target={target}
-                stats={query.data}
-                isLoading={query.isFetching && !query.data}
-                region={target?.region}
-                emptyLabel={`Choose Player ${index + 1}`}
-                visibleSlotCount={visibleSlotCount}
-                arenaMode={arenaMode}
+                  key={`compare-stats-${index}`}
+                  target={target}
+                  stats={query.data}
+                  isLoading={query.isFetching && !query.data}
+                  region={target?.region}
+                  emptyLabel={`Choose Player ${index + 1}`}
+                  visibleSlotCount={visibleSlotCount}
+                  arenaMode={arenaMode}
                 />
               );
             })}
@@ -742,12 +739,12 @@ const FavoriteCompareQuickAdd = ({
       new Set(
         slotTargets
           .filter((target): target is CompareTarget => target !== null)
-          .map(targetKey)
+          .map(targetKey),
       ),
-    [slotTargets]
+    [slotTargets],
   );
   const hasVisibleEmptySlot = slotTargets.some(
-    (target, index) => index < visibleSlotCount && target === null
+    (target, index) => index < visibleSlotCount && target === null,
   );
   const canUseQuickAdd = hasVisibleEmptySlot || canAddPlayer;
 
@@ -809,7 +806,7 @@ const ComparePlayerPicker = ({
     (region: Regions) => {
       if (region) onRegionChange(slotIndex, region);
     },
-    [onRegionChange, slotIndex]
+    [onRegionChange, slotIndex],
   );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -938,7 +935,7 @@ const CompareMetricPanel = ({
 const getMetricLeaders = (metric: CompareMetric) =>
   metric.parts.map((part) => {
     const values = metric.values.map((entry) =>
-      getMetricPartValue(entry, part.key)
+      getMetricPartValue(entry, part.key),
     );
     const firstValue = values[0];
     const allTie = values.every((value) => value === firstValue);
@@ -961,7 +958,10 @@ const MobileMetricCard = ({ metric }: { metric: CompareMetric }) => {
 
       <div className="mt-2 flex flex-col divide-y divide-border">
         {metric.values.map((entry) => (
-          <div key={targetKey(entry.target)} className="grid gap-2 py-2 first:pt-0 last:pb-0">
+          <div
+            key={targetKey(entry.target)}
+            className="grid gap-2 py-2 first:pt-0 last:pb-0"
+          >
             <div className="flex min-w-0 items-center justify-between gap-2">
               <p className="min-w-0 truncate text-xs font-medium text-fg">
                 {handleFor(entry.target)}
@@ -998,9 +998,7 @@ const CompareMetricRow = ({
       style={gridStyle}
     >
       <div className="min-w-0">
-        <p className="truncate text-xs font-semibold text-fg">
-          {metric.label}
-        </p>
+        <p className="truncate text-xs font-semibold text-fg">{metric.label}</p>
       </div>
       {metric.values.map((entry) => (
         <MetricValueGroup
@@ -1016,7 +1014,7 @@ const CompareMetricRow = ({
 
 const getMetricPartValue = (
   entry: CompareMetric["values"][number],
-  key: string
+  key: string,
 ): number => entry.parts.find((part) => part.key === key)?.value ?? 0;
 
 const MetricValueGroup = ({
@@ -1061,7 +1059,8 @@ const MetricValueGroup = ({
       {metric.parts.map((part) => {
         const value = getMetricPartValue(entry, part.key);
         const leader = leaders.find((candidate) => candidate.key === part.key);
-        const isLeading = !!leader && !leader.allTie && value === leader.bestValue;
+        const isLeading =
+          !!leader && !leader.allTie && value === leader.bestValue;
 
         return (
           <div key={part.key} className="min-w-0">
@@ -1139,7 +1138,7 @@ const EmptyCompareSlot = ({ label }: { label: string }) => (
 
 const getQueryError = (
   error: unknown,
-  target: CompareTarget | null
+  target: CompareTarget | null,
 ): string | null => {
   if (!error || !target) return null;
   if (error instanceof ApiError) {

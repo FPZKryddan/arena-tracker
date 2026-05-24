@@ -66,7 +66,7 @@ const champion = (
   timesPlayed: number,
   placementAvg: number,
   placements: championStatsDto["placements"],
-  stage: number
+  stage: number,
 ): championStatsDto => ({
   id,
   name,
@@ -79,66 +79,108 @@ const champion = (
 });
 
 export const LANDING_PODIUM_CHAMPIONS: championStatsDto[] = [
-  champion("Yasuo", "Yasuo", 42, 2.4, {
-    1: 12,
-    2: 9,
-    3: 8,
-    4: 6,
-    5: 3,
-    6: 2,
-    7: 1,
-    8: 1,
-  }, 3),
-  champion("Ahri", "Ahri", 31, 3.1, {
-    1: 4,
-    2: 8,
-    3: 6,
-    4: 5,
-    5: 3,
-    6: 2,
-    7: 2,
-    8: 1,
-  }, 2),
-  champion("Jinx", "Jinx", 28, 3.6, {
-    1: 2,
-    2: 5,
-    3: 7,
-    4: 4,
-    5: 3,
-    6: 3,
-    7: 2,
-    8: 2,
-  }, 1),
+  champion(
+    "Yasuo",
+    "Yasuo",
+    42,
+    2.4,
+    {
+      1: 12,
+      2: 9,
+      3: 8,
+      4: 6,
+      5: 3,
+      6: 2,
+      7: 1,
+      8: 1,
+    },
+    3,
+  ),
+  champion(
+    "Ahri",
+    "Ahri",
+    31,
+    3.1,
+    {
+      1: 4,
+      2: 8,
+      3: 6,
+      4: 5,
+      5: 3,
+      6: 2,
+      7: 2,
+      8: 1,
+    },
+    2,
+  ),
+  champion(
+    "Jinx",
+    "Jinx",
+    28,
+    3.6,
+    {
+      1: 2,
+      2: 5,
+      3: 7,
+      4: 4,
+      5: 3,
+      6: 3,
+      7: 2,
+      8: 2,
+    },
+    1,
+  ),
 ];
 
 export const LANDING_GRID_CHAMPIONS: championStatsDto[] = [
-  champion("Lux", "Lux", 19, 2.9, {
-    1: 5,
-    2: 3,
-    3: 4,
-    4: 3,
-    5: 2,
-    6: 1,
-    8: 1,
-  }, 3),
-  champion("Sett", "Sett", 16, 3.4, {
-    1: 1,
-    2: 4,
-    3: 3,
-    4: 3,
-    5: 2,
-    6: 2,
-    7: 1,
-  }, 2),
-  champion("Riven", "Riven", 9, 4.7, {
-    2: 1,
-    3: 1,
-    4: 2,
-    5: 2,
-    6: 1,
-    7: 1,
-    8: 1,
-  }, 1),
+  champion(
+    "Lux",
+    "Lux",
+    19,
+    2.9,
+    {
+      1: 5,
+      2: 3,
+      3: 4,
+      4: 3,
+      5: 2,
+      6: 1,
+      8: 1,
+    },
+    3,
+  ),
+  champion(
+    "Sett",
+    "Sett",
+    16,
+    3.4,
+    {
+      1: 1,
+      2: 4,
+      3: 3,
+      4: 3,
+      5: 2,
+      6: 2,
+      7: 1,
+    },
+    2,
+  ),
+  champion(
+    "Riven",
+    "Riven",
+    9,
+    4.7,
+    {
+      2: 1,
+      3: 1,
+      4: 2,
+      5: 2,
+      6: 1,
+      7: 1,
+      8: 1,
+    },
+    1,
+  ),
   champion("Karthus", "Karthus", 0, 0, {}, 0),
 ];
 
@@ -158,7 +200,7 @@ const normalizeAugmentName = (value: string): string =>
   value.toLowerCase().replace(/[^a-z0-9]/g, "");
 
 export const createLandingAugmentStats = (
-  augments: augmentsData[]
+  augments: augmentsData[],
 ): augmentsStatsDto => {
   const available = augments.filter((augment) => !!augment.iconLarge);
   const selected: augmentsData[] = [];
@@ -170,7 +212,7 @@ export const createLandingAugmentStats = (
       (augment) =>
         !selectedIds.has(augment.id) &&
         (normalizeAugmentName(augment.name) === normalizedName ||
-          normalizeAugmentName(augment.apiName) === normalizedName)
+          normalizeAugmentName(augment.apiName) === normalizedName),
     );
     if (!match) continue;
     selected.push(match);

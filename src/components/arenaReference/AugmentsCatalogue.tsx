@@ -28,14 +28,14 @@ const AugmentsCatalogue = ({ search }: AugmentsCatalogueProps) => {
 
   const displayAugments = useMemo(
     () => augments.filter(isDisplayAugment),
-    [augments]
+    [augments],
   );
   const tierGroups = useMemo(() => {
     const groups = new Map<number, augmentsData[]>();
 
     displayAugments
       .filter((augment) =>
-        augment.name.toLocaleLowerCase().includes(normalizedSearch)
+        augment.name.toLocaleLowerCase().includes(normalizedSearch),
       )
       .forEach((augment) => {
         const tier = groups.get(augment.rarity) ?? [];
@@ -53,7 +53,7 @@ const AugmentsCatalogue = ({ search }: AugmentsCatalogueProps) => {
   }, [displayAugments, normalizedSearch]);
   const visibleCount = tierGroups.reduce(
     (total, tier) => total + tier.augments.length,
-    0
+    0,
   );
 
   if (isLoading) return <CatalogueSkeleton grouped label="Loading augments" />;

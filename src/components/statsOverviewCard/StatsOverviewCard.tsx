@@ -44,15 +44,16 @@ const StatsOverviewCard = ({
   const hasStats = stats.placementAvg != 0;
   const matchCount = Math.max(
     0,
-    "matchesPlayed" in stats ? stats.matchesPlayed : stats.timesPlayed
+    "matchesPlayed" in stats ? stats.matchesPlayed : stats.timesPlayed,
   );
   const displayName =
     "gameName" in stats ? stats.gameName + "#" + stats.tagLine : stats.name;
   const bannerImgUrl =
     "profileIconId" in stats ? undefined : getChampionSplashArtUrl(stats.id);
   const arenaGodCompletedChampions = isPlayerStats
-    ? Object.values(stats.championStats).filter((champion) => champion.stage >= 3)
-        .length
+    ? Object.values(stats.championStats).filter(
+        (champion) => champion.stage >= 3,
+      ).length
     : 0;
   const effectiveFavoriteRegion = favoriteRegion ?? routeRegion;
   const effectiveProfileRegion =
@@ -62,7 +63,7 @@ const StatsOverviewCard = ({
     "gameName" in stats && profileRegion
       ? (() => {
           const path = `/profile/${profileRegion}/${encodeURIComponent(
-            stats.gameName
+            stats.gameName,
           )}/${encodeURIComponent(stats.tagLine)}`;
           if (!arenaMode || arenaMode === DEFAULT_ARENA_MODE) return path;
           return `${path}?${new URLSearchParams({ mode: arenaMode }).toString()}`;
@@ -75,15 +76,17 @@ const StatsOverviewCard = ({
   };
 
   const getImgUrl = (): string => {
-    if ('profileIconId' in stats) {
-      return `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${stats['profileIconId']}.png`;
+    if ("profileIconId" in stats) {
+      return `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${stats["profileIconId"]}.png`;
     }
     return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${firstLetterBig(stats.id)}.png`;
-  }
+  };
 
   return (
-    <div className={`${standalone ? 'border border-border bg-surface p-2 md:p-6' : 'bg-transparent'}
-     relative flex h-fit w-full grow-0 flex-col gap-6 rounded-lg text-fg`}>
+    <div
+      className={`${standalone ? "border border-border bg-surface p-2 md:p-6" : "bg-transparent"}
+     relative flex h-fit w-full grow-0 flex-col gap-6 rounded-lg text-fg`}
+    >
       {stats && hasStats ? (
         <div className="relative flex flex-col gap-6">
           {bannerImgUrl && (

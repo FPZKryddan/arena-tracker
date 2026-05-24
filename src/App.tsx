@@ -36,7 +36,10 @@ function App() {
         <Route path="/" element={<LandingShell />} />
         <Route element={<AppShell />}>
           <Route path="/reference" element={<ArenaReferencePage />} />
-          <Route path="/augments" element={<Navigate to="/reference" replace />} />
+          <Route
+            path="/augments"
+            element={<Navigate to="/reference" replace />}
+          />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/match/:region/:matchId" element={<MatchPage />} />
           <Route path="/compare" element={<ComparePage />} />

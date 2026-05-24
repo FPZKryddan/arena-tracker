@@ -4,11 +4,12 @@ import { ToastsContext } from "../contexts/ToastsContext";
 import type { ToastVariant } from "../types";
 
 function useToast() {
-  const { toasts, upsertToast, dismissToast } = useContextIfDefined(ToastsContext);
+  const { toasts, upsertToast, dismissToast } =
+    useContextIfDefined(ToastsContext);
 
   const createToast = useCallback(
     (message: string, type: ToastVariant) => upsertToast({ message, type }),
-    [upsertToast]
+    [upsertToast],
   );
 
   return {

@@ -13,16 +13,17 @@ import useContextIfDefined from "../hooks/useContextIfDefined";
 import usePlayerHydration from "../hooks/usePlayerHydration";
 import useProfileLookup from "../hooks/useProfileLookup";
 import type { ArenaModeSelection, PlayerStats, Regions } from "../types";
-import {
-  DEFAULT_ARENA_MODE,
-  parseArenaMode,
-} from "../utils/arenaModes";
+import { DEFAULT_ARENA_MODE, parseArenaMode } from "../utils/arenaModes";
 
 type RouteProgress = ReturnType<typeof usePlayerHydration>;
 
 const ProfilePage = () => {
   const { playerStats } = useContextIfDefined(PlayerStatsContext);
-  const params = useParams<{ region: string; gameName: string; tagLine: string }>();
+  const params = useParams<{
+    region: string;
+    gameName: string;
+    tagLine: string;
+  }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const region = (params.region ?? null) as Exclude<Regions, null> | null;
   const gameName = params.gameName ?? null;
@@ -38,12 +39,12 @@ const ProfilePage = () => {
   const { profile, refetch: refetchProfileLookup } = useProfileLookup(
     gameName ?? undefined,
     tagLine ?? undefined,
-    region ?? undefined
+    region ?? undefined,
   );
   const canUpdateProfile =
     !!region && !!gameName && !!tagLine && !routeProgress.isFetching;
   const pendingMatchesCount = profile?.tracked
-    ? profile.nonProcessedMatchesCount ?? 0
+    ? (profile.nonProcessedMatchesCount ?? 0)
     : 0;
   const pendingMatchesLabel =
     pendingMatchesCount === 1
@@ -65,7 +66,7 @@ const ProfilePage = () => {
         return next;
       });
     },
-    [setSearchParams]
+    [setSearchParams],
   );
 
   return (
@@ -107,7 +108,7 @@ const ProfilePage = () => {
               canUpdateProfile={canUpdateProfile}
               onUpdateProfile={handleUpdateProfile}
               onArenaModeChange={handleArenaModeChange}
-              />
+            />
           </div>
           <ProfileChampionMatches arenaMode={arenaMode} />
         </section>

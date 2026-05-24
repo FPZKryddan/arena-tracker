@@ -16,11 +16,7 @@ type FavoriteAugmentEntry = {
 const MAX_FAVORITE_AUGMENTS = 8;
 
 const FavoriteAugmentsBody = ({ augments }: FavoriteAugmentsBodyProps) => {
-  const {
-    data: augmentData = [],
-    isError,
-    isLoading,
-  } = useAugmentsQuery();
+  const { data: augmentData = [], isError, isLoading } = useAugmentsQuery();
 
   const augmentById = useMemo(() => {
     const map = new Map<number, augmentsData>();
@@ -48,7 +44,7 @@ const FavoriteAugmentsBody = ({ augments }: FavoriteAugmentsBodyProps) => {
       })
       .filter(
         (entry): entry is Omit<FavoriteAugmentEntry, "rank"> =>
-          !!entry.data && entry.picked > 0
+          !!entry.data && entry.picked > 0,
       )
       .sort((a, b) => b.picked - a.picked)
       .slice(0, MAX_FAVORITE_AUGMENTS)

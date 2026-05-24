@@ -60,7 +60,7 @@ const ChampionFiltering = ({
     onFiltersChange({ ...filters, roleFilter });
   const setPlayedRange = (
     minPlayedRequired: number,
-    maxPlayedAllowed: number
+    maxPlayedAllowed: number,
   ) => onFiltersChange({ ...filters, minPlayedRequired, maxPlayedAllowed });
   const setMinWinrateRequired = (minWinrateRequired: number) =>
     onFiltersChange({ ...filters, minWinrateRequired });
@@ -148,7 +148,7 @@ type ChampionFilteringSelectProps<TValue extends string> = {
   updateValueCallback: (value: TValue) => void;
 };
 
-const ChampionFilteringSelect = <TValue extends string,>({
+const ChampionFilteringSelect = <TValue extends string>({
   label,
   value,
   options,
@@ -227,7 +227,7 @@ const ChampionFilteringRange = ({
       : Math.min(Math.max(0, Math.floor(maxValue)), rangeMaxValue);
   const displayedMinValue = Math.min(
     Math.max(0, Math.floor(minValue)),
-    displayedMaxValue
+    displayedMaxValue,
   );
   const minPercent =
     rangeMaxValue > 0 ? (displayedMinValue / rangeMaxValue) * 100 : 0;
@@ -247,7 +247,7 @@ const ChampionFilteringRange = ({
   const updateMaxValue = (value: number): void => {
     const nextMaxValue = Math.max(
       Math.min(rangeMaxValue, value),
-      displayedMinValue
+      displayedMinValue,
     );
     updateValueCallback(displayedMinValue, toStoredMaxValue(nextMaxValue));
   };
@@ -266,7 +266,7 @@ const ChampionFilteringRange = ({
     const rect = track.getBoundingClientRect();
     const percent = Math.min(
       Math.max((clientX - rect.left) / rect.width, 0),
-      1
+      1,
     );
     return Math.round(percent * rangeMaxValue);
   };
@@ -292,21 +292,18 @@ const ChampionFilteringRange = ({
     return null;
   };
 
-  const handlePointerDown = (
-    e: ReactPointerEvent<HTMLDivElement>
-  ): void => {
+  const handlePointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
     if (disabled) return;
     const nextValue = getValueFromPointer(e.clientX);
-    const nextThumb = getThumbFromTarget(e.target) ?? getClosestThumb(nextValue);
+    const nextThumb =
+      getThumbFromTarget(e.target) ?? getClosestThumb(nextValue);
     activeThumbRef.current = nextThumb;
     e.currentTarget.setPointerCapture(e.pointerId);
     updateThumbValue(nextThumb, nextValue);
     e.preventDefault();
   };
 
-  const handlePointerMove = (
-    e: ReactPointerEvent<HTMLDivElement>
-  ): void => {
+  const handlePointerMove = (e: ReactPointerEvent<HTMLDivElement>): void => {
     if (!activeThumbRef.current) return;
     updateThumbValue(activeThumbRef.current, getValueFromPointer(e.clientX));
   };
@@ -318,9 +315,7 @@ const ChampionFilteringRange = ({
     }
   };
 
-  const handleMinKeyDown = (
-    e: ReactKeyboardEvent<HTMLInputElement>
-  ): void => {
+  const handleMinKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>): void => {
     switch (e.key) {
       case "ArrowLeft":
       case "ArrowDown":
@@ -342,9 +337,7 @@ const ChampionFilteringRange = ({
     e.preventDefault();
   };
 
-  const handleMaxKeyDown = (
-    e: ReactKeyboardEvent<HTMLInputElement>
-  ): void => {
+  const handleMaxKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>): void => {
     switch (e.key) {
       case "ArrowLeft":
       case "ArrowDown":

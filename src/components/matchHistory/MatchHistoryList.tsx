@@ -30,7 +30,8 @@ interface MatchHistoryListProps {
 }
 
 const placementColor = (placement: number): string => {
-  if (placement === 1) return "bg-gradient-to-r bg-placement-first/25 border-placement-first";
+  if (placement === 1)
+    return "bg-gradient-to-r bg-placement-first/25 border-placement-first";
   if (placement <= 4) return "bg-success/20 border-success";
   return "bg-surface-elevated border-border";
 };
@@ -54,7 +55,8 @@ const formatRelative = (timestamp: number): string => {
 const MatchHistoryList = ({
   arenaMode = DEFAULT_ARENA_MODE,
 }: MatchHistoryListProps) => {
-  const { playerStats, loadedProfile } = useContextIfDefined(PlayerStatsContext);
+  const { playerStats, loadedProfile } =
+    useContextIfDefined(PlayerStatsContext);
   const params = useParams<{ region: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const profileRegion = loadedProfile?.region ?? normalizeRegion(params.region);
@@ -64,7 +66,7 @@ const MatchHistoryList = ({
     playerStats?.tagLine,
     RECENT_LIMIT,
     profileRegion,
-    arenaMode
+    arenaMode,
   );
 
   const matchQueries = useMatchesQuery(matchIds, profileRegion);
@@ -74,11 +76,11 @@ const MatchHistoryList = ({
         .map((q) => q.data)
         .filter((m): m is MatchDto => !!m)
         .filter((match) =>
-          matchQueueIdBelongsToArenaMode(match.info.queueId, arenaMode)
+          matchQueueIdBelongsToArenaMode(match.info.queueId, arenaMode),
         )
         .sort((a, b) => b.info.gameCreation - a.info.gameCreation)
         .slice(0, RECENT_LIMIT),
-    [arenaMode, matchQueries]
+    [arenaMode, matchQueries],
   );
   const matchesLoading = matchQueries.some((q) => q.isLoading);
 
@@ -94,7 +96,7 @@ const MatchHistoryList = ({
 
       setSearchParams(nextParams);
     },
-    [searchParams, setSearchParams]
+    [searchParams, setSearchParams],
   );
 
   const loading = !playerStats || idsLoading || matchesLoading;
@@ -161,33 +163,31 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
   const teammates = useMemo(
     () =>
       match.info.participants.filter(
-        (p) => p.puuid !== me.puuid && p.playerSubteamId === me.playerSubteamId
+        (p) => p.puuid !== me.puuid && p.playerSubteamId === me.playerSubteamId,
       ),
-    [match, me]
+    [match, me],
   );
 
   const items = useMemo(
-    () =>
-      [me.item0, me.item1, me.item2, me.item3, me.item4, me.item5],
-    [me]
+    () => [me.item0, me.item1, me.item2, me.item3, me.item4, me.item5],
+    [me],
   );
 
   const augmentIds = useMemo(
-    () =>
-      [
-        me.playerAugment1,
-        me.playerAugment2,
-        me.playerAugment3,
-        me.playerAugment4,
-      ],
-    [me]
+    () => [
+      me.playerAugment1,
+      me.playerAugment2,
+      me.playerAugment3,
+      me.playerAugment4,
+    ],
+    [me],
   );
 
   return (
     <li
       onClick={onClick}
       className={`flex flex-row items-center gap-2 rounded-md border-l-4 p-2 text-xs text-fg transition-colors hover:cursor-pointer hover:bg-surface-hover ${placementColor(
-        me.placement
+        me.placement,
       )}`}
     >
       <div className="h-12 aspect-square rounded-full overflow-hidden shrink-0">
@@ -216,8 +216,12 @@ const MatchHistoryRow = ({ match, me, onClick }: MatchHistoryRowProps) => {
         <p>
           {me.kills}/{me.deaths}/{me.assists}
         </p>
-        <p className="text-fg-muted">{formatDuration(match.info.gameDuration)}</p>
-        <p className="text-fg-subtle">{formatRelative(match.info.gameCreation)}</p>
+        <p className="text-fg-muted">
+          {formatDuration(match.info.gameDuration)}
+        </p>
+        <p className="text-fg-subtle">
+          {formatRelative(match.info.gameCreation)}
+        </p>
       </div>
     </li>
   );
@@ -336,7 +340,10 @@ const MatchHistorySkeleton = () => {
   ];
 
   return (
-    <ul className="flex flex-col gap-1.5 animate-pulse" aria-label="Loading match history">
+    <ul
+      className="flex flex-col gap-1.5 animate-pulse"
+      aria-label="Loading match history"
+    >
       {Array.from({ length: RECENT_LIMIT }).map((_, i) => (
         <li
           key={`match-skeleton-${i}`}

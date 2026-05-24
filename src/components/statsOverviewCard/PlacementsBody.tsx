@@ -21,7 +21,13 @@ interface PlacementsBodyProps {
 
 const getPlacementLabel = (placement: number): string => {
   const suffix =
-    placement === 1 ? "st" : placement === 2 ? "nd" : placement === 3 ? "rd" : "th";
+    placement === 1
+      ? "st"
+      : placement === 2
+        ? "nd"
+        : placement === 3
+          ? "rd"
+          : "th";
   return `${placement}${suffix}`;
 };
 
@@ -47,7 +53,7 @@ ChartJS.register(
   LinearScale,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 const PlacementsBody = ({
   placements,
@@ -72,8 +78,9 @@ const PlacementsBody = ({
   const cssVar = (name: string) => {
     if (typeof window === "undefined") return `var(${name})`;
     return (
-      getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
-      `var(${name})`
+      getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim() || `var(${name})`
     );
   };
 
@@ -88,7 +95,7 @@ const PlacementsBody = ({
 
   const data = {
     labels: Array.from({ length: placementCount }, (_, index) =>
-      getPlacementLabel(placementCount - index)
+      getPlacementLabel(placementCount - index),
     ),
     datasets: [
       {
@@ -143,8 +150,8 @@ const PlacementsBody = ({
           <p>Played: {getTotalMatches(placements)}</p>
           <p>
             <span className="text-success">{getWins(placements)}</span> /
-            <span className="text-danger">{" " + getLosses(placements)}</span>{" "}
-            ({getWinrate(placements)}%)
+            <span className="text-danger">{" " + getLosses(placements)}</span> (
+            {getWinrate(placements)}%)
           </p>
         </div>
       </div>

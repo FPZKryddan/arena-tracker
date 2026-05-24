@@ -35,7 +35,7 @@ export const DEFAULT_CHAMPION_FILTERS: ChampionFilters = {
 
 const matchesStageFilter = (
   champion: championStatsDto,
-  stageFilter: ChampionStageFilter
+  stageFilter: ChampionStageFilter,
 ): boolean => {
   switch (stageFilter) {
     case "NOT_PLAYED":
@@ -56,7 +56,7 @@ const matchesStageFilter = (
 
 const matchesRoleFilter = (
   champion: championStatsDto,
-  roleFilter: ChampionRoleFilter
+  roleFilter: ChampionRoleFilter,
 ): boolean =>
   roleFilter === "ALL" || (champion.roles ?? []).includes(roleFilter);
 
@@ -72,7 +72,7 @@ export const hasActiveChampionFilters = (filters: ChampionFilters): boolean =>
 
 export const applyChampionFilters = (
   champions: championStatsDto[],
-  filters: ChampionFilters
+  filters: ChampionFilters,
 ): championStatsDto[] => {
   const {
     showCompleted,

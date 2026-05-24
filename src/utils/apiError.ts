@@ -53,7 +53,7 @@ const inferCodeFromText = (text: string, status?: number): ErrorCode => {
  */
 export const coerceApiErrorPayload = (
   raw: unknown,
-  fallbackStatus = 500
+  fallbackStatus = 500,
 ): ApiErrorPayload => {
   if (raw && typeof raw === "object") {
     const obj = raw as {
@@ -97,7 +97,9 @@ export const coerceApiErrorPayload = (
   };
 };
 
-export const parseApiError = async (res: Response): Promise<ApiErrorPayload> => {
+export const parseApiError = async (
+  res: Response,
+): Promise<ApiErrorPayload> => {
   let body: unknown = undefined;
   try {
     body = await res.json();
@@ -148,7 +150,7 @@ export interface FormatErrorContext {
 
 export const formatApiError = (
   err: ApiErrorPayload,
-  ctx: FormatErrorContext = {}
+  ctx: FormatErrorContext = {},
 ): string => {
   const who =
     ctx.gameName && ctx.tagLine
@@ -173,7 +175,7 @@ export const formatApiError = (
       return "Refresh expired. Please try again.";
     case "UPSTREAM_RATE_LIMITED":
       return `Riot API rate limited. Try again in ${getRetryAfterSeconds(
-        err
+        err,
       )}s.`;
     case "UPSTREAM_ERROR":
     case "INTERNAL_ERROR":

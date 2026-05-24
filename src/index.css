@@ -116,7 +116,7 @@
   --color-damage-true: #ffba0e;
   --color-damage-magic: #10ccdd;
   --color-damage-spell: #ce8fd3;
-  
+
   --color-placement-first: #facc15;
   --color-placement-first-fg: #1f1600;
   --color-placement-first-glow: rgb(154 106 24 / 0.16);
@@ -161,7 +161,8 @@ body {
   --text-display: 3.75rem;
   --text-display--line-height: 4rem;
 
-  --shadow-resting: 0 0.0625rem 0.125rem var(--color-shadow), 0 0.5rem 1.75rem rgb(0 0 0 / 0.08);
+  --shadow-resting:
+    0 0.0625rem 0.125rem var(--color-shadow), 0 0.5rem 1.75rem rgb(0 0 0 / 0.08);
   --shadow-raised: 0 1.125rem 3rem rgb(0 0 0 / 0.24);
 
   --color-bg: var(--color-bg);

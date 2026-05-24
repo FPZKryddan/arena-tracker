@@ -19,7 +19,7 @@ const ChampionMatchTabs = ({ arenaMode }: ChampionMatchTabsProps) => {
   const selectTab = useCallback((nextTab: Tab) => {
     setTab(nextTab);
     setMountedTabs((current) =>
-      current[nextTab] ? current : { ...current, [nextTab]: true }
+      current[nextTab] ? current : { ...current, [nextTab]: true },
     );
   }, []);
 

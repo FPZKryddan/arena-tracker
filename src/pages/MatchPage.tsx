@@ -18,9 +18,7 @@ const MatchPage = () => {
       <main className="flex min-h-72 flex-1 items-center justify-center">
         <div className="w-full max-w-lg rounded-lg border border-border bg-surface p-4 text-center">
           <p className="text-sm font-semibold">Arena Match</p>
-          <p className="mt-1 break-all text-xs text-fg-muted">
-            {matchId}
-          </p>
+          <p className="mt-1 break-all text-xs text-fg-muted">{matchId}</p>
         </div>
       </main>
       <MatchDetailModal

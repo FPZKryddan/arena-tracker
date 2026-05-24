@@ -53,7 +53,7 @@ export const NAV_ITEMS: AppNavigationItem[] = [
 
 export const getComparePathFromLocation = (
   pathname: string,
-  search: string
+  search: string,
 ): string => {
   const profileMatch = pathname.match(/^\/profile\/([^/]+)\/([^/]+)\/([^/]+)/);
   if (!profileMatch) return "/compare";
@@ -64,7 +64,9 @@ export const getComparePathFromLocation = (
   if (!gameName || !tagLine) return "/compare";
 
   const params = new URLSearchParams({
-    p: [region, encodeURIComponent(gameName), encodeURIComponent(tagLine)].join("|"),
+    p: [region, encodeURIComponent(gameName), encodeURIComponent(tagLine)].join(
+      "|",
+    ),
   });
   const mode = new URLSearchParams(search).get("mode");
   if (mode) params.set("mode", mode);
@@ -74,7 +76,7 @@ export const getComparePathFromLocation = (
 
 export const getNavigationTarget = (
   item: AppNavigationItem,
-  comparePath: string
+  comparePath: string,
 ) => (item.key === "compare" ? comparePath : item.defaultTo);
 
 const safeDecode = (value: string): string | null => {

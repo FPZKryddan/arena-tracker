@@ -7,10 +7,13 @@ interface RegionSelectorProps {
   initialRegion?: Regions;
 }
 
-const RegionSelector = ({ updateRegionCallback, initialRegion }: RegionSelectorProps) => {
+const RegionSelector = ({
+  updateRegionCallback,
+  initialRegion,
+}: RegionSelectorProps) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState<boolean>(false);
   const [regionSelected, setRegionSelected] = useState<Regions>(
-    initialRegion ?? 'EUW'
+    initialRegion ?? "EUW",
   );
 
   useEffect(() => {

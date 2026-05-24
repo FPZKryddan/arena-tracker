@@ -43,7 +43,7 @@ const isChampionRole = (role: string): role is ChampionRole =>
   (CHAMPION_ROLES as string[]).includes(role);
 
 const isChampionRecord = (
-  v: unknown
+  v: unknown,
 ): v is { name: string; id: string; tags: string[] } =>
   typeof v === "object" &&
   v !== null &&
@@ -71,29 +71,28 @@ export const queryKeys = {
     region: string,
     gameName: string,
     tagLine: string,
-    arenaMode: ArenaModeSelection
+    arenaMode: ArenaModeSelection,
   ) => ["playerStats", region, gameName, tagLine, arenaMode] as const,
   recentMatchIds: (
     region: string,
     gameName: string,
     tagLine: string,
     limit: number,
-    arenaMode: ArenaModeSelection
-  ) =>
-    ["recentMatchIds", region, gameName, tagLine, limit, arenaMode] as const,
+    arenaMode: ArenaModeSelection,
+  ) => ["recentMatchIds", region, gameName, tagLine, limit, arenaMode] as const,
   leaderboard: (
     page: number,
     limit: number,
     region: string,
     sortBy: LeaderboardSort,
     order: LeaderboardOrder,
-    arenaMode: ArenaModeSelection
+    arenaMode: ArenaModeSelection,
   ) => ["leaderboard", page, limit, region, sortBy, order, arenaMode] as const,
 };
 
 const fetchAugments = async (): Promise<augmentsData[]> => {
   const res = await fetch(
-    "https://raw.communitydragon.org/latest/cdragon/arena/en_us.json"
+    "https://raw.communitydragon.org/latest/cdragon/arena/en_us.json",
   );
   if (!res.ok) throw new Error(`CDragon augment fetch failed: ${res.status}`);
   const data = await res.json();
@@ -102,7 +101,7 @@ const fetchAugments = async (): Promise<augmentsData[]> => {
 
 const fetchChampions = async (version: string): Promise<championData[]> => {
   const res = await fetch(
-    `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`
+    `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`,
   );
   if (!res.ok) throw new Error(`DDragon champion fetch failed: ${res.status}`);
   const data = await res.json();
@@ -133,7 +132,7 @@ type DdragonChampionDetailResponse = {
 
 const fetchChampionSpellIcons = async (
   version: string,
-  championNames: string[]
+  championNames: string[],
 ): Promise<Record<string, ChampionSpellIconDto[]>> => {
   const entries = await Promise.all(
     championNames.map(async (championName) => {
@@ -145,21 +144,23 @@ const fetchChampionSpellIcons = async (
       const spells = (champion?.spells ?? []).map((spell) => ({
         id: spell.id ?? "",
         name: spell.name ?? "Spell",
-        icon: spell.image?.full ? getSpellIconUrl(version, spell.image.full) : "",
+        icon: spell.image?.full
+          ? getSpellIconUrl(version, spell.image.full)
+          : "",
       }));
 
       return [championName, spells] as const;
-    })
+    }),
   );
 
   return Object.fromEntries(entries);
 };
 
 const fetchItems = async (
-  version: string
+  version: string,
 ): Promise<Record<number, ItemDataDto>> => {
   const res = await fetch(
-    `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json`
+    `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json`,
   );
   if (!res.ok) throw new Error(`DDragon item fetch failed: ${res.status}`);
   const data = (await res.json()) as { data?: Record<string, ItemDataDto> };
@@ -175,7 +176,7 @@ const fetchItems = async (
 
 const fetchMatch = async (
   region: Exclude<Regions, null>,
-  matchId: string
+  matchId: string,
 ): Promise<MatchDto> => {
   const apiBase = getApiBase();
   const res = await fetch(`${apiBase}/matches/${region}/${matchId}`);
@@ -185,7 +186,7 @@ const fetchMatch = async (
 
 const fetchMatchTimeline = async (
   region: Exclude<Regions, null>,
-  matchId: string
+  matchId: string,
 ): Promise<MatchTimelineDto> => {
   const apiBase = getApiBase();
   const res = await fetch(`${apiBase}/matches/${region}/${matchId}/timeline`);
@@ -197,14 +198,14 @@ const fetchPlayerStats = async (
   region: Exclude<Regions, null>,
   gameName: string,
   tagLine: string,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): Promise<PlayerStats> => {
   const apiBase = getApiBase();
   const arenaModesSearch = createArenaModesSearch(arenaMode);
   const res = await fetch(
     `${apiBase}/players/${region}/${encodeURIComponent(
-      gameName
-    )}/${encodeURIComponent(tagLine)}?${arenaModesSearch}`
+      gameName,
+    )}/${encodeURIComponent(tagLine)}?${arenaModesSearch}`,
   );
   if (!res.ok) throw new ApiError(await parseApiError(res));
   return (await res.json()) as PlayerStats;
@@ -216,7 +217,7 @@ const fetchLeaderboard = async (
   region: Exclude<Regions, null>,
   sortBy: LeaderboardSort,
   order: LeaderboardOrder,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): Promise<LeaderboardResponse> => {
   const apiBase = getApiBase();
   const params = new URLSearchParams({
@@ -226,7 +227,9 @@ const fetchLeaderboard = async (
     sortBy,
     order,
   });
-  const arenaModesSearch = new URLSearchParams(createArenaModesSearch(arenaMode));
+  const arenaModesSearch = new URLSearchParams(
+    createArenaModesSearch(arenaMode),
+  );
   arenaModesSearch.forEach((value, key) => params.set(key, value));
   const res = await fetch(`${apiBase}/players/leaderboard?${params}`);
   if (!res.ok) throw new ApiError(await parseApiError(res));
@@ -261,15 +264,15 @@ const refreshPlayerStats = async (
   region: Exclude<Regions, null>,
   gameName: string,
   tagLine: string,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): Promise<PlayerStats> => {
   const apiBase = getApiBase();
   const arenaModesSearch = createArenaModesSearch(arenaMode);
   const startRes = await fetch(
     `${apiBase}/players/${region}/${encodeURIComponent(
-      gameName
+      gameName,
     )}/${encodeURIComponent(tagLine)}/refresh?${arenaModesSearch}`,
-    { method: "POST" }
+    { method: "POST" },
   );
   if (!startRes.ok) throw new ApiError(await parseApiError(startRes));
 
@@ -282,7 +285,7 @@ const fetchPlayerStatsWithRefresh = async (
   region: Exclude<Regions, null>,
   gameName: string,
   tagLine: string,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): Promise<PlayerStats> => {
   try {
     return await fetchPlayerStats(region, gameName, tagLine, arenaMode);
@@ -302,18 +305,18 @@ const fetchRecentMatchIds = async (
   gameName: string,
   tagLine: string,
   limit: number,
-  arenaMode: ArenaModeSelection
+  arenaMode: ArenaModeSelection,
 ): Promise<string[]> => {
   const apiBase = getApiBase();
   const params = createArenaMatchesSearch(limit, arenaMode);
   const res = await fetch(
     `${apiBase}/players/${region}/${encodeURIComponent(
-      gameName
-    )}/${encodeURIComponent(tagLine)}/matches?${params}`
+      gameName,
+    )}/${encodeURIComponent(tagLine)}/matches?${params}`,
   );
   if (!res.ok) throw new ApiError(await parseApiError(res));
   const data = (await res.json()) as { matchIds?: string[] } | string[];
-  return Array.isArray(data) ? data : data.matchIds ?? [];
+  return Array.isArray(data) ? data : (data.matchIds ?? []);
 };
 
 export const useAugmentsQuery = () =>
@@ -357,7 +360,7 @@ export const useItemDataQuery = () => {
 
 export const useMatchQuery = (
   matchId: string | undefined | null,
-  region: Exclude<Regions, null> = getStoredRegion()
+  region: Exclude<Regions, null> = getStoredRegion(),
 ) =>
   useQuery({
     queryKey: matchId ? queryKeys.match(region, matchId) : ["match", "none"],
@@ -368,7 +371,7 @@ export const useMatchQuery = (
 
 export const useMatchTimelineQuery = (
   matchId: string | undefined | null,
-  region: Exclude<Regions, null> = getStoredRegion()
+  region: Exclude<Regions, null> = getStoredRegion(),
 ) =>
   useQuery({
     queryKey: matchId
@@ -383,7 +386,7 @@ export const usePlayerStatsQuery = (
   region: Exclude<Regions, null> | undefined,
   gameName: string | undefined,
   tagLine: string | undefined,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ) =>
   useQuery({
     queryKey:
@@ -403,7 +406,7 @@ export const useLeaderboardQuery = (
   region: Exclude<Regions, null>,
   sortBy: LeaderboardSort,
   order: LeaderboardOrder,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ) =>
   useQuery({
     queryKey: queryKeys.leaderboard(
@@ -412,15 +415,16 @@ export const useLeaderboardQuery = (
       region,
       sortBy,
       order,
-      arenaMode
+      arenaMode,
     ),
-    queryFn: () => fetchLeaderboard(page, limit, region, sortBy, order, arenaMode),
+    queryFn: () =>
+      fetchLeaderboard(page, limit, region, sortBy, order, arenaMode),
     staleTime: 30_000,
   });
 
 export const useMatchesQuery = (
   matchIds: string[],
-  region: Exclude<Regions, null> = getStoredRegion()
+  region: Exclude<Regions, null> = getStoredRegion(),
 ) =>
   useQueries({
     queries: matchIds.map((id) => ({
@@ -435,7 +439,7 @@ export const useRecentMatchIdsQuery = (
   tagLine: string | undefined,
   limit: number,
   region: Exclude<Regions, null> = getStoredRegion(),
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ) =>
   useQuery({
     queryKey: queryKeys.recentMatchIds(
@@ -443,7 +447,7 @@ export const useRecentMatchIdsQuery = (
       gameName ?? "",
       tagLine ?? "",
       limit,
-      arenaMode
+      arenaMode,
     ),
     queryFn: () =>
       fetchRecentMatchIds(region, gameName!, tagLine!, limit, arenaMode),

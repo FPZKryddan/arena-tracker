@@ -25,7 +25,7 @@ const readFromStorage = (): Favorite[] => {
         f &&
         typeof f.gameName === "string" &&
         typeof f.tagLine === "string" &&
-        typeof f.region === "string"
+        typeof f.region === "string",
     );
   } catch {
     return [];
@@ -53,7 +53,7 @@ function useFavorites() {
 
   const isFavorite = useCallback(
     (f: Favorite) => favorites.some((existing) => sameProfile(existing, f)),
-    [favorites]
+    [favorites],
   );
 
   const add = useCallback((f: Favorite) => {

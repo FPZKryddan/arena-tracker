@@ -15,10 +15,10 @@ interface TeammateDetailCardProps {
 const getProfilePath = (
   region: Exclude<Regions, null>,
   gameName: string,
-  tagLine: string
+  tagLine: string,
 ): string =>
   `/profile/${region}/${encodeURIComponent(gameName)}/${encodeURIComponent(
-    tagLine
+    tagLine,
   )}`;
 
 const formatLastPlayed = (timestamp: number): string => {
@@ -46,7 +46,7 @@ const TeammateDetailCard = ({
   const profilePath = getProfilePath(
     profile?.region ?? region,
     displayGameName,
-    displayTagLine
+    displayTagLine,
   );
 
   return (

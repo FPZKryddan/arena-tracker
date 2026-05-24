@@ -14,10 +14,10 @@ import { DEFAULT_ARENA_MODE } from "../../utils/arenaModes";
 
 const profilePath = (
   f: Favorite,
-  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE
+  arenaMode: ArenaModeSelection = DEFAULT_ARENA_MODE,
 ): string => {
   const path = `/profile/${f.region}/${encodeURIComponent(
-    f.gameName
+    f.gameName,
   )}/${encodeURIComponent(f.tagLine)}`;
   if (arenaMode === DEFAULT_ARENA_MODE) return path;
   return `${path}?${new URLSearchParams({ mode: arenaMode }).toString()}`;
@@ -39,9 +39,15 @@ const SummonerInput = ({
   submitLabel,
   variant = "default",
 }: SummonerInputProps) => {
-  const params = useParams<{ region?: string; gameName?: string; tagLine?: string }>();
+  const params = useParams<{
+    region?: string;
+    gameName?: string;
+    tagLine?: string;
+  }>();
   const initialName =
-    params.gameName && params.tagLine ? `${params.gameName}#${params.tagLine}` : "";
+    params.gameName && params.tagLine
+      ? `${params.gameName}#${params.tagLine}`
+      : "";
   const initialRegion = (params.region ?? null) as Regions;
 
   const [playerInputName, setPlayerInputName] = useState<string>(initialName);
@@ -49,7 +55,7 @@ const SummonerInput = ({
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const { retrievePlayerData, isFetching, jobState } = useGetPlayerStats(
     region,
-    arenaMode
+    arenaMode,
   );
   const { favorites, remove } = useFavorites();
   const navigate = useNavigate();
@@ -57,7 +63,7 @@ const SummonerInput = ({
   const progressIsFetching = isFetching || routeProgress?.isFetching === true;
   const progressJobState = isFetching
     ? jobState
-    : routeProgress?.jobState ?? jobState;
+    : (routeProgress?.jobState ?? jobState);
   const isHero = variant === "hero";
 
   useEffect(() => {
@@ -89,7 +95,7 @@ const SummonerInput = ({
       setIsFocused(false);
     }
     navigate(
-      profilePath({ region: effectiveRegion, gameName, tagLine }, arenaMode)
+      profilePath({ region: effectiveRegion, gameName, tagLine }, arenaMode),
     );
   };
 
@@ -100,7 +106,10 @@ const SummonerInput = ({
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-    if (containerRef.current && !containerRef.current.contains(e.relatedTarget)) {
+    if (
+      containerRef.current &&
+      !containerRef.current.contains(e.relatedTarget)
+    ) {
       setIsFocused(false);
     }
   };

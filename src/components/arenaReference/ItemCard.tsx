@@ -1,7 +1,10 @@
 import { getDdragonItemIconUrl } from "../../utils/assetUrls";
 import GameStatIcon from "../common/GameStatIcon";
 import Tooltip from "../Tooltip/Tooltip";
-import { itemDescriptionToText, type ClassifiedArenaItem } from "./itemMetadata";
+import {
+  itemDescriptionToText,
+  type ClassifiedArenaItem,
+} from "./itemMetadata";
 
 interface ItemCardProps {
   item: ClassifiedArenaItem;
